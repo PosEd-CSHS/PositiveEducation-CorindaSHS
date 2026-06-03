@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-Frame-Options" content="ALLOWALL">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alphabucks — CSHS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
+
+  :root {
+    --green: #00180f;
+    --green-mid: #003d1f;
+    --green-light: #005a2e;
+    --gold: #f2b400;
+    --gold-dim: rgba(242,180,0,0.15);
+    --gold-border: rgba(242,180,0,0.3);
+    --white: #fdfdfd;
+    --muted: rgba(255,255,255,0.55);
+    --danger: #e05252;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,90,46,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(242,180,0,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 12vw, 96px);
+    color: var(--white);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+  }
+  .header h1 span { color: var(--gold); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  /* Letter badge */
+  .letter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: var(--gold);
+    color: var(--green);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    border-radius: 16px;
+    margin: 0 auto 24px;
+    box-shadow: 0 8px 32px rgba(242,180,0,0.35);
+  }
+
+  /* Cards */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  /* Sign in */
+  .group-select {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .group-btn {
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    color: var(--white);
+    padding: 10px 8px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .group-btn:hover { background: rgba(242,180,0,0.28); border-color: var(--gold); }
+  .group-btn.selected { background: var(--gold); color: var(--green); border-color: var(--gold); }
+  .group-btn.played { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+
+  /* Timer */
+  .timer-ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .timer-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 120px;
+    text-align: center;
+    transition: color 0.3s;
+  }
+  .timer-display.urgent { color: var(--danger); }
+
+  /* Progress bar */
+  .timer-bar-wrap {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .timer-bar {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 3px;
+    transition: width 1s linear, background 0.3s;
+  }
+  .timer-bar.urgent { background: var(--danger); }
+
+  /* Category grid */
+  .category-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .category-row {
+    display: grid;
+    grid-template-columns: 1fr 180px 80px;
+    gap: 10px;
+    align-items: center;
+  }
+  .category-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    padding: 4px 0;
+  }
+  .answer-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    transition: border-color 0.15s;
+    text-transform: uppercase;
+  }
+  .answer-input:focus { outline: none; border-color: var(--gold); background: rgba(242,180,0,0.06); }
+  .answer-input.correct { border-color: #4caf7a; background: rgba(76,175,122,0.1); }
+  .answer-input.wrong { border-color: var(--danger); background: rgba(224,82,82,0.1); }
+  .answer-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .pts-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--green);
+  }
+  .btn-primary:hover { background: #ffc820; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(242,180,0,0.3); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-border);
+  }
+  .btn-outline:hover { background: var(--gold-dim); }
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(224,82,82,0.3);
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+  .btn-danger:hover { background: rgba(224,82,82,0.1); }
+
+  .lb-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 80px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+  .lb-row.top1 { background: rgba(242,180,0,0.12); border-color: rgba(242,180,0,0.4); }
+  .lb-row.top2 { background: rgba(192,192,192,0.07); border-color: rgba(192,192,192,0.2); }
+  .lb-row.top3 { background: rgba(205,127,50,0.07); border-color: rgba(205,127,50,0.2); }
+  .lb-rank {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .lb-row.top1 .lb-rank { color: var(--gold); }
+  .lb-name { font-size: 14px; font-weight: 600; }
+  .lb-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gold);
+    text-align: right;
+  }
+  .lb-empty {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    padding: 20px;
+  }
+
+  /* Score reveal */
+  .score-reveal {
+    text-align: center;
+    padding: 16px 0;
+  }
+  .score-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .score-label { font-size: 13px; color: var(--muted); }
+
+  /* Admin panel */
+  .admin-panel { display: none; }
+  .admin-panel.open { display: block; }
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .admin-field label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .admin-input {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+  }
+  .admin-input:focus { outline: none; border-color: var(--gold); }
+  .category-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .category-item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .cat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    color: var(--muted);
+    border: none;
+    background: transparent;
+  }
+  .tab.active { background: var(--gold); color: var(--green); }
+
+  /* Status pill */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .pill-live { background: rgba(76,175,122,0.15); color: #4caf7a; border: 1px solid rgba(76,175,122,0.3); }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Util */
+  .flex-between { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .mt8 { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .text-muted { color: var(--muted); font-size: 12px; }
+  .full-width { width: 100%; }
+
+  /* Week info */
+  .week-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .week-chip {
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .category-row { grid-template-columns: 1fr 140px 60px; }
+    .admin-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-eyebrow">Corinda State High School</div>
+    <h1>ALPHA<span>BUCKS</span></h1>
+    <div class="header-sub">Name something for every category — starting with the letter of the week</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('game')">Game</button>
+  </div>
+
+  <!-- GAME TAB -->
+  <div id="tab-game" class="section active">
+
+    <!-- Sign In -->
+    <div id="screen-signin" class="section active">
+      <div class="card">
+        <div class="card-title">Step 1 — Select your house</div>
+        <div class="group-select" id="houseSelect"></div>
+        <div id="step2" style="display:none;margin-top:20px;">
+          <div class="card-title">Step 2 — Select your group</div>
+          <div class="group-select" id="groupLetterSelect"></div>
+        </div>
+        <div class="mt16">
+          <button class="btn btn-primary full-width" id="startBtn" onclick="startGame()" disabled>Start Game</button>
+        </div>
+      </div>
+      <div class="card" id="week-preview">
+        <div class="card-title">This week</div>
+        <div class="week-info" id="weekInfo"></div>
+      </div>
+    </div>
+
+    <!-- Playing -->
+    <div id="screen-playing" class="section">
+      <div class="card">
+        <div class="flex-between" style="margin-bottom:16px;">
+          <div>
+            <div class="card-title" style="margin-bottom:4px;">Now playing</div>
+            <div style="font-size:15px;font-weight:700;" id="playingGroup">—</div>
+          </div>
+          <div style="text-align:center;">
+            <div class="letter-badge" id="playingLetter" style="width:56px;height:56px;font-size:40px;margin:0;">A</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="card-title" style="margin-bottom:4px;">Time left</div>
+            <div class="timer-display" id="timerDisplay">60</div>
+          </div>
+        </div>
+        <div class="timer-bar-wrap">
+          <div class="timer-bar" id="timerBar"></div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--gold);margin:4px 0 10px;">⚡ Answer fast — finishing in the first half of the clock earns a bonus point!</div>
+        <div class="category-grid" id="categoryGrid"></div>
+        <div class="mt16">
+          <button class="btn btn-primary full-width" id="submitBtn" onclick="submitAnswers()">Submit Answers</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="screen-result" class="section">
+      <div class="card">
+        <div class="card-title">Round complete</div>
+        <div class="score-reveal">
+          <div class="score-big" id="finalScore">0</div>
+          <div class="score-label" id="scoreLabel">out of 10</div>
+          <div style="font-size:15px;font-weight:700;color:var(--gold);margin-top:6px;" id="alphaBreakdownLine"></div>
+        </div>
+        <div id="resultBreakdown" class="category-grid" style="margin-top:16px;"></div>
+        <div class="mt16" style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn btn-primary full-width" onclick="submitScore_AB()" id="submitScoreBtn" style="font-size:16px;padding:14px;">
+            📤 Submit Score
+          </button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline" style="flex:1;" onclick="resetToSignin()">Play Again</button>
+          </div>
+          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;">✓ Form opened in new tab — fill in your details and submit</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- ADMIN TAB -->
+  
+
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const STORAGE_KEY_CONFIG = 'alphabucks-config';
+const STORAGE_KEY_SCORES = 'alphabucks-scores';
+const STORAGE_KEY_PLAYED = 'alphabucks-played';
+const POLL_INTERVAL = 8000;
+
+const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
+const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
+
+const DEFAULT_CONFIG = {
+  week: 'Week 1',
+  letter: 'S',
+  timeLimit: 60,
+  pointsPerSecond: 2,
+  categoriesPerGame: 6,
+  formUrl: 'https://forms.office.com/r/x94vT9B782'
+};
+
+// ─── CATEGORY BANK ────────────────────────────────────────────────────────────
+
+const BANK = [
+  { week: 1, letter:'S', categories:['A sport', 'Something in a school', 'A sea creature', 'A snack food', 'Something soft', 'A science term'] },
+  { week: 2, letter:'T', categories:['A type of transport', 'Something in a kitchen', 'A tree', 'A TV show', 'Something tiny', 'A tool'] },
+  { week: 3, letter:'C', categories:['A colour', 'A country', 'Something cold', 'A career', 'A creature', 'Something in a classroom'] },
+  { week: 4, letter:'B', categories:['A breakfast food', 'A body part', 'A ball sport', 'Something at the beach', 'A breed of dog', 'Something beautiful'] },
+  { week: 5, letter:'M', categories:['A musical instrument', 'Something in a museum', 'A meal', 'A movie', 'Something made of metal', 'A mammal'] },
+  { week: 6, letter:'P', categories:['A place in Queensland', 'A plant', 'A piece of clothing', 'Something purple', 'A profession', 'A piece of furniture'] },
+  { week: 7, letter:'R', categories:['A reptile', 'Something red', 'A room in a house', 'A recipe ingredient', 'Something round', 'A river'] },
+  { week: 8, letter:'F', categories:['A fruit', 'Something funny', 'A farm animal', 'Something flat', 'A famous Australian', 'A feeling'] },
+  { week: 9, letter:'G', categories:['A game', 'Something green', 'A geographical feature', 'A grocery item', 'Something that grows', 'A goal you have'] },
+  { week:10, letter:'H', categories:['A hobby', 'Something hot', 'A household item', 'A hero', 'Something heavy', 'A health habit'] },
+  { week:11, letter:'L', categories:['A language', 'Something loud', 'A liquid', 'Something you learn at school', 'A landmark', 'A leisure activity'] },
+  { week:12, letter:'D', categories:['A drink', 'Something dangerous', 'A dessert', 'Something done daily', 'A dog breed', 'A destination'] },
+  { week:13, letter:'W', categories:['Something wild', 'A weather event', 'Something you wear', 'A water sport', 'Something wooden', 'A world record'] },
+  { week:14, letter:'N', categories:['Something noisy', 'A nature item', 'A number-related word', 'Something new', 'A nationality', 'A night-time thing'] },
+  { week:15, letter:'K', categories:['Something in a kitchen', 'A kind of music', 'Something kids love', 'A known landmark', 'Something knitted', 'A key invention'] },
+  { week:16, letter:'A', categories:['An Australian animal', 'An art form', 'Something aerial', 'An achievement', 'An appliance', 'Something ancient'] },
+  { week:17, letter:'E', categories:['Something electrical', 'An emotion', 'Something edible', 'An exercise', 'Something enormous', 'An environment'] },
+  { week:18, letter:'J', categories:['A job', 'Something in a jungle', 'A journey', 'Something jolly', 'A Japanese thing', 'Something just invented'] },
+  { week:19, letter:'V', categories:['A vegetable', 'Something valuable', 'A vehicle', 'Something vibrant', 'A vitamin source', 'A volcanic thing'] },
+  { week:20, letter:'Y', categories:['Something yellow', 'A year in history', 'Something you do yearly', 'A youth activity', 'Something yummy', 'A yoga pose'] },
+  { week:21, letter:'S', categories:['A subject at school', 'Something silent', 'A social media thing', 'A summer activity', 'Something sharp', 'A symbol'] },
+  { week:22, letter:'T', categories:['Something transparent', 'A talent', 'A team sport', 'Something tasty', 'A type of music', 'A tradition'] },
+  { week:23, letter:'C', categories:['Something circular', 'A city', 'A cooking method', 'Something creative', 'A celebration', 'A childhood memory'] },
+  { week:24, letter:'B', categories:['Something blue', 'A bird', 'A board game', 'Something bendable', 'A book genre', 'A Brisbane landmark'] },
+  { week:25, letter:'M', categories:['A mountain', 'Something miniature', 'A material', 'A mental health strategy', 'A mode of transport', 'Something mythical'] },
+  { week:26, letter:'P', categories:['A pet', 'Something plastic', 'A pattern', 'A physical activity', 'A positive emotion', 'Something portable'] },
+  { week:27, letter:'R', categories:['Something recyclable', 'A role model quality', 'A rain-related word', 'Something rough', 'A reward', 'A relaxation strategy'] },
+  { week:28, letter:'F', categories:['A festival', 'Something fragile', 'A field of science', 'Something flexible', 'A form of art', 'A future technology'] },
+  { week:29, letter:'G', categories:['Something giant', 'A garden item', 'A global issue', 'Something golden', 'A gesture', 'A group activity'] },
+  { week:30, letter:'H', categories:['Something helpful', 'A historical event', 'A human need', 'Something hollow', 'A holiday destination', 'A habit to build'] },
+  { week:31, letter:'L', categories:['Something luminous', 'A life skill', 'A legend', 'Something lightweight', 'A local food', 'A learning strategy'] },
+  { week:32, letter:'D', categories:['Something digital', 'A dance style', 'A decade', 'Something delicious', 'A daily challenge', 'A discovery'] },
+  { week:33, letter:'W', categories:['A wellbeing strategy', 'Something waterproof', 'A winter activity', 'A world wonder', 'Something wide', 'A way to help others'] },
+  { week:34, letter:'N', categories:['Something nutritious', 'A natural disaster', 'A neighbourhood thing', 'Something narrow', 'A new skill', 'A night sky object'] },
+  { week:35, letter:'K', categories:['Something kind', 'A kingdom', 'A kitchen gadget', 'Something kept secret', 'A key life skill', 'Something known worldwide'] },
+  { week:36, letter:'A', categories:['An adventure', 'Something amazing', 'An Australian icon', 'An act of courage', 'Something abstract', 'An ambition'] },
+  { week:37, letter:'E', categories:['Something eco-friendly', 'An everyday hero', 'Something expensive', 'An event you enjoy', 'Something elastic', 'An example of teamwork'] },
+  { week:38, letter:'O', categories:['Something orange', 'An ocean creature', 'An outdoor activity', 'Something old', 'An opportunity', 'Something oval'] },
+  { week:39, letter:'I', categories:['Something important', 'An invention', 'Something icy', 'An island', 'Something inspiring', 'An indoor activity'] },
+  { week:40, letter:'U', categories:['Something underground', 'Something unusual', 'An uplifting thing', 'Something useful', 'An urban feature', 'Something unique to Australia'] },
+];
+
+
+
+/* ── AUTO WEEK (shared across all CSHS games) ──────────────────────────────
+   Returns the current QLD 2026 school week as {term, week, absWeek 1..40}.
+   absWeek lets games index a content bank continuously across the year.
+   Rule: latest term-week whose Monday is on/before today; holidays hold the
+   most recent week; before the year starts, week 1. Matches Wheel of Fortune. */
+const CSHS_TERMS = [
+  { t:1, start:"2026-01-27", end:"2026-04-02" },
+  { t:2, start:"2026-04-20", end:"2026-06-26" },
+  { t:3, start:"2026-07-13", end:"2026-09-18" },
+  { t:4, start:"2026-10-06", end:"2026-12-11" }
+];
+function cshsWeekSchedule(){
+  const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+  const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
+  const out=[]; let abs=0;
+  for(const term of CSHS_TERMS){
+    const end=parse(term.end); let mon=mondayOf(parse(term.start)); let w=1;
+    while(mon<=end){ abs++; out.push({t:term.t,w,abs,mon:new Date(mon)}); mon=new Date(mon); mon.setDate(mon.getDate()+7); w++; }
+  }
+  return out;
+}
+function cshsCurrentWeek(){
+  const sched=cshsWeekSchedule();
+  const today=new Date(); today.setHours(0,0,0,0);
+  let chosen=sched[0];
+  for(const wk of sched){ if(wk.mon<=today) chosen=wk; else break; }
+  return chosen; // {t,w,abs,mon}
+}
+
+function cshsWeekLabel(){ const w=cshsCurrentWeek(); return `Term ${w.t} · Week ${w.w}`; }
+
+// Week-seeded category selection — same all week, auto-changes each school week
+function getWeekData() {
+  const weekNum = cshsCurrentWeek().abs;
+  const idx = Math.min(weekNum, BANK.length) - 1;
+  return BANK[idx >= 0 ? idx : 0];
+}
+function getWeekCategories() {
+  return getWeekData().categories;
+}
+function getWeekLetter() {
+  return getWeekData().letter;
+}
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let config = { ...DEFAULT_CONFIG };
+let scores = {};
+let selectedGroup = null;
+let timerInterval = null;
+let gameStartTime = null;        // ms when round began
+let lastValidAnswerSecs = null;  // elapsed secs at last valid answer entry
+let timeLeft = 60;
+let gameActive = false;
+let pollInterval = null;
+let played = new Set(); // groups that have played this week
+
+// ─── STORAGE HELPERS ──────────────────────────────────────────────────────────
+function loadConfig() { /* uses DEFAULT_CONFIG directly */ }
+function saveConfigStorage() { /* no-op in Canvas */ }
+
+function loadScores() { scores = {}; }
+function saveScore(group, pts) { scores[group] = pts; }
+
+function loadPlayed() {
+  played = new Set();
+  try {
+    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
+    played = new Set(data);
+  } catch(e) {}
+}
+function markPlayed(group) {
+  if (!group || group === 'Staff') return;
+  played.add(group);
+  markPlayedLS(group);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  // config uses DEFAULT_CONFIG directly — no storage dependency in Canvas
+  config.week = cshsWeekLabel();
+  config.letter = getWeekLetter();
+  renderGroupSelect();
+  renderWeekPreview();
+  // No polling needed without shared storage
+}
+
+
+// ─── GROUP SELECT (two-step) ──────────────────────────────────────────────────
+let selectedHouse = null;
+let selectedLetter = null;
+
+function renderGroupSelect() {
+  // Step 1: houses
+  const houseEl = document.getElementById('houseSelect');
+  houseEl.innerHTML = HOUSES.map(h => `
+    <button class="group-btn ${selectedHouse===h?'selected':''}" onclick="selectHouse('${h}')">${h}</button>
+  `).join('');
+  // Step 2: letters (shown only after house chosen)
+  const step2 = document.getElementById('step2');
+  if (selectedHouse) {
+    step2.style.display = 'block';
+    const letEl = document.getElementById('groupLetterSelect');
+    letEl.innerHTML = GROUP_LETTERS.map(l => {
+      const grp = selectedHouse + ' ' + l;
+      const done = isPlayed(grp);
+      const sel = selectedLetter === l;
+      return `<button class="group-btn ${sel?'selected':''} ${done?'played':''}"
+        onclick="selectLetter('${l}')" ${done?'title="Already played this week"':''}>
+        ${l}${done?' ✓':''}
+      </button>`;
+    }).join('') + `<button class="group-btn ${selectedLetter==='Staff'?'selected':''}" onclick="selectLetter('Staff')">Staff</button>`;
+  } else {
+    step2.style.display = 'none';
+  }
+}
+
+function selectHouse(h) {
+  selectedHouse = h;
+  selectedLetter = null;
+  selectedGroup = null;
+  document.getElementById('startBtn').disabled = true;
+  renderGroupSelect();
+}
+
+function selectLetter(l) {
+  selectedLetter = l;
+  selectedGroup = (l === 'Staff') ? 'Staff' : selectedHouse + ' ' + l;
+  renderGroupSelect();
+  const alreadyPlayed = isPlayed(selectedGroup);
+  document.getElementById('startBtn').disabled = alreadyPlayed;
+}
+
+// ─── WEEK PREVIEW ─────────────────────────────────────────────────────────────
+function renderWeekPreview() {
+  const el = document.getElementById('weekInfo');
+  el.innerHTML = `
+    <div class="week-chip">${cshsWeekLabel()}</div>
+    <div class="week-chip" style="font-size:16px;padding:4px 16px;">Letter: <strong>${config.letter.toUpperCase()}</strong></div>
+    <div class="week-chip">${config.categoriesPerGame || 6} categories</div>
+    <div class="week-chip">${config.timeLimit}s round</div>
+  `;
+}
+
+// ─── GAME ─────────────────────────────────────────────────────────────────────
+function startGame() {
+  if (!selectedGroup || !lockWeeklyAttempt(selectedGroup)) return;
+  showScreen('screen-playing');
+  document.getElementById('playingGroup').textContent = selectedGroup;
+  document.getElementById('playingLetter').textContent = config.letter.toUpperCase();
+  buildCategoryGrid();
+  startTimer();
+}
+
+function buildCategoryGrid() {
+  const grid = document.getElementById('categoryGrid');
+  const categories = getWeekCategories();
+  grid.innerHTML = categories.map((cat, i) => `
+    <div class="category-row" id="row-${i}">
+      <div class="category-label">${cat}</div>
+      <input class="answer-input" id="ans-${i}" placeholder="${config.letter.toUpperCase()}..." maxlength="30"
+        oninput="validateInput(${i})" autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="pts-badge" id="pts-${i}">—</div>
+    </div>
+  `).join('');
+  gameActive = true;
+  gameStartTime = Date.now();
+  lastValidAnswerSecs = null;
+  document.getElementById('ans-0')?.focus();
+}
+
+function validateInput(i) {
+  if (!gameActive) return;
+  const input = document.getElementById(`ans-${i}`);
+  const val = input.value.trim().toUpperCase();
+  const letter = config.letter.toUpperCase();
+  if (val.length === 0) {
+    input.classList.remove('correct','wrong');
+    document.getElementById(`pts-${i}`).textContent = '—';
+    return;
+  }
+  if (val.length >= 2 && val[0] === letter) {
+    input.classList.add('correct'); input.classList.remove('wrong');
+    // Record when the most recent valid answer was entered (for speed nudge)
+    if (gameStartTime) lastValidAnswerSecs = (Date.now() - gameStartTime) / 1000;
+  } else {
+    input.classList.add('wrong'); input.classList.remove('correct');
+  }
+}
+
+function startTimer() {
+  timeLeft = config.timeLimit;
+  const bar = document.getElementById('timerBar');
+  const display = document.getElementById('timerDisplay');
+  bar.style.width = '100%';
+  bar.style.background = 'var(--gold)';
+  display.classList.remove('urgent');
+  bar.classList.remove('urgent');
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const pct = (timeLeft / config.timeLimit) * 100;
+    display.textContent = timeLeft;
+    bar.style.width = pct + '%';
+    if (timeLeft <= 10) {
+      display.classList.add('urgent');
+      bar.classList.add('urgent');
+    }
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitAnswers();
+    }
+  }, 1000);
+}
+
+function submitAnswers() {
+  if (!gameActive) return;
+  gameActive = false;
+  clearInterval(timerInterval);
+
+  const letter = config.letter.toUpperCase();
+  let totalPts = 0;
+  const breakdown = [];
+
+  const categories = getWeekCategories();
+  categories.forEach((cat, i) => {
+    const input = document.getElementById(`ans-${i}`);
+    input.disabled = true;
+    const val = input.value.trim().toUpperCase();
+    const valid = val.length >= 2 && val[0] === letter;
+    const pts = valid ? (10 + timeLeft * config.pointsPerSecond) : 0;
+    totalPts += pts;
+    breakdown.push({ cat, val, valid, pts });
+    document.getElementById(`pts-${i}`).textContent = valid ? `+${pts}` : '0';
+    input.classList.toggle('correct', valid);
+    input.classList.toggle('wrong', !valid && val.length > 0);
+  });
+
+  const correctCount = breakdown.filter(b => b.valid).length;
+  const attempted = breakdown.some(b => (b.val || '').length > 0);
+  // "Fast" = last valid answer entered within the first half of the clock.
+  const half = (config.timeLimit || 60) / 2;
+  const fast = (correctCount >= 1) && (lastValidAnswerSecs !== null) && (lastValidAnswerSecs <= half);
+  const _scaled = alphabucksScore(correctCount, attempted, fast);
+  saveScore(selectedGroup, _scaled);
+  markPlayed(selectedGroup);
+  showResult(totalPts, breakdown, selectedGroup, correctCount, attempted, fast);
+}
+
+// Count sets the band; finishing fast nudges +1 (capped at 10).
+// 6->10, 5->9, 4->8, 3->7, 1-2->6; +1 if fast. 0 correct but attempted ->3; nothing ->0.
+function alphabucksScore(correct, attempted, fast){
+  const cats = config.categoriesPerGame || 6;
+  let base;
+  if (correct >= cats) base = 10;
+  else if (correct === 5) base = 9;
+  else if (correct === 4) base = 8;
+  else if (correct === 3) base = 7;
+  else if (correct >= 1) base = 6;
+  else return attempted ? 3 : 0;
+  if (fast) base = Math.min(10, base + 1);   // speed nudge
+  return base;
+}
+
+// Highest possible total: every category correct, answered with full clock.
+function alphabucksMax() {
+  const cats = config.categoriesPerGame || 6;
+  const perAnswerMax = 10 + (config.timeLimit || 60) * (config.pointsPerSecond || 2);
+  return cats * perAnswerMax;
+}
+
+function showResult(total, breakdown, group, correctCount, attempted, fast) {
+  const cats = config.categoriesPerGame || 6;
+  const scaled = alphabucksScore(correctCount, attempted, fast);
+  document.getElementById('finalScore').textContent = scaled;
+  const bd = document.getElementById('resultBreakdown');
+  bd.innerHTML = breakdown.map(b => `
+    <div class="category-row">
+      <div class="category-label">${b.cat}</div>
+      <div style="font-size:13px;color:${b.valid?'#4caf7a':'var(--muted)'};">
+        ${b.val || '(no answer)'}
+      </div>
+      <div class="pts-badge" style="color:${b.valid?'var(--gold)':'var(--muted)'};">${b.valid?'✓':'—'}</div>
+    </div>
+  `).join('');
+  // breakdown line
+  const line = document.getElementById('alphaBreakdownLine');
+  if (line) {
+    if (correctCount >= 1) {
+      line.textContent = `${correctCount} of ${cats} correct${fast ? ' + speed bonus' : ''} → ${scaled} out of 10`;
+    } else {
+      line.textContent = attempted ? 'Had a go → 3 out of 10' : 'No answers → 0 out of 10';
+    }
+  }
+  window._lastResult = { group: group || selectedGroup, score: scaled,
+    house: (group||selectedGroup).split(' ')[0],
+    detail: 'Letter ' + config.letter.toUpperCase() + ': ' + correctCount + '/' + cats + ' correct' + (fast ? ' (fast)' : '') };
+  showScreen('screen-result');
+}
+
+function resetToSignin() {
+  selectedGroup = null;
+  selectedHouse = null;
+  selectedLetter = null;
+  renderGroupSelect();
+  document.getElementById('startBtn').disabled = true;
+  showScreen('screen-signin');
+}
+
+function showScreen(id) {
+  ['screen-signin','screen-playing','screen-result'].forEach(s => {
+    document.getElementById(s).classList.toggle('active', s === id);
+  });
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────────
+let adminUnlocked = false;
+
+
+
+
+
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  ['game','admin'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === name);
+  });
+  document.querySelectorAll('.tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['game','admin'][i] === name);
+  });
+}
+
+
+// ─── COPY SCORES ──────────────────────────────────────────────────────────────
+async function copyScores() {
+  loadScores();
+  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  if (sorted.length === 0) { alert('No scores to copy yet.'); return; }
+
+  const header = `Alphabucks — ${config.week}\tLetter: ${config.letter.toUpperCase()}\t${new Date().toLocaleDateString('en-AU')}`;
+  const cols   = 'Rank\tGroup\tScore\tLetter';
+  const rows   = sorted.map(([name, score], i) =>
+    `${i+1}\t${name}\t${score}\t${config.letter.toUpperCase()}`
+  ).join('\n');
+  const text = `${header}\n${cols}\n${rows}`;
+
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch(e) {
+    // fallback for iframe/restricted contexts
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  const el = document.getElementById('copyConfirm');
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
+
+
+// ─── MICROSOFT FORMS SUBMIT ───────────────────────────────────────────────────
+function openFormSubmit(group, house, score, week, game, detail) {
+  const url = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
+  window.open(url, '_blank');
+}
+
+
+function submitScore_AB() {
+  const r = window._lastResult || {};
+  openFormSubmit(r.group||'', r.house||'', r.score||0, config.week, 'Alphabucks', r.detail||'');
+  markPlayedLS((window._lastResult||{}).group||'');
+  document.getElementById('submitConfirm').style.display = 'block';
+  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
+  document.getElementById('submitScoreBtn').disabled = true;
+}
+
+// ─── START ────────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", init);
+init();
+
+// ─── WEEKLY ATTEMPT LOCK (localStorage, per-device per-week) ─────────────────
+// Home groups get one attempt per game per school week. Staff is always unlimited.
+// Note: because these are static HTML files, this lock is enforced in this browser/device.
+function weeklyLockLabel() {
+  if (typeof cshsWeekLabel === 'function') return cshsWeekLabel();
+  const terms = [
+    { t:1, start:"2026-01-27", end:"2026-04-02" },
+    { t:2, start:"2026-04-20", end:"2026-06-26" },
+    { t:3, start:"2026-07-13", end:"2026-09-18" },
+    { t:4, start:"2026-10-06", end:"2026-12-11" }
+  ];
+  const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+  const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
+  const today=new Date(); today.setHours(0,0,0,0);
+  let chosen={t:1,w:1};
+  for(const term of terms){
+    const end=parse(term.end); let mon=mondayOf(parse(term.start)); let w=1;
+    while(mon<=end){
+      if(mon<=today) chosen={t:term.t,w}; else return `Term ${chosen.t} Week ${chosen.w}`;
+      mon=new Date(mon); mon.setDate(mon.getDate()+7); w++;
+    }
+  }
+  return `Term ${chosen.t} Week ${chosen.w}`;
+}
+function normaliseGroupName(group) {
+  return String(group || '').trim().replace(/\s+/g, ' ');
+}
+function isStaffGroup(group) {
+  const g = normaliseGroupName(group);
+  return g === 'Staff' || g.endsWith(' Staff');
+}
+function getPlayedKey() {
+  return 'alpha:played:' + weeklyLockLabel();
+}
+
+(function() {
+  // ?reset clears played records for this game and redirects cleanly
+  if (location.search.includes('reset')) {
+    try {
+      Object.keys(localStorage).filter(k => k.startsWith('alpha:played:')).forEach(k => localStorage.removeItem(k));
+    } catch(e) {}
+    history.replaceState(null, '', location.pathname);
+  }
+})();
+
+function readPlayedList() {
+  try {
+    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
+    return Array.isArray(data) ? data : [];
+  } catch(e) { return []; }
+}
+
+function writePlayedList(data) {
+  try { localStorage.setItem(getPlayedKey(), JSON.stringify([...new Set(data.map(normaliseGroupName))])); } catch(e) {}
+}
+
+function isPlayed(group) {
+  const g = normaliseGroupName(group);
+  if (!g || isStaffGroup(g)) return false;
+  return readPlayedList().includes(g);
+}
+
+function markPlayedLS(group) {
+  const g = normaliseGroupName(group);
+  if (!g || isStaffGroup(g)) return;
+  const data = readPlayedList();
+  if (!data.includes(g)) {
+    data.push(g);
+    writePlayedList(data);
+  }
+}
+
+function lockWeeklyAttempt(group) {
+  const g = normaliseGroupName(group);
+  if (!g) return false;
+  if (isStaffGroup(g)) return true;
+  if (isPlayed(g)) {
+    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    return false;
+  }
+  markPlayedLS(g);
+  try { if (typeof played !== 'undefined' && played && played.add) played.add(g); } catch(e) {}
+  return true;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+</script>
+</body>
+</html>
