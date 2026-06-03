@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brain Break!</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:#00180f;color:#fff;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+
+#card{background:#fff;color:#1a1a1a;border-radius:8px;max-width:580px;width:100%;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);overflow:hidden;}
+
+#card-header{background:#00180f;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+#card-header h1{font-size:13px;font-weight:700;color:#a8c5a0;letter-spacing:1px;text-transform:uppercase;font-family:Trebuchet MS,sans-serif;}
+#energy-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:Trebuchet MS,sans-serif;}
+
+#card-title{padding:18px 20px 0;}
+#card-title h2{font-size:26px;font-weight:700;color:#00180f;margin-bottom:4px;}
+#card-meta{font-size:12px;color:#888;margin-bottom:0;}
+
+#card-body{padding:16px 20px 20px;}
+#instruction{font-size:15px;line-height:1.6;color:#1a1a1a;margin-bottom:14px;}
+
+#card-footer{display:flex;gap:10px;padding:0 20px 20px;flex-wrap:wrap;}
+#again-btn{background:#00180f;color:#f2b400;border:none;padding:9px 20px;border-radius:4px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;}
+#again-btn:hover{background:#002a1a;}
+#booklet-btn{background:#f2b400;color:#00180f;border:none;padding:9px 20px;border-radius:4px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;text-decoration:none;display:inline-block;}
+#booklet-btn:hover{background:#d4a000;}
+
+#counter{font-size:12px;color:#a8c5a0;margin-top:16px;text-align:center;}
+
+/* Energy badge colours */
+.energy-low{background:#e8f5e9;color:#2e7d32;}
+.energy-medium{background:#fff8e1;color:#7a5800;}
+.energy-high{background:#fce4ec;color:#b71c1c;}
+</style>
+</head>
+<body>
+
+<div id="card">
+  <div id="card-header">
+    <h1>GGS Brain Break</h1>
+    <span id="energy-badge"></span>
+  </div>
+  <div id="card-title">
+    <h2 id="name"></h2>
+    <p id="card-meta"></p>
+  </div>
+  <div id="card-body">
+    <p id="instruction"></p>
+  </div>
+  <div id="card-footer">
+    <button id="again-btn" onclick="pickRandom()">🎲 Different one</button>
+    <a id="booklet-btn" href="https://qed05.instructure.com/courses/103375/files/14942972/preview" target="_blank">Open in booklet</a>
+  </div>
+</div>
+
+<p id="counter"></p>
+
+<script>
+const BREAKS = [
+  { name:'To Clap or Not to Clap', num:1, page:16, energy:'Medium', duration:'2 min', equipment:'None',
+    instruction:'Students stand in pairs. Both slap thighs then independently raise a thumb pointing left, up, or right. If both choose the same direction — slap thighs and clap! If different — slap thighs and try again.' },
+  { name:'Gotcha!', num:2, page:17, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Students stand in a circle. Left hand out flat, palm up. Right index finger into the left palm of the person to your right. On "Go!" — grab the finger to your left while escaping the grab on your right.' },
+  { name:'We Hate Diagonals', num:3, page:18, energy:'Medium', duration:'2 min', equipment:'None',
+    instruction:'Left hand moves only up and down (vertical axis). Right hand moves only side to side (horizontal axis). Combine both movements at once — no diagonals allowed! Once mastered, swap sides.' },
+  { name:'Look Down, Look Up!', num:4, page:19, energy:'Low', duration:'5 min', equipment:'Small object (floor)',
+    instruction:'Students stand in a circle staring at an object on the floor. Each secretly picks someone to look at. On "Look Up!" — if that person has also chosen you, both step out. Play continues until one or two remain.' },
+  { name:'One, Two, Three Three — Aghh!', num:5, page:20, energy:'Low', duration:'3 min', equipment:'None',
+    instruction:'Students stand with eyes closed. Any student calls "one", another must call "two", and so on. If two students call the same number simultaneously, the count resets to one.' },
+  { name:'Boi-ing 7', num:6, page:21, energy:'Low', duration:'4 min', equipment:'None',
+    instruction:'Standing circle. Count up from 1. Every number containing a 7 or divisible by 7, say "boi-ing" instead. If someone says the wrong thing or two people speak at once — restart from one.' },
+  { name:'Find the Fantale', num:7, page:22, energy:'Medium', duration:'1 min', equipment:'1 Fantale',
+    instruction:'Before class, hide a Fantale somewhere in the room. At a random point, call "Find the Fantale!" Students hunt for it in a controlled way. The end.' },
+  { name:'Seven-11', num:8, page:23, energy:'Low', duration:'2 min', equipment:'None',
+    instruction:'Groups of 3. On "Show!" all throw out 0–5 fingers on one hand. Goal: total exactly 7 — without talking. Try for 11 using two hands.' },
+  { name:'What Do You Look Like When…?', num:9, page:24, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Pairs stand back to back. One calls "What do you look like when…?" Both prepare their face in secret, then spin 180° and reveal simultaneously. Try several rounds.' },
+  { name:'Thumb Challenge', num:10, page:26, energy:'Low', duration:'1 min', equipment:'None',
+    instruction:'One hand gives a thumbs up, the other points a finger at the raised thumb. On "switch" — reverse positions. Alternate between the two as fast as possible.' },
+  { name:'Quick Clap', num:11, page:28, energy:'Medium', duration:'4 min', equipment:'None',
+    instruction:'Students stand in a circle. A clap travels around the circle — each person claps immediately after the one to their left. Try double and triple claps, multiple chains, or claps travelling in opposite directions.' },
+  { name:'Heads or Tails', num:12, page:29, energy:'Low', duration:'3 min', equipment:'2 coins',
+    instruction:'Students choose a pose: Heads (hands on head), Tails (hands on backside), or Combo (one on each). Two coins are tossed. Students in the correct matching pose remain standing. Others sit. Repeat.' },
+  { name:'Air Performances', num:13, page:30, energy:'High', duration:'2 min', equipment:'None',
+    instruction:'Students await an air activity instruction — air guitar, air skipping, air tennis, air juggling, air piano, air hackey sack. They perform their best imaginary version with full commitment.' },
+  { name:'Pop-Up Facts', num:14, page:32, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Students sit in a circle. Teacher calls a category and an action: "Stand up if you have a sibling — and click your fingers." Those who fit pop up, do the action, sit back down.' },
+  { name:'Eraser Race', num:15, page:34, energy:'Medium', duration:'3 min', equipment:'2 whiteboard erasers',
+    instruction:'Two students each balance an eraser on their head. One is the Racer, one is the Chaser. Racer gets a head start — walking race is on. If the eraser falls, stop and replace it before continuing.' },
+  { name:'Line-Up (and Fold Around)', num:16, page:36, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Students arrange themselves in one silent line by a given theme (birthday, middle name alphabetically, etc). No talking — gestures only. Head of line folds around to meet the tail, creating random pairs.' },
+  { name:'Whole-Body Scissors, Paper, Rock', num:17, page:38, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Full-body version of the classic game. Scissors: two arms moving. Paper: stretch body as straight as possible, arms raised. Rock: scrunch into a ball. Count in "scissors, paper, rock" and commit fully.' },
+  { name:'Back to Back', num:18, page:40, energy:'Medium', duration:'2 min', equipment:'None',
+    instruction:'Pairs sit back to back, link arms at the elbow, and stand up together without using hands. Challenge: sit back down five times in one minute. Try with groups of three or more.' },
+  { name:'Flip It!', num:19, page:42, energy:'Medium', duration:'3 min', equipment:'Plastic bottle',
+    instruction:'Students attempt to flip a water bottle so it lands upright. Design custom challenges: non-preferred hand, eyes closed, different landing zones (floor, desk, window sill).' },
+  { name:'Handstacking Races', num:20, page:43, energy:'Medium', duration:'2 min', equipment:'None',
+    instruction:'Teams of 6 form a circle and stack right hands then left hands on top. The bottom hand moves to the top — race to complete laps. Mark the top hand to signal the end of each lap.' },
+  { name:'Keep Me Up', num:21, page:44, energy:'Medium', duration:'3 min', equipment:'1–2 balloons',
+    instruction:'Challenge students to keep a balloon in the air using any body part — it cannot touch the ground, walls, or ceiling. Add multiple balloons for extra challenge.' },
+  { name:'Hand Clapping Games', num:22, page:45, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Students work in pairs or small groups. They are shown a clapping rhythm to copy, or design their own clapping routine to rehearse and perform.' },
+  { name:'What\'s Back on TV?', num:23, page:46, energy:'Medium', duration:'3 min', equipment:'None',
+    instruction:'Teams of 6–8 sit in a row. The back person is shown a simple picture. They draw it on the person in front\'s back with a finger. The image passes forward — the front person draws what they felt on paper.' },
+  { name:'Rain Circle', num:24, page:48, energy:'High', duration:'4 min', equipment:'None',
+    instruction:'Students stand in a circle. The leader rubs hands together — this passes around the circle. Then finger clicking, then thigh slapping, then foot stamping. Build the storm, then reverse back to silence.' },
+];
+
+let lastIdx = -1;
+let pickCount = 0;
+
+function pickRandom() {
+  let idx;
+  do { idx = Math.floor(Math.random() * BREAKS.length); } while (idx === lastIdx && BREAKS.length > 1);
+  lastIdx = idx;
+  pickCount++;
+  show(BREAKS[idx]);
+}
+
+function show(b) {
+  document.getElementById('name').textContent = b.name;
+  document.getElementById('instruction').textContent = b.instruction;
+
+  const meta = [];
+  meta.push('Activity #' + b.num);
+  meta.push(b.duration);
+  if (b.equipment !== 'None') meta.push('⚠ ' + b.equipment);
+  document.getElementById('card-meta').textContent = meta.join('  ·  ');
+
+  const badge = document.getElementById('energy-badge');
+  badge.textContent = b.energy + ' energy';
+  badge.className = 'energy-' + b.energy.toLowerCase();
+
+  const btn = document.getElementById('booklet-btn');
+  // Work out ordered PDF page from book page
+  const bookPages = ['cover','contents',...Array.from({length:48},(_,i)=>i+6)];
+  const pdfPage = bookPages.indexOf(b.page) + 1;
+  btn.href = 'https://qed05.instructure.com/courses/103375/files/14942972/preview?page=' + pdfPage;
+
+  if (pickCount > 1) {
+    document.getElementById('counter').textContent = pickCount + ' activities picked this session';
+  }
+}
+
+pickRandom();
+</script>
+</body>
+</html>
