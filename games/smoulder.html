@@ -312,7 +312,7 @@ function calcScore(seconds){
 const FORM_URL = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
 function submitScore(){
   window.open(FORM_URL, '_blank');
-    markPlayedLS(selectedGroup || selectedLetter || '');
+    markPlayedLS((typeof selectedGroup !== 'undefined' ? selectedGroup : '') || (typeof selectedLetter !== 'undefined' ? selectedLetter : ''));
   const btn = document.querySelector('#score-form button');
   btn.textContent = '✓ Submitted — fill in the form that opened!';
   btn.style.background = '#27ae60';
@@ -1682,6 +1682,10 @@ function generateCrowdPositions(){
 // ── CLICK DETECTION ──
 // Store bounding boxes for clickable hidden chars
 let clickTargets=[];
+// Track exact hidden-character instances across redraws.
+// Without this, render() can recreate click boxes and let the same character count again.
+let foundTargetIds=new Set();
+let targetOrdinals={};
 
 function addTarget(x,y,targetSize,key,label){
   const scale = CHAR_VISUAL_SCALE[key] || 1.0;
@@ -1693,18 +1697,21 @@ function addTarget(x,y,targetSize,key,label){
   const rise  = CHAR_TOP_RISE[key] || 0.5;
   const topY  = y - s * yOff - s * rise;
   const boxH  = (y - topY) + s * 0.15;
+  const ord = targetOrdinals[key] || 0;
+  targetOrdinals[key] = ord + 1;
+  const id = key + '-' + ord;
   clickTargets.push({
     x: x - boxW/2,
     y: topY,
     w: boxW,
     h: boxH,
-    key, label, found:false
+    key, label, id,
+    found: foundTargetIds.has(id)
   });
 }
 
 
 function loadPlayed() {
-  loadPlayed();
   played = new Set();
   try {
     const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
@@ -1715,6 +1722,7 @@ function init(){
   initCharFnMap();
   seed=SESSION_SEED;
   clickTargets=[];
+  foundTargetIds=new Set();
   totalFound=0;
   Object.keys(totals).forEach(k=>foundSets[k]=0);
   // Add this week's themed item to the find-list (once), or ensure it's present.
@@ -2780,7 +2788,14 @@ function drawDancer(x,y,s){
   ctx.restore();
 }
 
+function allRequiredTargetsFound(){
+  return Object.keys(totals).every(key => (foundSets[key] || 0) >= totals[key]);
+}
+
 function render(){
+  // Rebuild click targets from scratch on each redraw, preserving found state by id.
+  clickTargets=[];
+  targetOrdinals={};
   ctx.clearRect(0,0,W,H);
 
   // ── PHASE 1: draw background (buildings, trees, retaining wall, ground) ──
@@ -3039,11 +3054,12 @@ canvas.addEventListener('click',function(e){
   const cy=(e.clientY-rect.top)*scaleY;
 
   for(const t of clickTargets){
-    if(t.found) continue;
+    if(t.found || foundTargetIds.has(t.id)) continue;
     if(cx>=t.x && cx<=t.x+t.w && cy>=t.y && cy<=t.y+t.h){
       t.found=true;
+      foundTargetIds.add(t.id);
       foundSets[t.key]=(foundSets[t.key]||0)+1;
-      totalFound++;
+      totalFound=foundTargetIds.size;
       document.getElementById('score').textContent=totalFound+' / '+TOTAL;
       if(foundSets[t.key]>=totals[t.key]){
         document.getElementById('fi-'+t.key).classList.add('found');
@@ -3060,7 +3076,7 @@ canvas.addEventListener('click',function(e){
         if(flashes>5){clearInterval(fint);render();}
       },80);
 
-      if(totalFound>=TOTAL){
+      if(allRequiredTargetsFound()){
         setTimeout(()=>{
           stopTimer();
           const score = calcScore(timerSeconds);
@@ -3087,7 +3103,7 @@ canvas.addEventListener('mousemove',function(e){
   const cy=(e.clientY-rect.top)*scaleY;
   let hit=false;
   for(const t of clickTargets){
-    if(!t.found && cx>=t.x && cx<=t.x+t.w && cy>=t.y && cy<=t.y+t.h){
+    if(!t.found && !foundTargetIds.has(t.id) && cx>=t.x && cx<=t.x+t.w && cy>=t.y && cy<=t.y+t.h){
       hit=true;break;
     }
   }
