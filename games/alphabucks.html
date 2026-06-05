@@ -523,7 +523,7 @@ const DEFAULT_CONFIG = {
   timeLimit: 60,
   pointsPerSecond: 2,
   categoriesPerGame: 6,
-  formUrl: '' // deprecated - prefill now handled automatically
+  formUrl: 'https://forms.office.com/r/x94vT9B782'
 };
 
 // ─── CATEGORY BANK ────────────────────────────────────────────────────────────
@@ -743,6 +743,33 @@ function buildCategoryGrid() {
   document.getElementById('ans-0')?.focus();
 }
 
+function isScamAnswer(val) {
+  // Must be 4+ characters
+  if (val.length < 4) return true;
+  // Must have at least 2 distinct letters
+  const unique = new Set(val.split('')).size;
+  if (unique < 2) return true;
+  return false;
+}
+
+function hasDuplicateAnswer(val, currentIndex) {
+  const cats = getWeekCategories();
+  for (let j = 0; j < cats.length; j++) {
+    if (j === currentIndex) continue;
+    const other = document.getElementById(`ans-${j}`);
+    if (other && other.value.trim().toUpperCase() === val) return true;
+  }
+  return false;
+}
+
+function isValidAnswer(val, letter, index) {
+  if (val.length === 0) return null; // empty — no verdict yet
+  if (val[0] !== letter) return false;
+  if (isScamAnswer(val)) return false;
+  if (hasDuplicateAnswer(val, index)) return false;
+  return true;
+}
+
 function validateInput(i) {
   if (!gameActive) return;
   const input = document.getElementById(`ans-${i}`);
@@ -753,7 +780,8 @@ function validateInput(i) {
     document.getElementById(`pts-${i}`).textContent = '—';
     return;
   }
-  if (val.length >= 2 && val[0] === letter) {
+  const valid = isValidAnswer(val, letter, i);
+  if (valid === true) {
     input.classList.add('correct'); input.classList.remove('wrong');
     // Record when the most recent valid answer was entered (for speed nudge)
     if (gameStartTime) lastValidAnswerSecs = (Date.now() - gameStartTime) / 1000;
@@ -801,7 +829,7 @@ function submitAnswers() {
     const input = document.getElementById(`ans-${i}`);
     input.disabled = true;
     const val = input.value.trim().toUpperCase();
-    const valid = val.length >= 2 && val[0] === letter;
+    const valid = isValidAnswer(val, letter, i) === true;
     const pts = valid ? (10 + timeLeft * config.pointsPerSecond) : 0;
     totalPts += pts;
     breakdown.push({ cat, val, valid, pts });
@@ -812,9 +840,12 @@ function submitAnswers() {
 
   const correctCount = breakdown.filter(b => b.valid).length;
   const attempted = breakdown.some(b => (b.val || '').length > 0);
-  // "Fast" = last valid answer entered within the first half of the clock.
+  // "Fast" = last valid answer entered within the first half of the clock,
+  // AND not suspiciously fast (all answers done within 5 seconds = scam).
   const half = (config.timeLimit || 60) / 2;
-  const fast = (correctCount >= 1) && (lastValidAnswerSecs !== null) && (lastValidAnswerSecs <= half);
+  const elapsedAtSubmit = gameStartTime ? (Date.now() - gameStartTime) / 1000 : 999;
+  const suspiciouslyFast = (correctCount >= 1) && (elapsedAtSubmit < 5);
+  const fast = !suspiciouslyFast && (correctCount >= 1) && (lastValidAnswerSecs !== null) && (lastValidAnswerSecs <= half);
   const _scaled = alphabucksScore(correctCount, attempted, fast);
   saveScore(selectedGroup, _scaled);
   markPlayed(selectedGroup);
@@ -935,30 +966,16 @@ async function copyScores() {
 
 
 
-// ─── MICROSOFT FORMS PREFILL SUBMIT ──────────────────────────────────────────
-const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
-const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
-const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
-const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
-const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
-
-function openFormPrefilled(house, group, score, week, game) {
-  const params = new URLSearchParams({
-    id:              CSHS_FORM_ID,
-    [CSHS_F_WEEK]:   week,
-    [CSHS_F_GAME]:   game,
-    [CSHS_F_HOUSE]:  house,
-    [CSHS_F_GROUP]:  group,
-    [CSHS_F_SCORE]:  String(score)
-  });
-  window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
+// ─── MICROSOFT FORMS SUBMIT ───────────────────────────────────────────────────
+function openFormSubmit(group, house, score, week, game, detail) {
+  const url = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
+  window.open(url, '_blank');
 }
+
 
 function submitScore_AB() {
   const r = window._lastResult || {};
-  openFormPrefilled(r.house||'', r.group||'', r.score||0, config.week, 'Alphabucks');
+  openFormSubmit(r.group||'', r.house||'', r.score||0, config.week, 'Alphabucks', r.detail||'');
   markPlayedLS((window._lastResult||{}).group||'');
   document.getElementById('submitConfirm').style.display = 'block';
   document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
