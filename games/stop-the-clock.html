@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stop the Clock – CSHS Positive Education</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a; --panel: #111827; --accent: #00f5c4; --danger: #ff4d6d;
+    --gold: #ffd166; --text: #e2e8f0; --muted: #64748b; --border: #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 20px;
+    background-image: radial-gradient(ellipse at 20% 50%, rgba(0,245,196,0.05) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 20%, rgba(255,77,109,0.05) 0%, transparent 60%);
+  }
+  h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight:900; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); text-shadow:0 0 40px rgba(0,245,196,0.3); margin-bottom:6px; }
+  .subtitle { font-size:1rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:40px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:40px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+
+  /* Player banner */
+  .player-banner {
+    background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2);
+    border-radius: 10px; padding: 14px 20px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px; min-height: 60px;
+  }
+  .player-label { font-size:.75rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; white-space:nowrap; }
+  .player-name-input {
+    flex:1; background:transparent; border:none; border-bottom:2px solid var(--accent);
+    color:var(--accent); font-family:'Barlow Condensed',sans-serif; font-size:1.3rem;
+    font-weight:700; letter-spacing:.05em; padding:4px 6px; outline:none;
+  }
+  .player-name-input::placeholder { color: rgba(0,245,196,0.3); }
+  .player-name-input:disabled { border-color: var(--muted); color: var(--text); }
+
+  .target-label { font-size:.85rem; letter-spacing:.3em; color:var(--muted); text-transform:uppercase; text-align:center; margin-bottom:8px; }
+  .target { font-family:'Share Tech Mono',monospace; font-size:clamp(3rem,12vw,5rem); text-align:center; color:var(--gold); letter-spacing:.05em; margin-bottom:32px; text-shadow:0 0 30px rgba(255,209,102,0.3); }
+  .timer-display { font-family:'Share Tech Mono',monospace; font-size:clamp(3.5rem,14vw,6rem); text-align:center; color:var(--text); letter-spacing:.02em; margin-bottom:32px; transition:color .1s; min-height:1.2em; }
+  .timer-display.running { color:var(--accent); text-shadow:0 0 20px rgba(0,245,196,0.4); }
+  .timer-display.stopped { color:var(--danger); text-shadow:0 0 20px rgba(255,77,109,0.4); }
+
+  .btn { width:100%; padding:18px; font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; border:none; border-radius:10px; cursor:pointer; transition:all .15s; margin-bottom:12px; }
+  .btn-start { background:var(--accent); color:#0a0e1a; }
+  .btn-start:hover { filter:brightness(1.1); transform:translateY(-1px); }
+  .btn-stop { background:var(--danger); color:#fff; animation:pulse-red .8s ease-in-out infinite; }
+  .btn-reset { background:transparent; color:var(--muted); border:1px solid var(--border); font-size:1rem; }
+  .btn-reset:hover { color:var(--text); border-color:var(--muted); }
+  @keyframes pulse-red { 0%,100%{box-shadow:0 0 0 0 rgba(255,77,109,0.4);}50%{box-shadow:0 0 0 12px rgba(255,77,109,0);} }
+
+  .result-panel { display:none; background:#0d1f2d; border:1px solid var(--accent); border-radius:10px; padding:20px; margin-bottom:16px; text-align:center; }
+  .result-panel.show { display:block; }
+  .result-score { font-size:2.5rem; font-weight:900; color:var(--accent); margin-bottom:4px; }
+  .result-off { font-family:'Share Tech Mono',monospace; font-size:1rem; color:var(--muted); }
+
+  .attempts { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
+  .dot { width:12px; height:12px; border-radius:50%; border:2px solid var(--muted); transition:all .2s; }
+  .dot.used { background:var(--accent); border-color:var(--accent); }
+  .dot.best { background:var(--gold); border-color:var(--gold); }
+
+  /* Attempt scoreboard */
+  .attempt-log { margin-bottom:20px; }
+  .attempt-row { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border); margin-bottom:6px; font-size:1rem; }
+  .attempt-row .aname { color:var(--text); font-weight:700; }
+  .attempt-row .atime { font-family:'Share Tech Mono',monospace; color:var(--muted); }
+  .attempt-row.best-row { border-color:var(--gold); background:rgba(255,209,102,0.06); }
+  .attempt-row.best-row .aname { color:var(--gold); }
+
+  .form-section { margin-top:24px; border-top:1px solid var(--border); padding-top:24px; }
+  .form-section label { display:block; font-size:.8rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; margin-top:14px; }
+  .form-section select, .form-section input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; padding:10px 14px; outline:none; transition:border-color .2s; }
+  .form-section select:focus, .form-section input:focus { border-color:var(--accent); }
+  .btn-submit { background:var(--gold); color:#0a0e1a; margin-top:20px; }
+  .btn-submit:hover { filter:brightness(1.1); transform:translateY(-1px); }
+  .btn-submit:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+</style>
+</head>
+<body>
+<h1>Stop the Clock</h1>
+<p class="subtitle">Corinda State High School — House Challenge</p>
+<div class="card">
+  <div class="player-banner" id="playerBanner">
+    <span class="player-label">Player up</span>
+    <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
+  </div>
+
+  <div class="target-label">Target Time</div>
+  <div class="target">5.000s</div>
+
+  <div class="attempts" id="attemptDots">
+    <div class="dot" id="d0"></div>
+    <div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div>
+  </div>
+
+  <div class="timer-display" id="timerDisplay">0.000</div>
+  <div class="attempt-log" id="attemptLog" style="display:none"></div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-off" id="resultOff"></div>
+  </div>
+
+  <button class="btn btn-start" id="mainBtn" onclick="handleBtn()">Start</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+
+  <div class="form-section" id="formSection" style="display:none">
+    <label>House</label>
+    <select id="houseSelect">
+      <option value="">— Select —</option>
+      <option>Bunar</option><option>Dibbil</option><option>Kabul</option>
+      <option>Moori</option><option>Pirri</option><option>Yarraman</option>
+    </select>
+    <label>Home Group</label>
+    <select id="groupSelect">
+      <option value="">— Select —</option>
+      <option>A</option><option>B</option><option>C</option><option>D</option>
+      <option>E</option><option>F</option><option>G</option><option>H</option>
+      <option>I</option><option>J</option><option>K</option><option>L</option>
+      <option>M</option><option>N</option><option>Staff</option>
+    </select>
+    <button class="btn btn-submit" id="submitBtn" onclick="submitScore()" disabled>Submit Best Score</button>
+  </div>
+</div>
+<script>
+  const MAX_ATTEMPTS = 3;
+  const TARGET = 5.000;
+
+  let running = false, startTime = null, animFrame = null, stopped = false;
+  let attempt = 0, scores = [];
+
+  const timerEl  = document.getElementById('timerDisplay');
+  const btnEl    = document.getElementById('mainBtn');
+  const resultPanel = document.getElementById('resultPanel');
+  const resultScore = document.getElementById('resultScore');
+  const resultOff   = document.getElementById('resultOff');
+  const formSection = document.getElementById('formSection');
+  const submitBtn   = document.getElementById('submitBtn');
+  const attemptLog  = document.getElementById('attemptLog');
+  const playerInput = document.getElementById('playerNameInput');
+
+  function fmt(s) { return s.toFixed(3); }
+
+  function tick() {
+    if (!running) return;
+    timerEl.textContent = fmt((performance.now() - startTime) / 1000);
+    animFrame = requestAnimationFrame(tick);
+  }
+
+  function handleBtn() {
+    if (!running && !stopped) {
+      if (!playerInput.value.trim()) { playerInput.focus(); playerInput.style.borderColor='var(--danger)'; return; }
+      playerInput.style.borderColor = 'var(--accent)';
+      playerInput.disabled = true;
+      startTime = performance.now(); running = true;
+      timerEl.className = 'timer-display running';
+      btnEl.textContent = 'STOP!'; btnEl.className = 'btn btn-stop';
+      resultPanel.classList.remove('show');
+      animFrame = requestAnimationFrame(tick);
+    } else if (running) {
+      cancelAnimationFrame(animFrame);
+      const elapsed = (performance.now() - startTime) / 1000;
+      running = false; stopped = true;
+      timerEl.textContent = fmt(elapsed);
+      timerEl.className = 'timer-display stopped';
+      btnEl.className = 'btn btn-start';
+
+      const diff = Math.abs(elapsed - TARGET);
+      const rawScore = Math.max(0, 1000 - diff * 1000);
+      const playerName = playerInput.value.trim();
+      scores.push({ elapsed, diff, rawScore, name: playerName });
+
+      document.getElementById('d' + attempt).classList.add('used');
+      updateAttemptLog();
+
+      resultPanel.classList.add('show');
+      resultScore.textContent = 'Off by ' + fmt(diff) + 's';
+      resultOff.textContent = attempt + 1 < MAX_ATTEMPTS ? 'Next player up!' : '';
+
+      attempt++;
+      if (attempt >= MAX_ATTEMPTS) {
+        btnEl.style.display = 'none';
+        showBestAndForm();
+      } else {
+        stopped = false;
+        btnEl.textContent = 'Next Player – Start';
+        playerInput.value = '';
+        playerInput.disabled = false;
+        playerInput.focus();
+      }
+    }
+  }
+
+  function updateAttemptLog() {
+    attemptLog.style.display = 'block';
+    attemptLog.innerHTML = scores.map((s, i) =>
+      `<div class="attempt-row" id="logrow${i}">
+        <span class="aname">${s.name}</span>
+        <span class="atime">${fmt(s.elapsed)}s &nbsp; off by ${fmt(s.diff)}s</span>
+      </div>`
+    ).join('');
+  }
+
+  function showBestAndForm() {
+    const best = scores.reduce((a, b) => a.rawScore > b.rawScore ? a : b);
+    const bestIdx = scores.indexOf(best);
+    document.getElementById('d' + bestIdx).classList.remove('used');
+    document.getElementById('d' + bestIdx).classList.add('best');
+    const row = document.getElementById('logrow' + bestIdx);
+    if (row) row.classList.add('best-row');
+
+    const finalScore = Math.round(best.rawScore / 100);
+    resultScore.textContent = '🏆 ' + best.name + ' wins!';
+    resultOff.textContent = fmt(best.elapsed) + 's — Score: ' + finalScore + ' / 10';
+
+    playerInput.disabled = true;
+    document.getElementById('playerBanner').style.opacity = '0.4';
+    formSection.style.display = 'block';
+    document.getElementById('houseSelect').addEventListener('change', checkForm);
+    document.getElementById('groupSelect').addEventListener('change', checkForm);
+  }
+
+  function checkForm() {
+    submitBtn.disabled = !(document.getElementById('houseSelect').value && document.getElementById('groupSelect').value);
+  }
+
+  function getCurrentWeek() {
+    const d = new Date(), y = d.getFullYear();
+    const start = new Date(y, 0, 1);
+    const wk = Math.floor((d - start) / (7 * 24 * 60 * 60 * 1000)) + 1;
+    return 'Week ' + wk + ' ' + y;
+  }
+
+  // ─── MICROSOFT FORMS PREFILL ──────────────────────────────────────────────
+  const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+  const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
+  const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
+  const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
+  const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
+  const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
+
+  function submitScore() {
+    const best = scores.reduce((a, b) => a.rawScore > b.rawScore ? a : b);
+    const finalScore = Math.round(best.rawScore / 100);
+    const house = document.getElementById('houseSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const detail = scores.map(s => s.name + ':' + fmt(s.elapsed) + 's').join(' | ');
+    const params = new URLSearchParams({
+      id: CSHS_FORM_ID, [CSHS_F_WEEK]: getCurrentWeek(),
+      [CSHS_F_GAME]: 'Stop the Clock', [CSHS_F_HOUSE]: house,
+      [CSHS_F_GROUP]: group, [CSHS_F_SCORE]: String(finalScore)
+    });
+    window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
+    submitBtn.textContent = '✓ Submitted'; submitBtn.disabled = true;
+  }
+
+  function resetAll() {
+    cancelAnimationFrame(animFrame);
+    running = false; stopped = false; attempt = 0; scores = [];
+    timerEl.textContent = '0.000'; timerEl.className = 'timer-display';
+    btnEl.textContent = 'Start'; btnEl.className = 'btn btn-start'; btnEl.style.display = '';
+    resultPanel.classList.remove('show');
+    attemptLog.style.display = 'none'; attemptLog.innerHTML = '';
+    formSection.style.display = 'none';
+    submitBtn.textContent = 'Submit Best Score'; submitBtn.disabled = true;
+    document.getElementById('houseSelect').value = '';
+    document.getElementById('groupSelect').value = '';
+    playerInput.value = ''; playerInput.disabled = false; playerInput.style.borderColor = '';
+    document.getElementById('playerBanner').style.opacity = '';
+    ['d0','d1','d2'].forEach(id => { document.getElementById(id).className = 'dot'; });
+  }
+</script>
+</body>
+</html>

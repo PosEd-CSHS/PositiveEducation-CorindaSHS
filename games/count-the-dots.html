@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Count the Dots – CSHS Positive Education</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#fdf6ec; --panel:#ffffff; --ink:#1a1a2e; --pop:#e63946;
+    --warm:#f4a261; --cool:#457b9d; --green:#2a9d8f; --border:#e8ddd0; --muted:#9e8f82;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--ink); font-family:'Syne',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+  h1 { font-size:clamp(2.2rem,7vw,4rem); font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+  .subtitle { font-size:.9rem; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:32px; }
+  .card { background:var(--panel); border:2px solid var(--ink); border-radius:20px; padding:36px; width:100%; max-width:540px; box-shadow:6px 6px 0 var(--ink); }
+
+  /* Player banner */
+  .player-banner {
+    display:flex; align-items:center; gap:12px; background:#f0f4ff;
+    border:2px solid var(--ink); border-radius:12px; padding:12px 16px; margin-bottom:20px; min-height:56px;
+  }
+  .player-label { font-size:.75rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; white-space:nowrap; }
+  .player-name-input {
+    flex:1; background:transparent; border:none; border-bottom:2px solid var(--cool);
+    color:var(--cool); font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700;
+    padding:4px 6px; outline:none;
+  }
+  .player-name-input::placeholder { color:rgba(69,123,157,0.35); }
+  .player-name-input:disabled { border-color:var(--muted); color:var(--ink); }
+
+  .canvas-wrap { position:relative; width:100%; aspect-ratio:1/1; background:var(--ink); border-radius:12px; overflow:hidden; margin-bottom:20px; display:flex; align-items:center; justify-content:center; }
+  #dotCanvas { display:block; width:100%; height:100%; }
+  .flash-overlay { position:absolute; inset:0; background:var(--bg); opacity:0; pointer-events:none; transition:opacity .05s; }
+  .flash-overlay.hide { opacity:1; }
+  .countdown-ring { position:absolute; top:10px; right:10px; width:44px; height:44px; display:none; }
+  .countdown-ring.show { display:block; }
+  .ring-bg { fill:none; stroke:rgba(255,255,255,0.15); stroke-width:4; }
+  .ring-fg { fill:none; stroke:var(--warm); stroke-width:4; stroke-linecap:round; transform-origin:center; transform:rotate(-90deg); transition:stroke-dashoffset .05s linear; }
+
+  .phase-label { font-size:.8rem; letter-spacing:.2em; color:var(--muted); text-align:center; text-transform:uppercase; margin-bottom:12px; min-height:1.2em; }
+  .difficulty { display:inline-block; background:var(--warm); color:var(--ink); font-size:.75rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; padding:3px 10px; border-radius:20px; margin-bottom:16px; }
+
+  .guess-row { display:flex; gap:10px; margin-bottom:16px; }
+  .guess-input { flex:1; background:var(--bg); border:2px solid var(--ink); border-radius:10px; font-family:'Space Mono',monospace; font-size:1.6rem; padding:10px 16px; color:var(--ink); outline:none; text-align:center; }
+  .guess-input:focus { border-color:var(--pop); }
+  .guess-input:disabled { opacity:.4; }
+  .btn-guess { padding:10px 24px; background:var(--ink); color:var(--bg); border:2px solid var(--ink); border-radius:10px; font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; cursor:pointer; transition:all .15s; }
+  .btn-guess:hover { background:var(--pop); border-color:var(--pop); }
+  .btn-guess:disabled { opacity:.3; cursor:not-allowed; }
+
+  .btn { width:100%; padding:16px; font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:.05em; border:2px solid var(--ink); border-radius:10px; cursor:pointer; transition:all .15s; margin-bottom:10px; }
+  .btn-primary { background:var(--pop); color:#fff; }
+  .btn-primary:hover { background:#c1121f; }
+  .btn-secondary { background:transparent; color:var(--muted); }
+  .btn-secondary:hover { color:var(--ink); }
+
+  .result-panel { display:none; background:var(--bg); border:2px solid var(--green); border-radius:10px; padding:16px 20px; margin-bottom:16px; text-align:center; }
+  .result-panel.show { display:block; }
+  .result-score { font-size:2rem; font-weight:800; color:var(--green); }
+  .result-detail { font-size:.95rem; color:var(--muted); margin-top:4px; }
+
+  /* Round tracker */
+  .round-track { display:flex; gap:6px; justify-content:center; margin-bottom:20px; }
+  .round-pip { width:10px; height:10px; border-radius:50%; border:2px solid var(--muted); transition:all .2s; }
+  .round-pip.done { background:var(--cool); border-color:var(--cool); }
+
+  /* Attempt log */
+  .attempt-log { margin-bottom:16px; }
+  .attempt-row { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; border-radius:8px; background:rgba(0,0,0,0.03); border:1px solid var(--border); margin-bottom:5px; font-size:.95rem; }
+  .attempt-row .aname { font-weight:700; color:var(--ink); }
+  .attempt-row .ascore { font-family:'Space Mono',monospace; color:var(--muted); font-size:.85rem; }
+
+  .form-section { margin-top:20px; border-top:2px solid var(--border); padding-top:20px; }
+  .form-section label { display:block; font-size:.8rem; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; margin-top:12px; }
+  .form-section select, .form-section input { width:100%; background:var(--bg); border:2px solid var(--border); border-radius:8px; color:var(--ink); font-family:'Syne',sans-serif; font-size:1.1rem; padding:10px 14px; outline:none; }
+  .form-section select:focus, .form-section input:focus { border-color:var(--ink); }
+  .btn-submit { background:var(--green); color:#fff; border-color:var(--green); margin-top:16px; }
+  .btn-submit:hover { background:#218077; }
+  .btn-submit:disabled { opacity:.4; cursor:not-allowed; }
+</style>
+</head>
+<body>
+<h1>Count the Dots</h1>
+<p class="subtitle">Corinda State High School — House Challenge</p>
+<div class="card">
+  <div class="player-banner" id="playerBanner">
+    <span class="player-label">Player up</span>
+    <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
+  </div>
+
+  <div style="text-align:center"><span class="difficulty" id="diffBadge">Easy</span></div>
+  <div class="round-track" id="roundTrack"></div>
+
+  <div class="canvas-wrap">
+    <canvas id="dotCanvas"></canvas>
+    <div class="flash-overlay" id="flashOverlay"></div>
+    <svg class="countdown-ring" id="ringEl" viewBox="0 0 44 44">
+      <circle class="ring-bg" cx="22" cy="22" r="18"/>
+      <circle class="ring-fg" id="ringFg" cx="22" cy="22" r="18"/>
+    </svg>
+  </div>
+
+  <div class="phase-label" id="phaseLabel">Enter player name, then press Start</div>
+  <div class="guess-row">
+    <input class="guess-input" id="guessInput" type="number" min="1" max="200" placeholder="?" disabled>
+    <button class="btn-guess" id="guessBtn" onclick="submitGuess()" disabled>Guess</button>
+  </div>
+
+  <div class="attempt-log" id="attemptLog" style="display:none"></div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+
+  <button class="btn btn-primary" id="mainBtn" onclick="handleMain()">Start Round</button>
+  <button class="btn btn-secondary" onclick="resetAll()">Reset</button>
+
+  <div class="form-section" id="formSection" style="display:none">
+    <label>House</label>
+    <select id="houseSelect">
+      <option value="">— Select —</option>
+      <option>Bunar</option><option>Dibbil</option><option>Kabul</option>
+      <option>Moori</option><option>Pirri</option><option>Yarraman</option>
+    </select>
+    <label>Home Group</label>
+    <select id="groupSelect">
+      <option value="">— Select —</option>
+      <option>A</option><option>B</option><option>C</option><option>D</option>
+      <option>E</option><option>F</option><option>G</option><option>H</option>
+      <option>I</option><option>J</option><option>K</option><option>L</option>
+      <option>M</option><option>N</option><option>Staff</option>
+    </select>
+    <button class="btn btn-submit" id="submitBtn" onclick="submitScore()" disabled>Submit Total Score</button>
+  </div>
+</div>
+<script>
+  const ROUNDS = [
+    { min:8,  max:15, flashMs:1500, label:'Easy'   },
+    { min:16, max:28, flashMs:1000, label:'Medium'  },
+    { min:29, max:50, flashMs:700,  label:'Hard'    },
+  ];
+
+  let round = 0, roundScores = [], currentAnswer = 0, phase = 'idle';
+
+  const canvas       = document.getElementById('dotCanvas');
+  const ctx          = canvas.getContext('2d');
+  const flashOverlay = document.getElementById('flashOverlay');
+  const ringEl       = document.getElementById('ringEl');
+  const ringFg       = document.getElementById('ringFg');
+  const phaseLabel   = document.getElementById('phaseLabel');
+  const guessInput   = document.getElementById('guessInput');
+  const guessBtn     = document.getElementById('guessBtn');
+  const mainBtn      = document.getElementById('mainBtn');
+  const resultPanel  = document.getElementById('resultPanel');
+  const resultScore  = document.getElementById('resultScore');
+  const resultDetail = document.getElementById('resultDetail');
+  const formSection  = document.getElementById('formSection');
+  const submitBtn    = document.getElementById('submitBtn');
+  const attemptLog   = document.getElementById('attemptLog');
+  const playerInput  = document.getElementById('playerNameInput');
+
+  ROUNDS.forEach((_, i) => {
+    const pip = document.createElement('div');
+    pip.className = 'round-pip'; pip.id = 'pip' + i;
+    document.getElementById('roundTrack').appendChild(pip);
+  });
+
+  function sizeCanvas() {
+    const size = canvas.parentElement.clientWidth;
+    canvas.width = size; canvas.height = size;
+  }
+
+  function drawDots(count) {
+    sizeCanvas(); ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const pad = canvas.width * 0.08, minDist = canvas.width * 0.07;
+    const positions = [];
+    let attempts = 0;
+    while (positions.length < count && attempts < 5000) {
+      attempts++;
+      const x = pad + Math.random() * (canvas.width - 2*pad);
+      const y = pad + Math.random() * (canvas.height - 2*pad);
+      if (positions.every(p => Math.hypot(p.x-x, p.y-y) >= minDist)) positions.push({x, y});
+    }
+    const colors = ['#e63946','#f4a261','#2a9d8f','#457b9d','#e9c46a','#ffffff'];
+    const r = canvas.width * 0.028;
+    positions.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+      ctx.fillStyle = colors[Math.floor(Math.random()*colors.length)]; ctx.fill();
+    });
+    return positions.length;
+  }
+
+  function handleMain() {
+    if (phase === 'idle' || phase === 'result') {
+      if (!playerInput.value.trim()) { playerInput.focus(); playerInput.style.borderColor='var(--pop)'; return; }
+      playerInput.style.borderColor = '';
+      startRound();
+    }
+  }
+
+  function startRound() {
+    phase = 'showing';
+    const cfg = ROUNDS[round];
+    document.getElementById('diffBadge').textContent = cfg.label;
+    const count = cfg.min + Math.floor(Math.random() * (cfg.max - cfg.min + 1));
+    currentAnswer = drawDots(count);
+
+    resultPanel.classList.remove('show');
+    guessInput.value = ''; guessInput.disabled = true; guessBtn.disabled = true;
+    mainBtn.disabled = true;
+    flashOverlay.classList.remove('hide');
+    phaseLabel.textContent = 'Look carefully…';
+    playerInput.disabled = true;
+
+    setTimeout(() => {
+      flashOverlay.classList.add('hide');
+      phaseLabel.textContent = 'How many dots? — class, call it out!';
+      guessInput.disabled = false; guessBtn.disabled = false;
+      guessInput.focus(); phase = 'guessing';
+      startRing(10000);
+    }, 200);
+    setTimeout(() => { flashOverlay.classList.remove('hide'); }, cfg.flashMs + 200);
+  }
+
+  let ringTimer = null;
+  function startRing(ms) {
+    ringEl.classList.add('show');
+    const circumference = 2 * Math.PI * 18;
+    ringFg.style.strokeDasharray = circumference; ringFg.style.strokeDashoffset = 0;
+    const start = performance.now();
+    clearInterval(ringTimer);
+    ringTimer = setInterval(() => {
+      const frac = Math.min((performance.now() - start) / ms, 1);
+      ringFg.style.strokeDashoffset = circumference * frac;
+      if (frac >= 1) { clearInterval(ringTimer); ringEl.classList.remove('show'); if (phase === 'guessing') submitGuess(); }
+    }, 50);
+  }
+
+  function submitGuess() {
+    if (phase !== 'guessing') return;
+    clearInterval(ringTimer); ringEl.classList.remove('show');
+    phase = 'result';
+    const guess = parseInt(guessInput.value) || 0;
+    const diff = Math.abs(guess - currentAnswer);
+    const score = Math.max(0, 100 - diff * 10);
+    const name = playerInput.value.trim();
+    roundScores.push({ guess, answer: currentAnswer, diff, score, name });
+
+    document.getElementById('pip' + round).classList.add('done');
+    updateLog();
+
+    resultPanel.classList.add('show');
+    resultScore.textContent = diff === 0 ? '🎯 Perfect!' : diff <= 3 ? 'Close!' : 'Keep going!';
+    resultDetail.textContent = `${name} said ${guess}, answer was ${currentAnswer} (off by ${diff})`;
+
+    guessInput.disabled = true; guessBtn.disabled = true;
+    round++;
+
+    if (round < ROUNDS.length) {
+      mainBtn.textContent = 'Next Round';
+      mainBtn.disabled = false;
+      phaseLabel.textContent = 'Next player up!';
+      playerInput.value = ''; playerInput.disabled = false; playerInput.focus();
+    } else {
+      phaseLabel.textContent = 'All rounds complete!';
+      mainBtn.disabled = true; mainBtn.style.display = 'none';
+      showFinal();
+    }
+  }
+
+  function updateLog() {
+    attemptLog.style.display = 'block';
+    attemptLog.innerHTML = roundScores.map((r, i) =>
+      `<div class="attempt-row">
+        <span class="aname">R${i+1} — ${r.name}</span>
+        <span class="ascore">said ${r.guess} / ans ${r.answer} (off ${r.diff})</span>
+      </div>`
+    ).join('');
+  }
+
+  function showFinal() {
+    const total = roundScores.reduce((s, r) => s + r.score, 0);
+    const finalScore = Math.round(total / 30);
+    resultScore.textContent = 'Score: ' + finalScore + ' / 10';
+    resultDetail.textContent = roundScores.map((r,i) => `R${i+1} ${r.name}: off ${r.diff}`).join(' | ');
+    document.getElementById('playerBanner').style.opacity = '0.4';
+    formSection.style.display = 'block';
+    document.getElementById('houseSelect').addEventListener('change', checkForm);
+    document.getElementById('groupSelect').addEventListener('change', checkForm);
+  }
+
+  function checkForm() {
+    submitBtn.disabled = !(document.getElementById('houseSelect').value && document.getElementById('groupSelect').value);
+  }
+
+  function getCurrentWeek() {
+    const d = new Date(), y = d.getFullYear();
+    return 'Week ' + (Math.floor((d - new Date(y,0,1)) / 604800000) + 1) + ' ' + y;
+  }
+
+  const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+  const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1', CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
+  const CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba', CSHS_F_GROUP='r3022db1950b649218496e706728c203f';
+  const CSHS_F_SCORE='r8b61653d0854482a9e7e329026083f7b';
+
+  function submitScore() {
+    const total = roundScores.reduce((s, r) => s + r.score, 0);
+    const finalScore = Math.round(total / 30);
+    const house = document.getElementById('houseSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const params = new URLSearchParams({
+      id: CSHS_FORM_ID, [CSHS_F_WEEK]: getCurrentWeek(),
+      [CSHS_F_GAME]: 'Count the Dots', [CSHS_F_HOUSE]: house,
+      [CSHS_F_GROUP]: group, [CSHS_F_SCORE]: String(finalScore)
+    });
+    window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
+    submitBtn.textContent = '✓ Submitted'; submitBtn.disabled = true;
+  }
+
+  function resetAll() {
+    clearInterval(ringTimer);
+    round = 0; roundScores = []; currentAnswer = 0; phase = 'idle';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    flashOverlay.classList.remove('hide'); ringEl.classList.remove('show');
+    guessInput.value = ''; guessInput.disabled = true; guessBtn.disabled = true;
+    mainBtn.textContent = 'Start Round'; mainBtn.disabled = false; mainBtn.style.display = '';
+    resultPanel.classList.remove('show');
+    phaseLabel.textContent = 'Enter player name, then press Start';
+    attemptLog.style.display = 'none'; attemptLog.innerHTML = '';
+    formSection.style.display = 'none';
+    submitBtn.textContent = 'Submit Total Score'; submitBtn.disabled = true;
+    document.getElementById('houseSelect').value = ''; document.getElementById('groupSelect').value = '';
+    document.getElementById('diffBadge').textContent = 'Easy';
+    document.getElementById('playerBanner').style.opacity = '';
+    playerInput.value = ''; playerInput.disabled = false; playerInput.style.borderColor = '';
+    ROUNDS.forEach((_, i) => { document.getElementById('pip' + i).className = 'round-pip'; });
+  }
+
+  guessInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitGuess(); });
+  sizeCanvas();
+</script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fill the Bar – CSHS Positive Education</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#1c1c2e; --panel:#242436; --border:#2e2e48; --accent:#7c5cbf; --glow:#9b7fe8;
+    --gold:#f9c74f; --green:#43aa8b; --red:#f94144; --text:#ede9fe; --muted:#6b6b8a;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+    background-image: radial-gradient(circle at 10% 80%, rgba(124,92,191,0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 90% 20%, rgba(67,170,139,0.1) 0%, transparent 40%);
+  }
+  h1 { font-family:'DM Serif Display',serif; font-size:clamp(2.4rem,7vw,4rem); letter-spacing:-0.01em; margin-bottom:4px; }
+  .subtitle { font-size:.85rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:36px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:24px; padding:40px; width:100%; max-width:520px; box-shadow:0 0 60px rgba(124,92,191,0.15); }
+
+  /* Player banner */
+  .player-banner {
+    display:flex; align-items:center; gap:12px; background:rgba(124,92,191,0.1);
+    border:1px solid rgba(155,127,232,0.3); border-radius:12px; padding:12px 16px; margin-bottom:24px; min-height:56px;
+  }
+  .player-label { font-size:.75rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; white-space:nowrap; }
+  .player-name-input {
+    flex:1; background:transparent; border:none; border-bottom:2px solid var(--glow);
+    color:var(--glow); font-family:'DM Sans',sans-serif; font-size:1.2rem; font-weight:700;
+    padding:4px 6px; outline:none;
+  }
+  .player-name-input::placeholder { color:rgba(155,127,232,0.3); }
+  .player-name-input:disabled { border-color:var(--muted); color:var(--text); }
+
+  .target-area { text-align:center; margin-bottom:24px; }
+  .target-label { font-size:.8rem; letter-spacing:.25em; color:var(--muted); text-transform:uppercase; margin-bottom:10px; }
+  .target-pct { font-family:'DM Serif Display',serif; font-size:clamp(3.5rem,14vw,6rem); color:var(--gold); line-height:1; text-shadow:0 0 40px rgba(249,199,79,0.3); }
+
+  /* Countdown */
+  .countdown-wrap { display:flex; align-items:center; gap:12px; margin-bottom:14px; min-height:44px; }
+  .countdown-num { font-family:'DM Serif Display',serif; font-size:2.2rem; color:var(--gold); min-width:2ch; text-align:right; line-height:1; transition:color .2s; }
+  .countdown-num.urgent { color:var(--red); animation:urgentPulse .4s ease-in-out infinite; }
+  @keyframes urgentPulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.15);} }
+  .countdown-track { flex:1; height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .countdown-fill { height:100%; background:var(--gold); border-radius:4px; width:100%; transition:background .3s; }
+  .countdown-fill.urgent { background:var(--red); }
+
+  .bar-track { width:100%; height:64px; background:var(--bg); border:2px solid var(--border); border-radius:12px; overflow:hidden; position:relative; cursor:pointer; margin-bottom:14px; user-select:none; touch-action:none; }
+  .bar-track.active { border-color:var(--glow); box-shadow:0 0 16px rgba(155,127,232,0.3); }
+  .bar-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--glow)); border-radius:10px; width:0%; position:relative; }
+  .bar-fill::after { content:''; position:absolute; right:0; top:0; bottom:0; width:4px; background:white; border-radius:2px; box-shadow:0 0 8px rgba(255,255,255,0.8); }
+  .bar-target-line { position:absolute; top:0; bottom:0; width:3px; background:var(--gold); opacity:0; transition:opacity .3s; pointer-events:none; }
+  .bar-target-line.show { opacity:.85; }
+
+  .bar-instruction { font-size:.85rem; color:var(--muted); text-align:center; margin-bottom:20px; min-height:1.4em; }
+
+  /* Attempt log */
+  .attempt-log { margin-bottom:16px; }
+  .attempt-row { display:flex; justify-content:space-between; align-items:center; padding:7px 14px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border); margin-bottom:5px; font-size:.9rem; }
+  .attempt-row .aname { font-weight:700; color:var(--text); }
+  .attempt-row .ascore { font-family:monospace; color:var(--muted); }
+  .attempt-row.good-row { border-color:var(--green); }
+  .attempt-row.ok-row { border-color:var(--gold); }
+  .attempt-row.bad-row { border-color:var(--red); }
+
+  .btn { width:100%; padding:16px; font-family:'DM Sans',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:.05em; border:none; border-radius:12px; cursor:pointer; transition:all .15s; margin-bottom:10px; }
+  .btn-lock { background:var(--accent); color:#fff; box-shadow:0 4px 20px rgba(124,92,191,0.4); }
+  .btn-lock:hover { background:var(--glow); transform:translateY(-1px); }
+  .btn-lock:disabled { opacity:.3; cursor:not-allowed; transform:none; }
+  .btn-next { background:var(--green); color:#fff; display:none; }
+  .btn-next.show { display:block; }
+  .btn-next:hover { filter:brightness(1.1); }
+  .btn-reset { background:transparent; color:var(--muted); border:1px solid var(--border); font-size:.95rem; }
+  .btn-reset:hover { color:var(--text); }
+
+  .result-panel { display:none; border-radius:12px; padding:16px 20px; margin-bottom:16px; text-align:center; border:1px solid; }
+  .result-panel.show { display:block; }
+  .result-panel.good { background:rgba(67,170,139,0.1); border-color:var(--green); }
+  .result-panel.ok   { background:rgba(249,199,79,0.1);  border-color:var(--gold); }
+  .result-panel.bad  { background:rgba(249,65,68,0.1);   border-color:var(--red); }
+  .result-score { font-family:'DM Serif Display',serif; font-size:2.2rem; }
+  .result-panel.good .result-score { color:var(--green); }
+  .result-panel.ok   .result-score { color:var(--gold); }
+  .result-panel.bad  .result-score { color:var(--red); }
+  .result-detail { font-size:.9rem; color:var(--muted); margin-top:4px; }
+
+  .round-track { display:flex; gap:8px; justify-content:center; margin-bottom:24px; }
+  .rpip { width:32px; height:6px; border-radius:3px; background:var(--border); transition:all .3s; }
+  .rpip.done { background:var(--accent); }
+
+  .form-section { margin-top:20px; border-top:1px solid var(--border); padding-top:20px; }
+  .form-section label { display:block; font-size:.8rem; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; margin-top:14px; }
+  .form-section select, .form-section input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:1rem; padding:10px 14px; outline:none; }
+  .form-section select:focus, .form-section input:focus { border-color:var(--glow); }
+  .btn-submit { background:var(--gold); color:#1c1c2e; margin-top:16px; font-weight:700; }
+  .btn-submit:hover { filter:brightness(1.05); }
+  .btn-submit:disabled { opacity:.4; cursor:not-allowed; }
+</style>
+</head>
+<body>
+<h1>Fill the Bar</h1>
+<p class="subtitle">Corinda State High School — House Challenge</p>
+<div class="card">
+  <div class="player-banner" id="playerBanner">
+    <span class="player-label">Player up</span>
+    <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
+  </div>
+
+  <div class="round-track" id="roundTrack"></div>
+
+  <div class="target-area">
+    <div class="target-label">Fill the bar to exactly</div>
+    <div class="target-pct" id="targetPct">—</div>
+  </div>
+
+  <div class="countdown-wrap" id="countdownWrap" style="display:none">
+    <div class="countdown-num" id="countdownNum">10</div>
+    <div class="countdown-track"><div class="countdown-fill" id="countdownFill"></div></div>
+  </div>
+
+  <div class="bar-track" id="barTrack">
+    <div class="bar-fill" id="barFill"></div>
+    <div class="bar-target-line" id="targetLine"></div>
+  </div>
+
+  <div class="bar-instruction" id="barInstruction">Enter player name, then press Start</div>
+
+  <div class="attempt-log" id="attemptLog" style="display:none"></div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+
+  <button class="btn btn-lock" id="lockBtn" onclick="lockIn()" disabled>Lock It In</button>
+  <button class="btn btn-next" id="nextBtn" onclick="nextRound()">Next Round →</button>
+  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+  <button class="btn btn-lock" id="startBtn" onclick="startGame()" style="margin-top:4px">Start</button>
+
+  <div class="form-section" id="formSection" style="display:none">
+    <label>House</label>
+    <select id="houseSelect">
+      <option value="">— Select —</option>
+      <option>Bunar</option><option>Dibbil</option><option>Kabul</option>
+      <option>Moori</option><option>Pirri</option><option>Yarraman</option>
+    </select>
+    <label>Home Group</label>
+    <select id="groupSelect">
+      <option value="">— Select —</option>
+      <option>A</option><option>B</option><option>C</option><option>D</option>
+      <option>E</option><option>F</option><option>G</option><option>H</option>
+      <option>I</option><option>J</option><option>K</option><option>L</option>
+      <option>M</option><option>N</option><option>Staff</option>
+    </select>
+    <button class="btn btn-submit" id="submitBtn" onclick="submitScore()" disabled>Submit Total Score</button>
+  </div>
+</div>
+<script>
+  const ROUNDS = [
+    { target:50, time:10 }, { target:33, time:8 }, { target:75, time:6 },
+    { target:20, time:4  }, { target:66, time:3 },
+  ];
+
+  let round = 0, roundScores = [], currentFill = 0, dragging = false, active = false;
+  let countdownInterval = null, roundTime = 10;
+
+  const barTrack    = document.getElementById('barTrack');
+  const barFill     = document.getElementById('barFill');
+  const targetLine  = document.getElementById('targetLine');
+  const targetPct   = document.getElementById('targetPct');
+  const barInstruction = document.getElementById('barInstruction');
+  const lockBtn     = document.getElementById('lockBtn');
+  const nextBtn     = document.getElementById('nextBtn');
+  const startBtn    = document.getElementById('startBtn');
+  const resultPanel = document.getElementById('resultPanel');
+  const resultScore = document.getElementById('resultScore');
+  const resultDetail= document.getElementById('resultDetail');
+  const formSection = document.getElementById('formSection');
+  const submitBtn   = document.getElementById('submitBtn');
+  const countdownWrap = document.getElementById('countdownWrap');
+  const countdownNum  = document.getElementById('countdownNum');
+  const countdownFill = document.getElementById('countdownFill');
+  const attemptLog  = document.getElementById('attemptLog');
+  const playerInput = document.getElementById('playerNameInput');
+
+  ROUNDS.forEach((_, i) => {
+    const pip = document.createElement('div');
+    pip.className = 'rpip'; pip.id = 'rpip' + i;
+    document.getElementById('roundTrack').appendChild(pip);
+  });
+
+  function getX(e) {
+    const rect = barTrack.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  }
+  function setFill(frac) { currentFill = frac * 100; barFill.style.width = currentFill + '%'; }
+
+  barTrack.addEventListener('mousedown', e => { if (!active) return; dragging=true; setFill(getX(e)); });
+  barTrack.addEventListener('mousemove', e => { if (!dragging) return; setFill(getX(e)); });
+  document.addEventListener('mouseup', () => { dragging=false; });
+  barTrack.addEventListener('touchstart', e => { if (!active) return; e.preventDefault(); dragging=true; setFill(getX(e)); }, {passive:false});
+  barTrack.addEventListener('touchmove', e => { if (!dragging) return; e.preventDefault(); setFill(getX(e)); }, {passive:false});
+  document.addEventListener('touchend', () => { dragging=false; });
+
+  function startGame() {
+    if (!playerInput.value.trim()) { playerInput.focus(); playerInput.style.borderColor='var(--red)'; return; }
+    playerInput.style.borderColor = '';
+    startBtn.style.display = 'none';
+    loadRound();
+  }
+
+  function loadRound() {
+    const cfg = ROUNDS[round]; roundTime = cfg.time;
+    targetPct.textContent = cfg.target + '%';
+    barFill.style.width = '0%'; currentFill = 0;
+    active = true; barTrack.classList.add('active');
+    targetLine.classList.remove('show');
+    lockBtn.disabled = false; nextBtn.classList.remove('show');
+    resultPanel.classList.remove('show');
+    barInstruction.textContent = `${playerInput.value.trim()} — drag to fill, class calls the stop! (${cfg.time}s)`;
+    playerInput.disabled = true;
+
+    countdownWrap.style.display = 'flex';
+    countdownNum.textContent = roundTime;
+    countdownNum.classList.remove('urgent');
+    countdownFill.style.width = '100%'; countdownFill.classList.remove('urgent');
+    const start = performance.now();
+    clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+      const remaining = Math.max(0, roundTime - (performance.now() - start) / 1000);
+      const frac = remaining / roundTime;
+      countdownNum.textContent = Math.ceil(remaining);
+      countdownFill.style.width = (frac * 100) + '%';
+      const urgent = remaining <= 3;
+      countdownNum.classList.toggle('urgent', urgent);
+      countdownFill.classList.toggle('urgent', urgent);
+      if (remaining <= 0) { clearInterval(countdownInterval); if (active) lockIn(); }
+    }, 50);
+  }
+
+  function lockIn() {
+    if (!active) return;
+    clearInterval(countdownInterval);
+    active = false; dragging = false;
+    barTrack.classList.remove('active'); lockBtn.disabled = true;
+    countdownWrap.style.display = 'none';
+
+    const cfg = ROUNDS[round];
+    const diff = Math.abs(currentFill - cfg.target);
+    const score = Math.max(0, Math.round(100 - diff * 4));
+    const name = playerInput.value.trim();
+    roundScores.push({ fill: currentFill.toFixed(1), target: cfg.target, diff: diff.toFixed(1), score, name });
+
+    targetLine.style.left = cfg.target + '%'; targetLine.classList.add('show');
+    document.getElementById('rpip' + round).classList.add('done');
+    updateLog();
+
+    const quality = diff < 3 ? 'good' : diff < 8 ? 'ok' : 'bad';
+    resultPanel.classList.add('show'); resultPanel.className = 'result-panel show ' + quality;
+    resultScore.textContent = diff < 3 ? '🎯 Spot on!' : diff < 8 ? 'Close!' : 'Keep going!';
+    resultDetail.textContent = `${name} filled ${currentFill.toFixed(1)}%, target was ${cfg.target}% (off ${diff.toFixed(1)}%)`;
+
+    round++;
+    if (round < ROUNDS.length) {
+      nextBtn.classList.add('show');
+      barInstruction.textContent = `Next player up! — ${ROUNDS[round].time}s for this one`;
+    } else {
+      barInstruction.textContent = 'All done!';
+      showFinal();
+    }
+  }
+
+  function nextRound() {
+    nextBtn.classList.remove('show');
+    playerInput.value = ''; playerInput.disabled = false; playerInput.focus();
+    barInstruction.textContent = 'Enter next player name, then drag to fill';
+    // Wait for name entry before starting countdown — use startBtn logic inline
+    lockBtn.disabled = true;
+    // show a small "ready" button
+    startBtn.textContent = 'Start Round ' + (round + 1);
+    startBtn.style.display = '';
+  }
+
+  function updateLog() {
+    attemptLog.style.display = 'block';
+    attemptLog.innerHTML = roundScores.map((r, i) => {
+      const cls = parseFloat(r.diff) < 3 ? 'good-row' : parseFloat(r.diff) < 8 ? 'ok-row' : 'bad-row';
+      return `<div class="attempt-row ${cls}">
+        <span class="aname">R${i+1} — ${r.name}</span>
+        <span class="ascore">${r.fill}% / target ${r.target}% (off ${r.diff}%)</span>
+      </div>`;
+    }).join('');
+  }
+
+  function showFinal() {
+    const total = roundScores.reduce((s, r) => s + r.score, 0);
+    const finalScore = Math.round(total / 50);
+    resultScore.textContent = 'Score: ' + finalScore + ' / 10';
+    resultDetail.textContent = roundScores.map((r,i) => `R${i+1} ${r.name}: off ${r.diff}%`).join(' | ');
+    resultPanel.className = 'result-panel show good';
+    document.getElementById('playerBanner').style.opacity = '0.4';
+    formSection.style.display = 'block';
+    document.getElementById('houseSelect').addEventListener('change', checkForm);
+    document.getElementById('groupSelect').addEventListener('change', checkForm);
+  }
+
+  function checkForm() {
+    submitBtn.disabled = !(document.getElementById('houseSelect').value && document.getElementById('groupSelect').value);
+  }
+
+  function getCurrentWeek() {
+    const d = new Date(), y = d.getFullYear();
+    return 'Week ' + (Math.floor((d - new Date(y,0,1)) / 604800000) + 1) + ' ' + y;
+  }
+
+  const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+  const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1', CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
+  const CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba', CSHS_F_GROUP='r3022db1950b649218496e706728c203f';
+  const CSHS_F_SCORE='r8b61653d0854482a9e7e329026083f7b';
+
+  function submitScore() {
+    const total = roundScores.reduce((s, r) => s + r.score, 0);
+    const finalScore = Math.round(total / 50);
+    const house = document.getElementById('houseSelect').value;
+    const group = document.getElementById('groupSelect').value;
+    const params = new URLSearchParams({
+      id: CSHS_FORM_ID, [CSHS_F_WEEK]: getCurrentWeek(),
+      [CSHS_F_GAME]: 'Fill the Bar', [CSHS_F_HOUSE]: house,
+      [CSHS_F_GROUP]: group, [CSHS_F_SCORE]: String(finalScore)
+    });
+    window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
+    submitBtn.textContent = '✓ Submitted'; submitBtn.disabled = true;
+  }
+
+  function resetAll() {
+    clearInterval(countdownInterval);
+    round = 0; roundScores = []; currentFill = 0; active = false; dragging = false;
+    barFill.style.width = '0%'; targetPct.textContent = '—';
+    targetLine.classList.remove('show'); barTrack.classList.remove('active');
+    barInstruction.textContent = 'Enter player name, then press Start';
+    lockBtn.disabled = true; nextBtn.classList.remove('show');
+    resultPanel.classList.remove('show'); countdownWrap.style.display = 'none';
+    startBtn.textContent = 'Start'; startBtn.style.display = '';
+    attemptLog.style.display = 'none'; attemptLog.innerHTML = '';
+    formSection.style.display = 'none';
+    submitBtn.textContent = 'Submit Total Score'; submitBtn.disabled = true;
+    document.getElementById('houseSelect').value = ''; document.getElementById('groupSelect').value = '';
+    document.getElementById('playerBanner').style.opacity = '';
+    playerInput.value = ''; playerInput.disabled = false; playerInput.style.borderColor = '';
+    ROUNDS.forEach((_, i) => { document.getElementById('rpip' + i).className = 'rpip'; });
+  }
+</script>
+</body>
+</html>
