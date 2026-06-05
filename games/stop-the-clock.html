@@ -3,92 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stop the Clock – CSHS Positive Education</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+<title>Stop the Clock – CSHS</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
   :root {
-    --bg: #0a0e1a; --panel: #111827; --accent: #00f5c4; --danger: #ff4d6d;
-    --gold: #ffd166; --text: #e2e8f0; --muted: #64748b; --border: #1e293b;
+    --green: #00180f; --green-mid: #003d1f; --green-light: #005a2e;
+    --gold: #f2b400; --gold-dim: rgba(242,180,0,0.15); --gold-border: rgba(242,180,0,0.3);
+    --white: #fdfdfd; --muted: rgba(255,255,255,0.55); --danger: #e05252; --correct: #4caf7a;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg); color: var(--text); font-family: 'Barlow Condensed', sans-serif;
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; padding: 20px;
-    background-image: radial-gradient(ellipse at 20% 50%, rgba(0,245,196,0.05) 0%, transparent 60%),
-                      radial-gradient(ellipse at 80% 20%, rgba(255,77,109,0.05) 0%, transparent 60%);
-  }
-  h1 { font-size: clamp(2rem,6vw,3.5rem); font-weight:900; letter-spacing:.15em; text-transform:uppercase; color:var(--accent); text-shadow:0 0 40px rgba(0,245,196,0.3); margin-bottom:6px; }
-  .subtitle { font-size:1rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:40px; }
-  .card { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:40px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+  body { font-family: 'DM Sans', sans-serif; background: var(--green); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; }
+
+  .header { text-align: center; margin-bottom: 24px; }
+  .header-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .header h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.4rem,8vw,3.8rem); letter-spacing: 0.06em; color: var(--white); line-height: 1; }
+  .header h1 span { color: var(--gold); }
+  .header-sub { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; margin-bottom: 16px; width: 100%; max-width: 480px; }
+  .card-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
 
   /* Player banner */
-  .player-banner {
-    background: rgba(0,245,196,0.08); border: 1px solid rgba(0,245,196,0.2);
-    border-radius: 10px; padding: 14px 20px; margin-bottom: 20px;
-    display: flex; align-items: center; gap: 14px; min-height: 60px;
-  }
-  .player-label { font-size:.75rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; white-space:nowrap; }
-  .player-name-input {
-    flex:1; background:transparent; border:none; border-bottom:2px solid var(--accent);
-    color:var(--accent); font-family:'Barlow Condensed',sans-serif; font-size:1.3rem;
-    font-weight:700; letter-spacing:.05em; padding:4px 6px; outline:none;
-  }
-  .player-name-input::placeholder { color: rgba(0,245,196,0.3); }
-  .player-name-input:disabled { border-color: var(--muted); color: var(--text); }
+  .player-banner { display: flex; align-items: center; gap: 12px; background: var(--gold-dim); border: 1px solid var(--gold-border); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; }
+  .player-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+  .player-name-input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--gold-border); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 700; padding: 4px 6px; outline: none; }
+  .player-name-input::placeholder { color: rgba(242,180,0,0.3); }
+  .player-name-input:disabled { border-color: rgba(255,255,255,0.15); color: var(--white); }
 
-  .target-label { font-size:.85rem; letter-spacing:.3em; color:var(--muted); text-transform:uppercase; text-align:center; margin-bottom:8px; }
-  .target { font-family:'Share Tech Mono',monospace; font-size:clamp(3rem,12vw,5rem); text-align:center; color:var(--gold); letter-spacing:.05em; margin-bottom:32px; text-shadow:0 0 30px rgba(255,209,102,0.3); }
-  .timer-display { font-family:'Share Tech Mono',monospace; font-size:clamp(3.5rem,14vw,6rem); text-align:center; color:var(--text); letter-spacing:.02em; margin-bottom:32px; transition:color .1s; min-height:1.2em; }
-  .timer-display.running { color:var(--accent); text-shadow:0 0 20px rgba(0,245,196,0.4); }
-  .timer-display.stopped { color:var(--danger); text-shadow:0 0 20px rgba(255,77,109,0.4); }
+  /* Target + Timer */
+  .target-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-align: center; margin-bottom: 6px; }
+  .target-val { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem,8vw,3rem); text-align: center; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 20px; }
+  .timer-display { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem,18vw,6.5rem); text-align: center; color: var(--white); letter-spacing: 0.02em; margin-bottom: 24px; line-height: 1; transition: color 0.1s; }
+  .timer-display.running { color: var(--gold); }
+  .timer-display.stopped { color: var(--danger); }
 
-  .btn { width:100%; padding:18px; font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; border:none; border-radius:10px; cursor:pointer; transition:all .15s; margin-bottom:12px; }
-  .btn-start { background:var(--accent); color:#0a0e1a; }
-  .btn-start:hover { filter:brightness(1.1); transform:translateY(-1px); }
-  .btn-stop { background:var(--danger); color:#fff; animation:pulse-red .8s ease-in-out infinite; }
-  .btn-reset { background:transparent; color:var(--muted); border:1px solid var(--border); font-size:1rem; }
-  .btn-reset:hover { color:var(--text); border-color:var(--muted); }
-  @keyframes pulse-red { 0%,100%{box-shadow:0 0 0 0 rgba(255,77,109,0.4);}50%{box-shadow:0 0 0 12px rgba(255,77,109,0);} }
+  /* Attempt dots */
+  .attempts { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); transition: all 0.2s; }
+  .dot.used { background: var(--gold-dim); border-color: var(--gold); }
+  .dot.best { background: var(--gold); border-color: var(--gold); }
 
-  .result-panel { display:none; background:#0d1f2d; border:1px solid var(--accent); border-radius:10px; padding:20px; margin-bottom:16px; text-align:center; }
-  .result-panel.show { display:block; }
-  .result-score { font-size:2.5rem; font-weight:900; color:var(--accent); margin-bottom:4px; }
-  .result-off { font-family:'Share Tech Mono',monospace; font-size:1rem; color:var(--muted); }
+  /* Attempt log */
+  .attempt-log { margin-bottom: 16px; }
+  .attempt-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 5px; font-size: 13px; }
+  .attempt-row .aname { font-weight: 700; color: var(--white); }
+  .attempt-row .atime { font-family: 'DM Mono', monospace; color: var(--muted); font-size: 12px; }
+  .attempt-row.best-row { border-color: var(--gold-border); background: var(--gold-dim); }
+  .attempt-row.best-row .aname { color: var(--gold); }
 
-  .attempts { display:flex; gap:8px; justify-content:center; margin-bottom:20px; }
-  .dot { width:12px; height:12px; border-radius:50%; border:2px solid var(--muted); transition:all .2s; }
-  .dot.used { background:var(--accent); border-color:var(--accent); }
-  .dot.best { background:var(--gold); border-color:var(--gold); }
+  /* Result */
+  .result-panel { display: none; background: var(--gold-dim); border: 1px solid var(--gold-border); border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; text-align: center; }
+  .result-panel.show { display: block; }
+  .result-score { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: var(--gold); letter-spacing: 0.05em; }
+  .result-off { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-  /* Attempt scoreboard */
-  .attempt-log { margin-bottom:20px; }
-  .attempt-row { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border); margin-bottom:6px; font-size:1rem; }
-  .attempt-row .aname { color:var(--text); font-weight:700; }
-  .attempt-row .atime { font-family:'Share Tech Mono',monospace; color:var(--muted); }
-  .attempt-row.best-row { border-color:var(--gold); background:rgba(255,209,102,0.06); }
-  .attempt-row.best-row .aname { color:var(--gold); }
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; letter-spacing: 0.02em; width: 100%; margin-bottom: 10px; }
+  .btn-primary { background: var(--gold); color: var(--green); }
+  .btn-primary:hover { background: #ffc820; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(242,180,0,0.3); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-stop { background: var(--danger); color: var(--white); animation: pulseRed 0.8s ease-in-out infinite; }
+  @keyframes pulseRed { 0%,100%{box-shadow:0 0 0 0 rgba(224,82,82,0.4);}50%{box-shadow:0 0 0 10px rgba(224,82,82,0);} }
+  .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold-border); }
+  .btn-outline:hover { background: var(--gold-dim); }
 
-  .form-section { margin-top:24px; border-top:1px solid var(--border); padding-top:24px; }
-  .form-section label { display:block; font-size:.8rem; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; margin-top:14px; }
-  .form-section select, .form-section input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; padding:10px 14px; outline:none; transition:border-color .2s; }
-  .form-section select:focus, .form-section input:focus { border-color:var(--accent); }
-  .btn-submit { background:var(--gold); color:#0a0e1a; margin-top:20px; }
-  .btn-submit:hover { filter:brightness(1.1); transform:translateY(-1px); }
-  .btn-submit:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+  /* Form */
+  .form-section { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+  .form-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 8px; margin-top: 14px; }
+  .group-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 8px; }
+  .group-btn { background: var(--gold-dim); border: 1px solid var(--gold-border); color: var(--white); padding: 8px 6px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .group-btn:hover { background: rgba(242,180,0,0.28); border-color: var(--gold); }
+  .group-btn.selected { background: var(--gold); color: var(--green); border-color: var(--gold); }
 </style>
 </head>
 <body>
-<h1>Stop the Clock</h1>
-<p class="subtitle">Corinda State High School — House Challenge</p>
-<div class="card">
+<div class="header">
+  <div class="header-eyebrow">Corinda State High School</div>
+  <h1>Stop the <span>Clock</span></h1>
+  <div class="header-sub">3 players — closest to 5 seconds wins</div>
+</div>
+
+<div class="card" style="max-width:480px;width:100%">
   <div class="player-banner" id="playerBanner">
     <span class="player-label">Player up</span>
     <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
   </div>
 
   <div class="target-label">Target Time</div>
-  <div class="target">5.000s</div>
+  <div class="target-val">5.000s</div>
 
   <div class="attempts" id="attemptDots">
     <div class="dot" id="d0"></div>
@@ -104,174 +106,149 @@
     <div class="result-off" id="resultOff"></div>
   </div>
 
-  <button class="btn btn-start" id="mainBtn" onclick="handleBtn()">Start</button>
-  <button class="btn btn-reset" onclick="resetAll()">Reset</button>
+  <button class="btn btn-primary" id="mainBtn" onclick="handleBtn()">Start</button>
+  <button class="btn btn-outline" onclick="resetAll()">Reset</button>
 
   <div class="form-section" id="formSection" style="display:none">
-    <label>House</label>
-    <select id="houseSelect">
-      <option value="">— Select —</option>
-      <option>Bunar</option><option>Dibbil</option><option>Kabul</option>
-      <option>Moori</option><option>Pirri</option><option>Yarraman</option>
-    </select>
-    <label>Home Group</label>
-    <select id="groupSelect">
-      <option value="">— Select —</option>
-      <option>A</option><option>B</option><option>C</option><option>D</option>
-      <option>E</option><option>F</option><option>G</option><option>H</option>
-      <option>I</option><option>J</option><option>K</option><option>L</option>
-      <option>M</option><option>N</option><option>Staff</option>
-    </select>
-    <button class="btn btn-submit" id="submitBtn" onclick="submitScore()" disabled>Submit Best Score</button>
+    <span class="form-label">House</span>
+    <div class="group-select" id="houseSelectBtns"></div>
+    <span class="form-label">Home Group</span>
+    <div class="group-select" id="groupSelectBtns"></div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitScore()" style="margin-top:16px" disabled>📤 Submit Score</button>
   </div>
 </div>
+
 <script>
-  const MAX_ATTEMPTS = 3;
-  const TARGET = 5.000;
+  const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
+  const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
+  const MAX_ATTEMPTS = 3, TARGET = 5.000;
 
-  let running = false, startTime = null, animFrame = null, stopped = false;
-  let attempt = 0, scores = [];
+  let running=false, startTime=null, animFrame=null, stopped=false, attempt=0, scores=[];
+  let selectedHouse=null, selectedGroup=null;
 
-  const timerEl  = document.getElementById('timerDisplay');
-  const btnEl    = document.getElementById('mainBtn');
-  const resultPanel = document.getElementById('resultPanel');
-  const resultScore = document.getElementById('resultScore');
-  const resultOff   = document.getElementById('resultOff');
-  const formSection = document.getElementById('formSection');
-  const submitBtn   = document.getElementById('submitBtn');
-  const attemptLog  = document.getElementById('attemptLog');
-  const playerInput = document.getElementById('playerNameInput');
+  const timerEl    = document.getElementById('timerDisplay');
+  const btnEl      = document.getElementById('mainBtn');
+  const resultPanel= document.getElementById('resultPanel');
+  const resultScore= document.getElementById('resultScore');
+  const resultOff  = document.getElementById('resultOff');
+  const formSection= document.getElementById('formSection');
+  const submitBtn  = document.getElementById('submitBtn');
+  const attemptLog = document.getElementById('attemptLog');
+  const playerInput= document.getElementById('playerNameInput');
 
-  function fmt(s) { return s.toFixed(3); }
+  function fmt(s){ return s.toFixed(3); }
 
-  function tick() {
-    if (!running) return;
-    timerEl.textContent = fmt((performance.now() - startTime) / 1000);
+  function tick(){
+    if(!running) return;
+    timerEl.textContent = fmt((performance.now()-startTime)/1000);
     animFrame = requestAnimationFrame(tick);
   }
 
-  function handleBtn() {
-    if (!running && !stopped) {
-      if (!playerInput.value.trim()) { playerInput.focus(); playerInput.style.borderColor='var(--danger)'; return; }
-      playerInput.style.borderColor = 'var(--accent)';
-      playerInput.disabled = true;
-      startTime = performance.now(); running = true;
-      timerEl.className = 'timer-display running';
-      btnEl.textContent = 'STOP!'; btnEl.className = 'btn btn-stop';
+  function handleBtn(){
+    if(!running && !stopped){
+      if(!playerInput.value.trim()){ playerInput.focus(); playerInput.style.borderColor='var(--danger)'; return; }
+      playerInput.style.borderColor='';
+      playerInput.disabled=true;
+      startTime=performance.now(); running=true;
+      timerEl.className='timer-display running';
+      btnEl.textContent='STOP!'; btnEl.className='btn btn-stop';
       resultPanel.classList.remove('show');
-      animFrame = requestAnimationFrame(tick);
-    } else if (running) {
+      animFrame=requestAnimationFrame(tick);
+    } else if(running){
       cancelAnimationFrame(animFrame);
-      const elapsed = (performance.now() - startTime) / 1000;
-      running = false; stopped = true;
-      timerEl.textContent = fmt(elapsed);
-      timerEl.className = 'timer-display stopped';
-      btnEl.className = 'btn btn-start';
+      const elapsed=(performance.now()-startTime)/1000;
+      running=false; stopped=true;
+      timerEl.textContent=fmt(elapsed);
+      timerEl.className='timer-display stopped';
+      btnEl.className='btn btn-primary';
 
-      const diff = Math.abs(elapsed - TARGET);
-      const rawScore = Math.max(0, 1000 - diff * 1000);
-      const playerName = playerInput.value.trim();
-      scores.push({ elapsed, diff, rawScore, name: playerName });
-
-      document.getElementById('d' + attempt).classList.add('used');
-      updateAttemptLog();
+      const diff=Math.abs(elapsed-TARGET);
+      const rawScore=Math.max(0,1000-diff*1000);
+      scores.push({elapsed,diff,rawScore,name:playerInput.value.trim()});
+      document.getElementById('d'+attempt).classList.add('used');
+      updateLog();
 
       resultPanel.classList.add('show');
-      resultScore.textContent = 'Off by ' + fmt(diff) + 's';
-      resultOff.textContent = attempt + 1 < MAX_ATTEMPTS ? 'Next player up!' : '';
+      resultScore.textContent='Off by '+fmt(diff)+'s';
+      resultOff.textContent= attempt+1 < MAX_ATTEMPTS ? 'Next player up!' : '';
 
       attempt++;
-      if (attempt >= MAX_ATTEMPTS) {
-        btnEl.style.display = 'none';
+      if(attempt>=MAX_ATTEMPTS){
+        btnEl.style.display='none';
         showBestAndForm();
       } else {
-        stopped = false;
-        btnEl.textContent = 'Next Player – Start';
-        playerInput.value = '';
-        playerInput.disabled = false;
-        playerInput.focus();
+        stopped=false;
+        btnEl.textContent='Next Player — Start';
+        playerInput.value=''; playerInput.disabled=false; playerInput.focus();
       }
     }
   }
 
-  function updateAttemptLog() {
-    attemptLog.style.display = 'block';
-    attemptLog.innerHTML = scores.map((s, i) =>
+  function updateLog(){
+    attemptLog.style.display='block';
+    attemptLog.innerHTML=scores.map((s,i)=>
       `<div class="attempt-row" id="logrow${i}">
         <span class="aname">${s.name}</span>
-        <span class="atime">${fmt(s.elapsed)}s &nbsp; off by ${fmt(s.diff)}s</span>
+        <span class="atime">${fmt(s.elapsed)}s &nbsp;·&nbsp; off ${fmt(s.diff)}s</span>
       </div>`
     ).join('');
   }
 
-  function showBestAndForm() {
-    const best = scores.reduce((a, b) => a.rawScore > b.rawScore ? a : b);
-    const bestIdx = scores.indexOf(best);
-    document.getElementById('d' + bestIdx).classList.remove('used');
-    document.getElementById('d' + bestIdx).classList.add('best');
-    const row = document.getElementById('logrow' + bestIdx);
-    if (row) row.classList.add('best-row');
-
-    const finalScore = Math.round(best.rawScore / 100);
-    resultScore.textContent = '🏆 ' + best.name + ' wins!';
-    resultOff.textContent = fmt(best.elapsed) + 's — Score: ' + finalScore + ' / 10';
-
-    playerInput.disabled = true;
-    document.getElementById('playerBanner').style.opacity = '0.4';
-    formSection.style.display = 'block';
-    document.getElementById('houseSelect').addEventListener('change', checkForm);
-    document.getElementById('groupSelect').addEventListener('change', checkForm);
+  function showBestAndForm(){
+    const best=scores.reduce((a,b)=>a.rawScore>b.rawScore?a:b);
+    const bi=scores.indexOf(best);
+    document.getElementById('d'+bi).classList.replace('used','best');
+    const row=document.getElementById('logrow'+bi);
+    if(row) row.classList.add('best-row');
+    const finalScore=Math.round(best.rawScore/100);
+    resultScore.textContent='🏆 '+best.name+' wins!';
+    resultOff.textContent=fmt(best.elapsed)+'s — Score: '+finalScore+' / 10';
+    playerInput.disabled=true;
+    document.getElementById('playerBanner').style.opacity='0.5';
+    formSection.style.display='block';
+    buildSelectors();
   }
 
-  function checkForm() {
-    submitBtn.disabled = !(document.getElementById('houseSelect').value && document.getElementById('groupSelect').value);
+  function buildSelectors(){
+    const hd=document.getElementById('houseSelectBtns');
+    const gd=document.getElementById('groupSelectBtns');
+    hd.innerHTML=HOUSES.map(h=>`<button class="group-btn" onclick="selectHouse('${h}')">${h}</button>`).join('');
+    gd.innerHTML=GROUPS.map(g=>`<button class="group-btn" onclick="selectGroup('${g}')">${g}</button>`).join('');
+  }
+  function selectHouse(h){ selectedHouse=h; document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h)); checkForm(); }
+  function selectGroup(g){ selectedGroup=g; document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g)); checkForm(); }
+  function checkForm(){ submitBtn.disabled=!(selectedHouse&&selectedGroup); }
+
+  function getCurrentWeek(){
+    const d=new Date(),y=d.getFullYear();
+    return 'Week '+(Math.floor((d-new Date(y,0,1))/604800000)+1)+' '+y;
+  }
+  const CSHS_FORM_BASE='https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_ID='xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+  const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1',CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
+  const CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba',CSHS_F_GROUP='r3022db1950b649218496e706728c203f';
+  const CSHS_F_SCORE='r8b61653d0854482a9e7e329026083f7b';
+
+  function submitScore(){
+    const best=scores.reduce((a,b)=>a.rawScore>b.rawScore?a:b);
+    const finalScore=Math.round(best.rawScore/100);
+    const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Stop the Clock',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:selectedGroup,[CSHS_F_SCORE]:String(finalScore)});
+    window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');
+    submitBtn.textContent='✓ Submitted'; submitBtn.disabled=true;
   }
 
-  function getCurrentWeek() {
-    const d = new Date(), y = d.getFullYear();
-    const start = new Date(y, 0, 1);
-    const wk = Math.floor((d - start) / (7 * 24 * 60 * 60 * 1000)) + 1;
-    return 'Week ' + wk + ' ' + y;
-  }
-
-  // ─── MICROSOFT FORMS PREFILL ──────────────────────────────────────────────
-  const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-  const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-  const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
-  const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
-  const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
-  const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
-  const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
-
-  function submitScore() {
-    const best = scores.reduce((a, b) => a.rawScore > b.rawScore ? a : b);
-    const finalScore = Math.round(best.rawScore / 100);
-    const house = document.getElementById('houseSelect').value;
-    const group = document.getElementById('groupSelect').value;
-    const detail = scores.map(s => s.name + ':' + fmt(s.elapsed) + 's').join(' | ');
-    const params = new URLSearchParams({
-      id: CSHS_FORM_ID, [CSHS_F_WEEK]: getCurrentWeek(),
-      [CSHS_F_GAME]: 'Stop the Clock', [CSHS_F_HOUSE]: house,
-      [CSHS_F_GROUP]: group, [CSHS_F_SCORE]: String(finalScore)
-    });
-    window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
-    submitBtn.textContent = '✓ Submitted'; submitBtn.disabled = true;
-  }
-
-  function resetAll() {
+  function resetAll(){
     cancelAnimationFrame(animFrame);
-    running = false; stopped = false; attempt = 0; scores = [];
-    timerEl.textContent = '0.000'; timerEl.className = 'timer-display';
-    btnEl.textContent = 'Start'; btnEl.className = 'btn btn-start'; btnEl.style.display = '';
+    running=false;stopped=false;attempt=0;scores=[];selectedHouse=null;selectedGroup=null;
+    timerEl.textContent='0.000';timerEl.className='timer-display';
+    btnEl.textContent='Start';btnEl.className='btn btn-primary';btnEl.style.display='';
     resultPanel.classList.remove('show');
-    attemptLog.style.display = 'none'; attemptLog.innerHTML = '';
-    formSection.style.display = 'none';
-    submitBtn.textContent = 'Submit Best Score'; submitBtn.disabled = true;
-    document.getElementById('houseSelect').value = '';
-    document.getElementById('groupSelect').value = '';
-    playerInput.value = ''; playerInput.disabled = false; playerInput.style.borderColor = '';
-    document.getElementById('playerBanner').style.opacity = '';
-    ['d0','d1','d2'].forEach(id => { document.getElementById(id).className = 'dot'; });
+    attemptLog.style.display='none';attemptLog.innerHTML='';
+    formSection.style.display='none';
+    submitBtn.textContent='📤 Submit Score';submitBtn.disabled=true;
+    document.getElementById('playerBanner').style.opacity='';
+    playerInput.value='';playerInput.disabled=false;playerInput.style.borderColor='';
+    ['d0','d1','d2'].forEach(id=>{document.getElementById(id).className='dot';});
   }
 </script>
 </body>
