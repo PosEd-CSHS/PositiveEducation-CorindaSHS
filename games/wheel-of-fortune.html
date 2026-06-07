@@ -198,6 +198,14 @@
 .weekly-lock-start:disabled{opacity:0.45;cursor:not-allowed;}
 .game-locked{filter:blur(2px) grayscale(0.35);pointer-events:none;opacity:0.55;}
 
+
+  .btn-hint-wof{background:transparent;color:rgba(255,255,255,0.5);border:2px solid rgba(255,255,255,0.2);
+    font-family:'Nunito',sans-serif;font-weight:900;font-size:0.85rem;padding:8px 18px;
+    border-radius:20px;cursor:pointer;margin-top:10px;text-transform:uppercase;letter-spacing:1px;}
+  .btn-hint-wof:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-hint-wof:disabled{opacity:0.3;cursor:not-allowed;}
+  .hint-used-wof{display:none;font-size:0.72rem;color:#e05252;text-align:center;margin-top:4px;font-weight:700;}
+  .hint-used-wof.show{display:block;}
 </style>
 </head>
 <body>
@@ -241,6 +249,10 @@
   <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
     <button class="btn solve" onclick="trySolve()">Solve the puzzle</button>
     <button class="btn" style="background:var(--green);color:var(--gold);border:2px solid var(--gold);" onclick="if(confirm('Give up on this puzzle? You\'ll score 3 for having a go.'))giveUp()">Give up</button>
+  </div>
+  <div style="text-align:center;">
+    <button class="btn-hint-wof" id="hintBtn" onclick="useHintWof()">💡 Need a hint? — costs ½ point</button>
+    <div class="hint-used-wof" id="hintUsedNote">Hint used — 0.5 point deducted</div>
   </div>
   <div class="hint">Spin, then pick a <strong>consonant</strong> to earn the spin value. <span class="vowel-note">Vowels cost $250</span> and can be bought any time. Solve when you're ready.</div>
   </div>
@@ -367,6 +379,7 @@ let lettersGuessed = 0;
 let bank = 0;
 let pendingSpin = null;        // value waiting on a consonant pick
 let spinning = false;
+let hintUsed = false;
 let gameStartTime = null;
 let timerInterval = null;
 let solved = false;
@@ -407,6 +420,9 @@ function newPuzzle() {
   bank = 0;
   pendingSpin = null;
   solved = false;
+  hintUsed = false;
+  const hb=document.getElementById('hintBtn'); if(hb){hb.disabled=false;}
+  const hn=document.getElementById('hintUsedNote'); if(hn){hn.classList.remove('show');}
   gameStartTime = Date.now();
   document.getElementById('category').textContent = weekLabel + "  —  " + current.cat;
   document.getElementById('wheelResult').textContent = "Spin to begin";
@@ -609,6 +625,25 @@ function spin() {
 }
 
 // ---------- SOLVE ----------
+
+// ─── HINT ────────────────────────────────────────────────────────────────────
+function useHintWof() {
+  if (hintUsed || solved) return;
+  hintUsed = true;
+  document.getElementById('hintBtn').disabled = true;
+  document.getElementById('hintUsedNote').classList.add('show');
+  // Reveal one unrevealed letter from the puzzle
+  const letters = current.text.replace(/[^A-Z]/g,'').split('');
+  const unrevealed = [...new Set(letters)].filter(l => !revealed.has(l));
+  if (unrevealed.length === 0) return;
+  const pick = unrevealed[Math.floor(Math.random()*unrevealed.length)];
+  revealed.add(pick);
+  revealLetter(pick);
+  lettersGuessed++; // count against score
+  updateStatus();
+  document.getElementById('wheelResult').textContent = `💡 Hint: revealed "${pick}"`;
+}
+
 function trySolve() {
   if (!weeklyGameUnlocked) { alert('Please choose your Home Group first.'); return; }
   if (solved) return;
@@ -637,14 +672,16 @@ function finish(won) {
   else if (lettersGuessed <= 13) score = 7;
   else score = 6;
 
-  document.getElementById('finalScore').textContent = score;
+  if (hintUsed) score = Math.max(0, score - 0.5);
+  const displayScore = Number.isInteger(score) ? score : score.toFixed(1);
+  document.getElementById('finalScore').textContent = displayScore;
   document.getElementById('scoreLabelText').textContent = 'out of 10';
   const mins = Math.floor(elapsed/60), secs = Math.round(elapsed%60);
   document.getElementById('winMeta').innerHTML =
     `⏱ Time: <strong>${mins}:${String(secs).padStart(2,'0')}</strong> &nbsp;•&nbsp; ` +
-    `🔤 Letters used: <strong>${lettersGuessed}</strong> → ${score} out of 10`;
+    `🔤 Letters used: <strong>${lettersGuessed}</strong> → ${typeof displayScore!=='undefined'?displayScore:score} out of 10${hintUsed?' (−½ hint)':''}`;
   window._lastScore = score;
-  window._lastDetail = `Solved, ${lettersGuessed} letters`;
+  window._lastDetail = `Solved, ${lettersGuessed} letters${hintUsed?' (hint)':''}`;
   document.getElementById('winOverlay').classList.add('show');
 }
 
@@ -654,8 +691,10 @@ function giveUp(){
   if (solved) return;
   solved = true;
   clearInterval(timerInterval);
-  const score = lettersGuessed >= 1 ? 3 : 0;
-  document.getElementById('finalScore').textContent = score;
+  let score = lettersGuessed >= 1 ? 3 : 0;
+  if (hintUsed && score > 0) score = Math.max(0, score - 0.5);
+  const giveUpDisplay = Number.isInteger(score) ? score : score.toFixed(1);
+  document.getElementById('finalScore').textContent = giveUpDisplay;
   document.getElementById('scoreLabelText').textContent = 'out of 10';
   document.getElementById('winMeta').innerHTML =
     (score === 3
@@ -689,7 +728,9 @@ function openFormPrefilled(house, group, score, week, game) {
 
 function submitScore() {
   markPlayedLS(selectedGroup);
-  openFormPrefilled(selectedHouse||'', selectedGroup||'', window._lastScore||0, weekLabel, 'Wheel of Fortune');
+  const wl = weekLabel || (typeof resolveWeekPuzzle === 'function' ? (`Term ${WEEKLY_PUZZLES.find(p=>p)||{t:'?',w:'?'}}.t · Week ?`) : 'Unknown');
+  const safeWeek = weekLabel || wl;
+  openFormPrefilled(selectedHouse||'', selectedGroup||'', window._lastScore||0, safeWeek, 'Wheel of Fortune');
 }
 
 // ---------- ADMIN ----------

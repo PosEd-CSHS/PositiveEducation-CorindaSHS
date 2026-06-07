@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Count the Dots – CSHS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
+  :root {
+    --green:#00180f;--green-mid:#003d1f;--green-light:#005a2e;
+    --gold:#f2b400;--gold-dim:rgba(242,180,0,0.15);--gold-border:rgba(242,180,0,0.3);
+    --white:#fdfdfd;--muted:rgba(255,255,255,0.55);--danger:#e05252;--correct:#4caf7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--green);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;}
+  .header{text-align:center;margin-bottom:24px;}
+  .header-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,8vw,3.8rem);letter-spacing:.06em;color:var(--white);line-height:1;}
+  .header h1 span{color:var(--gold);}
+  .header-sub{font-size:13px;color:var(--muted);margin-top:8px;}
+  .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:16px;width:100%;max-width:480px;}
+  .card-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+
+  .player-banner{display:flex;align-items:center;gap:12px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:12px 16px;margin-bottom:20px;}
+  .player-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);white-space:nowrap;}
+  .player-name-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--gold-border);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:700;padding:4px 6px;outline:none;}
+  .player-name-input::placeholder{color:rgba(242,180,0,0.3);}
+  .player-name-input:disabled{border-color:rgba(255,255,255,0.15);color:var(--white);}
+
+  /* Difficulty + round pips */
+  .meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .diff-badge{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);padding:4px 10px;border-radius:20px;}
+  .round-track{display:flex;gap:8px;}
+  .round-pip{width:28px;height:5px;border-radius:3px;background:rgba(255,255,255,0.1);transition:all .2s;}
+  .round-pip.done{background:var(--gold);}
+
+  /* Canvas */
+  .canvas-wrap{position:relative;width:100%;aspect-ratio:1/1;background:var(--green-mid);border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+  #dotCanvas{display:block;width:100%;height:100%;}
+  .flash-overlay{position:absolute;inset:0;background:var(--green);opacity:0;pointer-events:none;transition:opacity .05s;}
+  .flash-overlay.hide{opacity:1;}
+  .countdown-ring{position:absolute;top:10px;right:10px;width:40px;height:40px;display:none;}
+  .countdown-ring.show{display:block;}
+  .ring-bg{fill:none;stroke:rgba(255,255,255,0.1);stroke-width:4;}
+  .ring-fg{fill:none;stroke:var(--gold);stroke-width:4;stroke-linecap:round;transform-origin:center;transform:rotate(-90deg);}
+
+  .phase-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:12px;min-height:1.4em;}
+
+  .guess-row{display:flex;gap:10px;margin-bottom:16px;}
+  .guess-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:2rem;padding:10px 16px;color:var(--white);outline:none;text-align:center;}
+  .guess-input:focus{border-color:var(--gold-border);}
+  .guess-input:disabled{opacity:.35;}
+  .btn-guess{padding:10px 20px;background:var(--gold);color:var(--green);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .btn-guess:hover{background:#ffc820;}
+  .btn-guess:disabled{opacity:.3;cursor:not-allowed;}
+
+  /* Attempt log */
+  .attempt-log{margin-bottom:16px;}
+  .attempt-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);margin-bottom:5px;font-size:13px;}
+  .attempt-row .aname{font-weight:700;color:var(--white);}
+  .attempt-row .ascore{font-family:'DM Mono',monospace;color:var(--muted);font-size:11px;}
+
+  /* Result */
+  .result-panel{display:none;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:16px 20px;margin-bottom:16px;text-align:center;}
+  .result-panel.show{display:block;}
+  .result-score{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);letter-spacing:.05em;}
+  .result-detail{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:.02em;width:100%;margin-bottom:10px;}
+  .btn-primary{background:var(--gold);color:var(--green);}
+  .btn-primary:hover{background:#ffc820;transform:translateY(-1px);box-shadow:0 4px 16px rgba(242,180,0,0.3);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold-border);}
+  .btn-outline:hover{background:var(--gold-dim);}
+
+  .form-section{margin-top:20px;border-top:1px solid rgba(255,255,255,0.08);padding-top:20px;}
+  .form-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
+  .group-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
+  .group-btn{background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--white);padding:8px 6px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
+  .group-btn:hover{background:rgba(242,180,0,0.28);border-color:var(--gold);}
+  .group-btn.selected{background:var(--gold);color:var(--green);border-color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-eyebrow">Corinda State High School</div>
+  <h1>Count the <span>Dots</span></h1>
+  <div class="header-sub">3 rounds — one player per round</div>
+</div>
+
+<div class="card">
+  <div class="player-banner" id="playerBanner">
+    <span class="player-label">Player up</span>
+    <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
+  </div>
+
+  <div class="meta-row">
+    <span class="diff-badge" id="diffBadge">Round 1 of 3</span>
+    <div class="round-track" id="roundTrack"></div>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="dotCanvas"></canvas>
+    <div class="flash-overlay" id="flashOverlay"></div>
+    <svg class="countdown-ring" id="ringEl" viewBox="0 0 40 40">
+      <circle class="ring-bg" cx="20" cy="20" r="16"/>
+      <circle class="ring-fg" id="ringFg" cx="20" cy="20" r="16"/>
+    </svg>
+  </div>
+
+  <div class="phase-label" id="phaseLabel">Enter player name, then press Start</div>
+
+  <div class="guess-row">
+    <input class="guess-input" id="guessInput" type="number" min="1" max="200" placeholder="?" disabled>
+    <button class="btn-guess" id="guessBtn" onclick="submitGuess()" disabled>Lock In</button>
+  </div>
+
+  <div class="attempt-log" id="attemptLog" style="display:none"></div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+
+  <button class="btn btn-primary" id="mainBtn" onclick="handleMain()">Start Round</button>
+  <button class="btn btn-outline" onclick="resetAll()">Reset</button>
+
+  <div class="form-section" id="formSection" style="display:none">
+    <span class="form-label">House</span>
+    <div class="group-select" id="houseSelectBtns"></div>
+    <span class="form-label">Home Group</span>
+    <div class="group-select" id="groupSelectBtns"></div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitScore()" style="margin-top:16px" disabled>📤 Submit Score</button>
+  </div>
+</div>
+
+<script>
+  const ROUNDS=[{min:8,max:15,flashMs:1500,label:'Easy'},{min:16,max:28,flashMs:1000,label:'Medium'},{min:29,max:50,flashMs:700,label:'Hard'}];
+  const HOUSES=['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
+  const GROUPS=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
+  let round=0,roundScores=[],currentAnswer=0,phase='idle',selectedHouse=null,selectedGroup=null;
+
+  const canvas=document.getElementById('dotCanvas'),ctx=canvas.getContext('2d');
+  const flashOverlay=document.getElementById('flashOverlay'),ringEl=document.getElementById('ringEl'),ringFg=document.getElementById('ringFg');
+  const phaseLabel=document.getElementById('phaseLabel'),guessInput=document.getElementById('guessInput'),guessBtn=document.getElementById('guessBtn');
+  const mainBtn=document.getElementById('mainBtn'),resultPanel=document.getElementById('resultPanel');
+  const resultScore=document.getElementById('resultScore'),resultDetail=document.getElementById('resultDetail');
+  const formSection=document.getElementById('formSection'),submitBtn=document.getElementById('submitBtn');
+  const attemptLog=document.getElementById('attemptLog'),playerInput=document.getElementById('playerNameInput');
+
+  ROUNDS.forEach((_,i)=>{const p=document.createElement('div');p.className='round-pip';p.id='pip'+i;document.getElementById('roundTrack').appendChild(p);});
+
+  function sizeCanvas(){const s=canvas.parentElement.clientWidth;canvas.width=s;canvas.height=s;}
+  function drawDots(count){
+    sizeCanvas();ctx.clearRect(0,0,canvas.width,canvas.height);
+    const pad=canvas.width*.08,minD=canvas.width*.07,pos=[],colors=['#f2b400','#4caf7a','#e05252','#64b5f6','#fdfdfd','#f4a261'];
+    let att=0;
+    while(pos.length<count&&att<5000){att++;const x=pad+Math.random()*(canvas.width-2*pad),y=pad+Math.random()*(canvas.height-2*pad);if(pos.every(p=>Math.hypot(p.x-x,p.y-y)>=minD))pos.push({x,y});}
+    const r=canvas.width*.028;
+    pos.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=colors[Math.floor(Math.random()*colors.length)];ctx.fill();});
+    return pos.length;
+  }
+
+  function handleMain(){
+    if(phase==='idle'||phase==='result'){
+      if(!playerInput.value.trim()){playerInput.focus();playerInput.style.borderColor='var(--danger)';return;}
+      playerInput.style.borderColor='';startRound();
+    }
+  }
+
+  function startRound(){
+    phase='showing';const cfg=ROUNDS[round];
+    document.getElementById('diffBadge').textContent=`Round ${round+1} of ${ROUNDS.length} — ${cfg.label}`;
+    currentAnswer=drawDots(cfg.min+Math.floor(Math.random()*(cfg.max-cfg.min+1)));
+    resultPanel.classList.remove('show');guessInput.value='';guessInput.disabled=true;guessBtn.disabled=true;
+    mainBtn.disabled=true;flashOverlay.classList.remove('hide');phaseLabel.textContent='Look carefully…';playerInput.disabled=true;
+    setTimeout(()=>{flashOverlay.classList.add('hide');phaseLabel.textContent='How many? — class, call it out!';guessInput.disabled=false;guessBtn.disabled=false;guessInput.focus();phase='guessing';startRing(10000);},200);
+    setTimeout(()=>{flashOverlay.classList.remove('hide');},cfg.flashMs+200);
+  }
+
+  let ringTimer=null;
+  function startRing(ms){
+    ringEl.classList.add('show');const c=2*Math.PI*16;ringFg.style.strokeDasharray=c;ringFg.style.strokeDashoffset=0;
+    const start=performance.now();clearInterval(ringTimer);
+    ringTimer=setInterval(()=>{const f=Math.min((performance.now()-start)/ms,1);ringFg.style.strokeDashoffset=c*f;if(f>=1){clearInterval(ringTimer);ringEl.classList.remove('show');if(phase==='guessing')submitGuess();}},50);
+  }
+
+  function submitGuess(){
+    if(phase!=='guessing')return;clearInterval(ringTimer);ringEl.classList.remove('show');phase='result';
+    const guess=parseInt(guessInput.value)||0,diff=Math.abs(guess-currentAnswer),score=Math.max(0,100-diff*10);
+    const name=playerInput.value.trim();roundScores.push({guess,answer:currentAnswer,diff,score,name});
+    document.getElementById('pip'+round).classList.add('done');updateLog();
+    resultPanel.classList.add('show');
+    resultScore.textContent=diff===0?'🎯 Perfect!':diff<=3?'So close!':'Keep going!';
+    resultDetail.textContent=`${name} said ${guess}, answer was ${currentAnswer} (off by ${diff})`;
+    guessInput.disabled=true;guessBtn.disabled=true;round++;
+    if(round<ROUNDS.length){mainBtn.textContent='Next Round';mainBtn.disabled=false;phaseLabel.textContent='Next player up!';playerInput.value='';playerInput.disabled=false;playerInput.focus();}
+    else{phaseLabel.textContent='All rounds complete!';mainBtn.disabled=true;mainBtn.style.display='none';showFinal();}
+  }
+
+  function updateLog(){
+    attemptLog.style.display='block';
+    attemptLog.innerHTML=roundScores.map((r,i)=>`<div class="attempt-row"><span class="aname">R${i+1} — ${r.name}</span><span class="ascore">said ${r.guess} · ans ${r.answer} · off ${r.diff}</span></div>`).join('');
+  }
+
+  function showFinal(){
+    const total=roundScores.reduce((s,r)=>s+r.score,0),finalScore=Math.round(total/30);
+    resultScore.textContent='Score: '+finalScore+' / 10';
+    resultDetail.textContent=roundScores.map((r,i)=>`R${i+1} ${r.name}: off ${r.diff}`).join(' · ');
+    document.getElementById('playerBanner').style.opacity='0.5';
+    formSection.style.display='block';buildSelectors();
+  }
+
+  function buildSelectors(){
+    document.getElementById('houseSelectBtns').innerHTML=HOUSES.map(h=>`<button class="group-btn" onclick="selectHouse('${h}')">${h}</button>`).join('');
+    document.getElementById('groupSelectBtns').innerHTML=GROUPS.map(g=>`<button class="group-btn" onclick="selectGroup('${g}')">${g}</button>`).join('');
+  }
+  function selectHouse(h){selectedHouse=h;document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h));checkForm();}
+  function selectGroup(g){selectedGroup=g;document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g));checkForm();}
+  function checkForm(){submitBtn.disabled=!(selectedHouse&&selectedGroup);}
+
+  function getCurrentWeek(){const d=new Date(),y=d.getFullYear();return 'Week '+(Math.floor((d-new Date(y,0,1))/604800000)+1)+' '+y;}
+  const CSHS_FORM_BASE='https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_ID='xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+  const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1',CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
+  const CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba',CSHS_F_GROUP='r3022db1950b649218496e706728c203f';
+  const CSHS_F_SCORE='r8b61653d0854482a9e7e329026083f7b';
+
+  function submitScore(){
+    const total=roundScores.reduce((s,r)=>s+r.score,0),finalScore=Math.round(total/30);
+    const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Count the Dots',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:selectedGroup,[CSHS_F_SCORE]:String(finalScore)});
+    window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');
+    submitBtn.textContent='✓ Submitted';submitBtn.disabled=true;
+  }
+
+  function resetAll(){
+    clearInterval(ringTimer);round=0;roundScores=[];currentAnswer=0;phase='idle';selectedHouse=null;selectedGroup=null;
+    ctx.clearRect(0,0,canvas.width,canvas.height);flashOverlay.classList.remove('hide');ringEl.classList.remove('show');
+    guessInput.value='';guessInput.disabled=true;guessBtn.disabled=true;
+    mainBtn.textContent='Start Round';mainBtn.disabled=false;mainBtn.style.display='';
+    resultPanel.classList.remove('show');phaseLabel.textContent='Enter player name, then press Start';
+    attemptLog.style.display='none';attemptLog.innerHTML='';formSection.style.display='none';
+    submitBtn.textContent='📤 Submit Score';submitBtn.disabled=true;
+    document.getElementById('diffBadge').textContent='Round 1 of 3';
+    document.getElementById('playerBanner').style.opacity='';
+    playerInput.value='';playerInput.disabled=false;playerInput.style.borderColor='';
+    ROUNDS.forEach((_,i)=>{document.getElementById('pip'+i).className='round-pip';});
+  }
+  guessInput.addEventListener('keydown',e=>{if(e.key==='Enter')submitGuess();});
+  sizeCanvas();
+</script>
+</body>
+</html>

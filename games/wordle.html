@@ -345,6 +345,12 @@
   .hint-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
   .hint-swatch { width: 16px; height: 16px; border-radius: 3px; }
 
+
+  .btn-hint{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.12);font-size:12px;padding:8px 16px;border-radius:10px;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;font-weight:600;display:block;margin:10px auto 0;}
+  .btn-hint:hover{border-color:var(--gold-border);color:var(--gold);}
+  .btn-hint:disabled{opacity:0.3;cursor:not-allowed;}
+  .hint-used-note{display:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--danger);text-align:center;margin-top:6px;}
+  .hint-used-note.show{display:block;}
   @media (max-width: 480px) {
     .wordle-tile { width: 46px; height: 46px; font-size: 24px; }
     .kb-key { height: 42px; min-width: 30px; font-size: 12px; }
@@ -416,6 +422,10 @@
         <!-- Keyboard -->
         <div class="keyboard" id="keyboard"></div>
 
+        <div style="margin-top:12px;text-align:center;">
+          <button class="btn-hint" id="hintBtn" onclick="useHintWordle()">💡 Need a hint? — costs ½ point</button>
+          <div class="hint-used-note" id="hintUsedNote">Hint used — 0.5 point deducted</div>
+        </div>
         <div style="margin-top:16px; text-align:center;">
           <div id="guessStatus" style="font-size:13px; color:var(--muted); height:20px;"></div>
         </div>
@@ -580,6 +590,7 @@ let currentRow   = 0;
 let gameStartTime = 0;
 let guesses      = []; // array of submitted guess strings
 let gameOver     = false;
+let hintUsed     = false;
 let wordLength   = 6;
 let maxGuesses   = 6;
 let targetWord   = 'HAPPY';
@@ -1003,9 +1014,33 @@ function scoreByGuesses(won, numGuesses){
   }
   return numGuesses >= 1 ? 3 : 0;   // participation floor for a genuine attempt
 }
+
+// ─── HINT ────────────────────────────────────────────────────────────────────
+function useHintWordle() {
+  if (hintUsed || gameOver) return;
+  hintUsed = true;
+  document.getElementById('hintBtn').disabled = true;
+  document.getElementById('hintUsedNote').classList.add('show');
+  // Reveal one letter that hasn't been correctly placed yet
+  const correctPositions = new Set();
+  guesses.forEach(g => {
+    [...g].forEach((ch, i) => { if (ch === targetWord[i]) correctPositions.add(i); });
+  });
+  // Find first unrevealed position
+  let revealIdx = -1;
+  for (let i = 0; i < targetWord.length; i++) {
+    if (!correctPositions.has(i)) { revealIdx = i; break; }
+  }
+  if (revealIdx === -1) return; // all revealed already
+  const letter = targetWord[revealIdx];
+  const pos = ['1st','2nd','3rd','4th','5th','6th'][revealIdx] || `${revealIdx+1}th`;
+  showToast(`💡 Hint: the ${pos} letter is "${letter}"`);
+}
+
 async function endGame(won, pts) {
   const n = guesses.length;
-  const scaled = scoreByGuesses(won, n);
+  let scaled = scoreByGuesses(won, n);
+  if (hintUsed && scaled > 0) scaled = Math.max(0, scaled - 0.5);
   await saveScore(selectedGroup, scaled);
   await markPlayed(selectedGroup);
   window._lastResult = { group: selectedGroup, score: scaled,
@@ -1013,7 +1048,7 @@ async function endGame(won, pts) {
     detail: won ? 'Solved in ' + n + ' guess' + (n===1?'':'es')
                 : (n >= 1 ? 'Not solved (' + n + ' guess' + (n===1?'':'es') + ')' : 'No guesses') };
 
-  document.getElementById('finalScore').textContent = scaled;
+  document.getElementById('finalScore').textContent = Number.isInteger(scaled) ? scaled : scaled.toFixed(1);
   document.getElementById('resultEmoji').textContent = won ? '🎉' : '🙂';
 
   // How the score was worked out
@@ -1021,9 +1056,9 @@ async function endGame(won, pts) {
   if (won){
     breakdown = n <= 2
       ? `Solved in ${n} guess${n===1?'':'es'} → top score!`
-      : `Solved in ${n} guesses → ${scaled} out of 10`;
+      : `Solved in ${n} guesses → ${Number.isInteger(scaled)?scaled:scaled.toFixed(1)} out of 10${hintUsed?' (−½ hint)':''}`;
   } else if (n >= 1){
-    breakdown = `${n} guess${n===1?'':'es'} made → 3 out of 10 for having a go`;
+    breakdown = `${n} guess${n===1?'':'es'} made → ${Number.isInteger(scaled)?scaled:scaled.toFixed(1)} out of 10 for having a go${hintUsed?' (−½ hint)':''}`;
   } else {
     breakdown = `No guesses made → 0 out of 10`;
   }
