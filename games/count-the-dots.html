@@ -135,7 +135,7 @@
 </div>
 
 <script>
-  const ROUNDS=[{min:8,max:15,flashMs:1500,label:'Easy'},{min:16,max:28,flashMs:1000,label:'Medium'},{min:29,max:50,flashMs:700,label:'Hard'}];
+  const ROUNDS=[{min:5,max:10,flashMs:1500,label:'Easy'},{min:11,max:18,flashMs:1000,label:'Medium'},{min:19,max:30,flashMs:700,label:'Hard'}];
   const HOUSES=['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
   const GROUPS=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
   let round=0,roundScores=[],currentAnswer=0,phase='idle',selectedHouse=null,selectedGroup=null;
@@ -174,8 +174,8 @@
     currentAnswer=drawDots(cfg.min+Math.floor(Math.random()*(cfg.max-cfg.min+1)));
     resultPanel.classList.remove('show');guessInput.value='';guessInput.disabled=true;guessBtn.disabled=true;
     mainBtn.disabled=true;flashOverlay.classList.remove('hide');phaseLabel.textContent='Look carefully…';playerInput.disabled=true;
-    setTimeout(()=>{flashOverlay.classList.add('hide');phaseLabel.textContent='How many? — class, call it out!';guessInput.disabled=false;guessBtn.disabled=false;guessInput.focus();phase='guessing';startRing(10000);},200);
-    setTimeout(()=>{flashOverlay.classList.remove('hide');},cfg.flashMs+200);
+    setTimeout(()=>{flashOverlay.classList.add('hide');phaseLabel.textContent='How many? — class, call it out!';guessInput.disabled=false;guessBtn.disabled=false;guessInput.focus();phase='guessing';startRing(15000);},200);
+    setTimeout(()=>{flashOverlay.classList.add('hide');},cfg.flashMs+200);
   }
 
   let ringTimer=null;
