@@ -143,7 +143,59 @@
 </div>
 
 <script>
-  const ROUNDS=[{target:50,time:10},{target:33,time:8},{target:75,time:6},{target:20,time:4},{target:66,time:3}];
+  // 40-week bank — 5 rounds per week, times: 5,4,4,3,3
+  const ROUND_BANK = [
+    [{target:50,time:5},{target:33,time:4},{target:75,time:4},{target:20,time:3},{target:66,time:3}],
+    [{target:40,time:5},{target:60,time:4},{target:25,time:4},{target:80,time:3},{target:45,time:3}],
+    [{target:70,time:5},{target:15,time:4},{target:55,time:4},{target:85,time:3},{target:30,time:3}],
+    [{target:35,time:5},{target:65,time:4},{target:10,time:4},{target:90,time:3},{target:50,time:3}],
+    [{target:55,time:5},{target:25,time:4},{target:70,time:4},{target:40,time:3},{target:15,time:3}],
+    [{target:80,time:5},{target:45,time:4},{target:20,time:4},{target:60,time:3},{target:35,time:3}],
+    [{target:25,time:5},{target:75,time:4},{target:50,time:4},{target:10,time:3},{target:65,time:3}],
+    [{target:60,time:5},{target:30,time:4},{target:85,time:4},{target:45,time:3},{target:20,time:3}],
+    [{target:15,time:5},{target:55,time:4},{target:35,time:4},{target:70,time:3},{target:90,time:3}],
+    [{target:45,time:5},{target:80,time:4},{target:15,time:4},{target:55,time:3},{target:30,time:3}],
+    [{target:65,time:5},{target:20,time:4},{target:40,time:4},{target:75,time:3},{target:10,time:3}],
+    [{target:30,time:5},{target:50,time:4},{target:90,time:4},{target:25,time:3},{target:60,time:3}],
+    [{target:75,time:5},{target:10,time:4},{target:60,time:4},{target:35,time:3},{target:80,time:3}],
+    [{target:20,time:5},{target:70,time:4},{target:45,time:4},{target:15,time:3},{target:55,time:3}],
+    [{target:85,time:5},{target:40,time:4},{target:25,time:4},{target:65,time:3},{target:50,time:3}],
+    [{target:50,time:5},{target:15,time:4},{target:80,time:4},{target:30,time:3},{target:70,time:3}],
+    [{target:35,time:5},{target:60,time:4},{target:10,time:4},{target:85,time:3},{target:40,time:3}],
+    [{target:70,time:5},{target:25,time:4},{target:55,time:4},{target:20,time:3},{target:75,time:3}],
+    [{target:10,time:5},{target:45,time:4},{target:75,time:4},{target:50,time:3},{target:25,time:3}],
+    [{target:90,time:5},{target:35,time:4},{target:20,time:4},{target:60,time:3},{target:15,time:3}],
+    [{target:40,time:5},{target:65,time:4},{target:85,time:4},{target:10,time:3},{target:45,time:3}],
+    [{target:55,time:5},{target:30,time:4},{target:50,time:4},{target:80,time:3},{target:20,time:3}],
+    [{target:25,time:5},{target:75,time:4},{target:15,time:4},{target:40,time:3},{target:65,time:3}],
+    [{target:80,time:5},{target:20,time:4},{target:60,time:4},{target:35,time:3},{target:90,time:3}],
+    [{target:15,time:5},{target:50,time:4},{target:30,time:4},{target:70,time:3},{target:55,time:3}],
+    [{target:60,time:5},{target:85,time:4},{target:45,time:4},{target:25,time:3},{target:10,time:3}],
+    [{target:45,time:5},{target:10,time:4},{target:65,time:4},{target:50,time:3},{target:80,time:3}],
+    [{target:20,time:5},{target:55,time:4},{target:35,time:4},{target:90,time:3},{target:30,time:3}],
+    [{target:75,time:5},{target:40,time:4},{target:70,time:4},{target:15,time:3},{target:60,time:3}],
+    [{target:30,time:5},{target:90,time:4},{target:25,time:4},{target:45,time:3},{target:85,time:3}],
+    [{target:65,time:5},{target:15,time:4},{target:80,time:4},{target:55,time:3},{target:20,time:3}],
+    [{target:10,time:5},{target:60,time:4},{target:50,time:4},{target:30,time:3},{target:75,time:3}],
+    [{target:85,time:5},{target:35,time:4},{target:15,time:4},{target:65,time:3},{target:40,time:3}],
+    [{target:50,time:5},{target:70,time:4},{target:40,time:4},{target:20,time:3},{target:55,time:3}],
+    [{target:25,time:5},{target:45,time:4},{target:90,time:4},{target:75,time:3},{target:10,time:3}],
+    [{target:70,time:5},{target:20,time:4},{target:55,time:4},{target:40,time:3},{target:85,time:3}],
+    [{target:40,time:5},{target:80,time:4},{target:30,time:4},{target:10,time:3},{target:50,time:3}],
+    [{target:15,time:5},{target:65,time:4},{target:85,time:4},{target:60,time:3},{target:35,time:3}],
+    [{target:90,time:5},{target:25,time:4},{target:45,time:4},{target:80,time:3},{target:65,time:3}],
+    [{target:55,time:5},{target:10,time:4},{target:70,time:4},{target:35,time:3},{target:20,time:3}],
+  ];
+  function getAbsWeek(){
+    const terms=[{t:1,start:"2026-01-27",end:"2026-04-02"},{t:2,start:"2026-04-20",end:"2026-06-26"},{t:3,start:"2026-07-13",end:"2026-09-18"},{t:4,start:"2026-10-06",end:"2026-12-11"}];
+    const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+    const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
+    const today=new Date();today.setHours(0,0,0,0);
+    let abs=1,chosen=1;
+    for(const term of terms){const end=parse(term.end);let mon=mondayOf(parse(term.start));while(mon<=end){if(mon<=today)chosen=abs;else{return chosen;}mon=new Date(mon);mon.setDate(mon.getDate()+7);abs++;}}
+    return chosen;
+  }
+  const ROUNDS = ROUND_BANK[(getAbsWeek()-1) % ROUND_BANK.length];
   const HOUSES=['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
   const GROUPS=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
   let round=0,roundScores=[],currentFill=0,dragging=false,active=false,countdownInterval=null,roundTime=10;

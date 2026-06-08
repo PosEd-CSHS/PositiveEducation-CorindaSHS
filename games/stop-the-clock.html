@@ -215,8 +215,8 @@
     hd.innerHTML=HOUSES.map(h=>`<button class="group-btn" onclick="selectHouse('${h}')">${h}</button>`).join('');
     gd.innerHTML=GROUPS.map(g=>`<button class="group-btn" onclick="selectGroup('${g}')">${g}</button>`).join('');
   }
-  function selectHouse(h){ selectedHouse=h; document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h)); checkForm(); }
-  function selectGroup(g){ selectedGroup=g; document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g)); checkForm(); }
+  function selectHouse(h){ selectedHouse=h; selectedGroup=null; document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h)); document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.remove('selected')); checkForm(); }
+  function selectGroup(g){ selectedGroup=(g==='Staff')?'Staff':(selectedHouse?selectedHouse+' '+g:g); document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g)); checkForm(); }
   function checkForm(){ submitBtn.disabled=!(selectedHouse&&selectedGroup); }
 
   function getCurrentWeek(){
