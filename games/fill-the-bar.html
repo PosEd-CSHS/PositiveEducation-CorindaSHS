@@ -240,7 +240,15 @@
   function selectGroup(g){selectedGroup=g;document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g));checkForm();}
   function checkForm(){submitBtn.disabled=!(selectedHouse&&selectedGroup);}
 
-  function getCurrentWeek(){const d=new Date(),y=d.getFullYear();return 'Week '+(Math.floor((d-new Date(y,0,1))/604800000)+1)+' '+y;}
+  function getCurrentWeek(){
+    const terms=[{t:1,start:"2026-01-27",end:"2026-04-02"},{t:2,start:"2026-04-20",end:"2026-06-26"},{t:3,start:"2026-07-13",end:"2026-09-18"},{t:4,start:"2026-10-06",end:"2026-12-11"}];
+    const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+    const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
+    const today=new Date();today.setHours(0,0,0,0);
+    let chosen={t:1,w:1};
+    for(const term of terms){const end=parse(term.end);let mon=mondayOf(parse(term.start));let w=1;while(mon<=end){if(mon<=today)chosen={t:term.t,w};else return `Term ${chosen.t} · Week ${chosen.w}`;mon=new Date(mon);mon.setDate(mon.getDate()+7);w++;}}
+    return `Term ${chosen.t} · Week ${chosen.w}`;
+  }
   const CSHS_FORM_BASE='https://forms.office.com/Pages/ResponsePage.aspx';
   const CSHS_FORM_ID='xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
   const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1',CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
