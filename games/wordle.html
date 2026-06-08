@@ -345,12 +345,6 @@
   .hint-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
   .hint-swatch { width: 16px; height: 16px; border-radius: 3px; }
 
-
-  .btn-hint{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.12);font-size:12px;padding:8px 16px;border-radius:10px;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;font-weight:600;display:block;margin:10px auto 0;}
-  .btn-hint:hover{border-color:var(--gold-border);color:var(--gold);}
-  .btn-hint:disabled{opacity:0.3;cursor:not-allowed;}
-  .hint-used-note{display:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--danger);text-align:center;margin-top:6px;}
-  .hint-used-note.show{display:block;}
   @media (max-width: 480px) {
     .wordle-tile { width: 46px; height: 46px; font-size: 24px; }
     .kb-key { height: 42px; min-width: 30px; font-size: 12px; }
@@ -422,10 +416,6 @@
         <!-- Keyboard -->
         <div class="keyboard" id="keyboard"></div>
 
-        <div style="margin-top:12px;text-align:center;">
-          <button class="btn-hint" id="hintBtn" onclick="useHintWordle()">💡 Need a hint? — costs ½ point</button>
-          <div class="hint-used-note" id="hintUsedNote">Hint used — 0.5 point deducted</div>
-        </div>
         <div style="margin-top:16px; text-align:center;">
           <div id="guessStatus" style="font-size:13px; color:var(--muted); height:20px;"></div>
         </div>
@@ -571,7 +561,7 @@ const DEFAULT_CONFIG = {
   maxGuesses: 6,
   hint: '',
   paUrl: '',
-  formUrl: '' // deprecated - prefill now handled automatically
+  formUrl: 'https://forms.office.com/r/x94vT9B782'
 };
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
@@ -590,7 +580,6 @@ let currentRow   = 0;
 let gameStartTime = 0;
 let guesses      = []; // array of submitted guess strings
 let gameOver     = false;
-let hintUsed     = false;
 let wordLength   = 6;
 let maxGuesses   = 6;
 let targetWord   = 'HAPPY';
@@ -1014,33 +1003,9 @@ function scoreByGuesses(won, numGuesses){
   }
   return numGuesses >= 1 ? 3 : 0;   // participation floor for a genuine attempt
 }
-
-// ─── HINT ────────────────────────────────────────────────────────────────────
-function useHintWordle() {
-  if (hintUsed || gameOver) return;
-  hintUsed = true;
-  document.getElementById('hintBtn').disabled = true;
-  document.getElementById('hintUsedNote').classList.add('show');
-  // Reveal one letter that hasn't been correctly placed yet
-  const correctPositions = new Set();
-  guesses.forEach(g => {
-    [...g].forEach((ch, i) => { if (ch === targetWord[i]) correctPositions.add(i); });
-  });
-  // Find first unrevealed position
-  let revealIdx = -1;
-  for (let i = 0; i < targetWord.length; i++) {
-    if (!correctPositions.has(i)) { revealIdx = i; break; }
-  }
-  if (revealIdx === -1) return; // all revealed already
-  const letter = targetWord[revealIdx];
-  const pos = ['1st','2nd','3rd','4th','5th','6th'][revealIdx] || `${revealIdx+1}th`;
-  showToast(`💡 Hint: the ${pos} letter is "${letter}"`);
-}
-
 async function endGame(won, pts) {
   const n = guesses.length;
-  let scaled = scoreByGuesses(won, n);
-  if (hintUsed && scaled > 0) scaled = Math.max(0, scaled - 0.5);
+  const scaled = scoreByGuesses(won, n);
   await saveScore(selectedGroup, scaled);
   await markPlayed(selectedGroup);
   window._lastResult = { group: selectedGroup, score: scaled,
@@ -1048,7 +1013,7 @@ async function endGame(won, pts) {
     detail: won ? 'Solved in ' + n + ' guess' + (n===1?'':'es')
                 : (n >= 1 ? 'Not solved (' + n + ' guess' + (n===1?'':'es') + ')' : 'No guesses') };
 
-  document.getElementById('finalScore').textContent = Number.isInteger(scaled) ? scaled : scaled.toFixed(1);
+  document.getElementById('finalScore').textContent = scaled;
   document.getElementById('resultEmoji').textContent = won ? '🎉' : '🙂';
 
   // How the score was worked out
@@ -1056,9 +1021,9 @@ async function endGame(won, pts) {
   if (won){
     breakdown = n <= 2
       ? `Solved in ${n} guess${n===1?'':'es'} → top score!`
-      : `Solved in ${n} guesses → ${Number.isInteger(scaled)?scaled:scaled.toFixed(1)} out of 10${hintUsed?' (−½ hint)':''}`;
+      : `Solved in ${n} guesses → ${scaled} out of 10`;
   } else if (n >= 1){
-    breakdown = `${n} guess${n===1?'':'es'} made → ${Number.isInteger(scaled)?scaled:scaled.toFixed(1)} out of 10 for having a go${hintUsed?' (−½ hint)':''}`;
+    breakdown = `${n} guess${n===1?'':'es'} made → 3 out of 10 for having a go`;
   } else {
     breakdown = `No guesses made → 0 out of 10`;
   }
@@ -1169,30 +1134,23 @@ async function copyScores() {
 
 
 
-// ─── MICROSOFT FORMS PREFILL SUBMIT ──────────────────────────────────────────
-const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
-const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
-const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
-const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
-const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
-
-function openFormPrefilled(house, group, score, week, game) {
+// ─── MICROSOFT FORMS SUBMIT ───────────────────────────────────────────────────
+function openFormSubmit(group, house, score, week, game, detail) {
   const params = new URLSearchParams({
-    id:              CSHS_FORM_ID,
-    [CSHS_F_WEEK]:   week,
-    [CSHS_F_GAME]:   game,
-    [CSHS_F_HOUSE]:  house,
-    [CSHS_F_GROUP]:  group,
-    [CSHS_F_SCORE]:  String(score)
+    id: 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u',
+    rb28fecc633264af694f45d8cf2b3b8c1: week,
+    rdbbd457b83da425e93f978536b950482: game,
+    rd04d4cf9da8a4213820791f91cdcf6ba: house,
+    r3022db1950b649218496e706728c203f: group,
+    r8b61653d0854482a9e7e329026083f7b: String(score)
   });
-  window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
+  window.open('https://forms.office.com/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
 }
+
 
 function submitScore_WL() {
   const r = window._lastResult || {};
-  openFormPrefilled(r.house||'', r.group||'', r.score||0, config.week, 'Wordle');
+  openFormSubmit(r.group||'', r.house||'', r.score||0, config.week, 'Wordle', r.detail||'');
   document.getElementById('submitConfirm').style.display = 'block';
   document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
   document.getElementById('submitScoreBtn').disabled = true;

@@ -344,7 +344,7 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 const config = {
-  formUrl: '', // deprecated - prefill now handled automatically
+  formUrl: 'https://forms.office.com/r/x94vT9B782',          // Admin pastes Microsoft Forms pre-fill URL here
   adminPass: '',
   weekLabel: '',        // e.g. "Week 3 Term 2"
 };
@@ -364,35 +364,31 @@ function calcScore(seconds){
 }
 
 // ── FORM SUBMIT ─────────────────────────────────────────────────────────────
-const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
-const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
-const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
-const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
-const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
-
-function openFormPrefilled(house, group, score, week, game) {
-  const params = new URLSearchParams({
-    id:              CSHS_FORM_ID,
-    [CSHS_F_WEEK]:   week,
-    [CSHS_F_GAME]:   game,
-    [CSHS_F_HOUSE]:  house,
-    [CSHS_F_GROUP]:  group,
-    [CSHS_F_SCORE]:  String(score)
-  });
-  window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
-}
-
 function submitScore(){
-  const grp = (typeof selectedGroup !== 'undefined' ? selectedGroup : '') || (typeof selectedLetter !== 'undefined' ? selectedLetter : '');
+  // Extract score from the win panel text (e.g. "🏆 8 / 10 pts")
+  const winScoreEl = document.getElementById('win-score');
+  let score = 0;
+  if (gaveUpScore !== null) {
+    score = gaveUpScore;
+  } else if (winScoreEl) {
+    const m = winScoreEl.textContent.match(/(\d+)\s*\/\s*10/);
+    if (m) score = parseInt(m[1], 10);
+  }
+  const group = (typeof selectedGroup !== 'undefined' ? selectedGroup : '') || (typeof selectedLetter !== 'undefined' ? selectedLetter : '');
   const house = (typeof selectedHouse !== 'undefined' ? selectedHouse : '') || '';
-  const score = (gaveUpScore !== null) ? gaveUpScore : (window._smoulderScore || 0);
-  const week = (typeof cshsWeekLabel === 'function') ? cshsWeekLabel() : (config.weekLabel || '');
-  markPlayedLS(grp);
-  openFormPrefilled(house, grp, score, week, "Where's Smoulder");
+  const week = weeklyLockLabel();
+  const params = new URLSearchParams({
+    id: 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u',
+    rb28fecc633264af694f45d8cf2b3b8c1: week,
+    rdbbd457b83da425e93f978536b950482: "Where's Smoulder",
+    rd04d4cf9da8a4213820791f91cdcf6ba: house,
+    r3022db1950b649218496e706728c203f: group,
+    r8b61653d0854482a9e7e329026083f7b: String(score)
+  });
+  window.open('https://forms.office.com/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
+  markPlayedLS(group);
   const btn = document.querySelector('#score-form button');
-  btn.textContent = '✓ Submitted!';
+  btn.textContent = '✓ Submitted — fill in the form that opened!';
   btn.style.background = '#27ae60';
 }
 
@@ -2962,8 +2958,23 @@ function render(){
   const MIN_VIS=0.55; // require at least 55% of each occluded figure below the canopy edge
 
   hiddenDrawList.forEach((h,i)=>{
-    // Characters are never placed behind trees — all hidden chars are fully visible.
-    h.occludeBy='none';
+    // Find nearest tree and distance
+    const nearTree=treeXs.reduce((a,b)=>Math.abs(b-h.x)<Math.abs(a-h.x)?b:a);
+    const treeDist=Math.abs(nearTree-h.x);
+    // Only flag as tree-occluded if char actually landed near a tree x position.
+    if(i%4===0 && treeDist<120){
+      h.occludeBy='tree';
+      h.treeX=nearTree;
+      // Position the figure so a guaranteed fraction of its body hangs BELOW the
+      // canopy's bottom edge (where it stays visible and clickable). Previously this
+      // forced y high enough that the canopy could cover the figure entirely.
+      const [cty,ccw]=treeCanopy[nearTree]||[220,110];
+      const canopyBottom=cty+0.9*ccw;          // lower edge of the green canopy
+      const rise=CHAR_TOP_RISE[h.key]||1.0;     // figure height above its anchor, in s units
+      h.y=canopyBottom + MIN_VIS*h.s*rise;      // feet/anchor below canopy by 55% of height
+    } else {
+      h.occludeBy='none';
+    }
   });
 
   // Clamp all hidden chars to be fully on-screen with margin.
@@ -3144,7 +3155,6 @@ canvas.addEventListener('click',function(e){
         setTimeout(()=>{
           stopTimer();
           const score = calcScore(timerSeconds);
-          window._smoulderScore = score;
           document.getElementById('win-time').textContent='⏱ Your time: '+formatTime(timerSeconds);
           document.getElementById('win-score').textContent='🏆 '+score+' / 10 pts';
           document.getElementById('win').classList.add('show');

@@ -414,12 +414,6 @@
     .category-row { grid-template-columns: 1fr 140px 60px; }
     .admin-grid { grid-template-columns: 1fr; }
   }
-
-  .btn-hint{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.12);font-size:12px;padding:8px 16px;border-radius:10px;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;font-weight:600;display:block;margin:12px auto 0;}
-  .btn-hint:hover{border-color:var(--gold-border);color:var(--gold);}
-  .btn-hint:disabled{opacity:0.3;cursor:not-allowed;}
-  .hint-used-note{display:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--danger);text-align:center;margin-top:6px;}
-  .hint-used-note.show{display:block;}
 </style>
 </head>
 <body>
@@ -482,8 +476,6 @@
         <div class="category-grid" id="categoryGrid"></div>
         <div class="mt16">
           <button class="btn btn-primary full-width" id="submitBtn" onclick="submitAnswers()">Submit Answers</button>
-          <button class="btn-hint" id="hintBtn" onclick="useHint()">💡 Need a hint? — costs ½ point</button>
-          <div class="hint-used-note" id="hintUsedNote">Hint used — 0.5 point deducted</div>
         </div>
       </div>
     </div>
@@ -630,7 +622,6 @@ let config = { ...DEFAULT_CONFIG };
 let scores = {};
 let selectedGroup = null;
 let timerInterval = null;
-let hintUsed = false;
 let gameStartTime = null;        // ms when round began
 let lastValidAnswerSecs = null;  // elapsed secs at last valid answer entry
 let timeLeft = 60;
@@ -747,9 +738,6 @@ function buildCategoryGrid() {
     </div>
   `).join('');
   gameActive = true;
-  hintUsed = false;
-  const hb=document.getElementById('hintBtn'); if(hb){hb.disabled=false;}
-  const hn=document.getElementById('hintUsedNote'); if(hn){hn.classList.remove('show');}
   gameStartTime = Date.now();
   lastValidAnswerSecs = null;
   document.getElementById('ans-0')?.focus();
@@ -827,24 +815,6 @@ function startTimer() {
   }, 1000);
 }
 
-
-// ─── HINT ────────────────────────────────────────────────────────────────────
-function useHint() {
-  if (hintUsed || !gameActive) return;
-  hintUsed = true;
-  document.getElementById('hintBtn').disabled = true;
-  document.getElementById('hintUsedNote').classList.add('show');
-  // Reveal valid example answer for a random unanswered category
-  const letter = config.letter.toUpperCase();
-  const cats = getWeekCategories();
-  const unanswered = cats.filter((_, i) => {
-    const inp = document.getElementById(`ans-${i}`);
-    return inp && !inp.value.trim();
-  });
-  const cat = unanswered.length > 0 ? unanswered[Math.floor(Math.random()*unanswered.length)] : cats[0];
-  showToast(`💡 Example: "${letter}" — ${cat}`);
-}
-
 function submitAnswers() {
   if (!gameActive) return;
   gameActive = false;
@@ -876,11 +846,10 @@ function submitAnswers() {
   const elapsedAtSubmit = gameStartTime ? (Date.now() - gameStartTime) / 1000 : 999;
   const suspiciouslyFast = (correctCount >= 1) && (elapsedAtSubmit < 5);
   const fast = !suspiciouslyFast && (correctCount >= 1) && (lastValidAnswerSecs !== null) && (lastValidAnswerSecs <= half);
-  let _scaled = alphabucksScore(correctCount, attempted, fast);
-  if (hintUsed && _scaled > 0) _scaled = Math.max(0, _scaled - 0.5);
+  const _scaled = alphabucksScore(correctCount, attempted, fast);
   saveScore(selectedGroup, _scaled);
   markPlayed(selectedGroup);
-  showResult(totalPts, breakdown, selectedGroup, correctCount, attempted, fast, _scaled);
+  showResult(totalPts, breakdown, selectedGroup, correctCount, attempted, fast);
 }
 
 // Count sets the band; finishing fast nudges +1 (capped at 10).
@@ -905,10 +874,10 @@ function alphabucksMax() {
   return cats * perAnswerMax;
 }
 
-function showResult(total, breakdown, group, correctCount, attempted, fast, scaledOverride) {
+function showResult(total, breakdown, group, correctCount, attempted, fast) {
   const cats = config.categoriesPerGame || 6;
-  let scaled = scaledOverride !== undefined ? scaledOverride : alphabucksScore(correctCount, attempted, fast);
-  document.getElementById('finalScore').textContent = Number.isInteger(scaled) ? scaled : scaled.toFixed(1);
+  const scaled = alphabucksScore(correctCount, attempted, fast);
+  document.getElementById('finalScore').textContent = scaled;
   const bd = document.getElementById('resultBreakdown');
   bd.innerHTML = breakdown.map(b => `
     <div class="category-row">
@@ -923,14 +892,14 @@ function showResult(total, breakdown, group, correctCount, attempted, fast, scal
   const line = document.getElementById('alphaBreakdownLine');
   if (line) {
     if (correctCount >= 1) {
-      line.textContent = `${correctCount} of ${cats} correct${fast ? ' + speed bonus' : ''} → ${Number.isInteger(scaled)?scaled:scaled.toFixed(1)} out of 10${hintUsed?' (−½ hint)':''}`;
+      line.textContent = `${correctCount} of ${cats} correct${fast ? ' + speed bonus' : ''} → ${scaled} out of 10`;
     } else {
       line.textContent = attempted ? 'Had a go → 3 out of 10' : 'No answers → 0 out of 10';
     }
   }
   window._lastResult = { group: group || selectedGroup, score: scaled,
     house: (group||selectedGroup).split(' ')[0],
-    detail: 'Letter ' + config.letter.toUpperCase() + ': ' + correctCount + '/' + cats + ' correct' + (fast ? ' (fast)' : '') + (hintUsed?' (hint)':'') };
+    detail: 'Letter ' + config.letter.toUpperCase() + ': ' + correctCount + '/' + cats + ' correct' + (fast ? ' (fast)' : '') };
   showScreen('screen-result');
 }
 
@@ -998,25 +967,16 @@ async function copyScores() {
 
 
 // ─── MICROSOFT FORMS SUBMIT ───────────────────────────────────────────────────
-// ─── MICROSOFT FORMS PREFILL ─────────────────────────────────────────────────
-const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
-const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
-const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
-const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
-const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
-
 function openFormSubmit(group, house, score, week, game, detail) {
   const params = new URLSearchParams({
-    id:            CSHS_FORM_ID,
-    [CSHS_F_WEEK]: week || config.week || '',
-    [CSHS_F_GAME]: game,
-    [CSHS_F_HOUSE]: house,
-    [CSHS_F_GROUP]: group,
-    [CSHS_F_SCORE]: String(score)
+    id: 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u',
+    rb28fecc633264af694f45d8cf2b3b8c1: week,
+    rdbbd457b83da425e93f978536b950482: game,
+    rd04d4cf9da8a4213820791f91cdcf6ba: house,
+    r3022db1950b649218496e706728c203f: group,
+    r8b61653d0854482a9e7e329026083f7b: String(score)
   });
-  window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
+  window.open('https://forms.office.com/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
 }
 
 

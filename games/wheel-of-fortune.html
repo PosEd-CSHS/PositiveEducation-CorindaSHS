@@ -669,7 +669,18 @@ function giveUp(){
 
 function submitScore() {
   markPlayedLS(selectedGroup);
-  window.open('https://forms.office.com/r/x94vT9B782?origin=lprLink', '_blank');
+  const week  = encodeURIComponent(weeklyLockLabel());
+  const game  = encodeURIComponent('Wheel of Fortune');
+  const house = encodeURIComponent(selectedHouse || '');
+  const group = encodeURIComponent(selectedGroup || '');
+  const score = encodeURIComponent(window._lastScore != null ? window._lastScore : 0);
+  const url = `https://forms.office.com/pages/responsepage.aspx?id=xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u`
+    + `&rb28fecc633264af694f45d8cf2b3b8c1=${week}`
+    + `&rdbbd457b83da425e93f978536b950482=${game}`
+    + `&rd04d4cf9da8a4213820791f91cdcf6ba=${house}`
+    + `&r3022db1950b649218496e706728c203f=${group}`
+    + `&r8b61653d0854482a9e7e329026083f7b=${score}`;
+  window.open(url, '_blank');
 }
 
 // ---------- ADMIN ----------
