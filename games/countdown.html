@@ -82,13 +82,6 @@
   .mt16{margin-top:16px;}
   .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--white);color:var(--green);padding:10px 20px;border-radius:8px;font-weight:700;font-size:14px;z-index:100;transition:transform 0.3s ease;pointer-events:none;}
   .toast.show{transform:translateX(-50%) translateY(0);}
-
-  .btn-hint-row{text-align:center;margin-top:14px;}
-  .btn-hint{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.12);font-size:12px;padding:8px 16px;border-radius:10px;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;font-weight:600;}
-  .btn-hint:hover{border-color:var(--gold-border);color:var(--gold);}
-  .btn-hint:disabled{opacity:0.3;cursor:not-allowed;}
-  .hint-used-note{display:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--danger);margin-top:6px;}
-  .hint-used-note.show{display:block;}
   @media(max-width:480px){.num-tile{width:60px;height:60px;font-size:28px;} .admin-grid{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -136,7 +129,7 @@
             <div style="font-size:14px;font-weight:700;" id="playingGroup">—</div>
           </div>
           <div style="text-align:right;">
-            <div class="timer-text" id="timerText">30</div>
+            <div class="timer-text" id="timerText">3:00</div>
           </div>
         </div>
         <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar"></div></div>
@@ -154,11 +147,6 @@
           <button class="op-btn clear" onclick="clearCalc()">Clear</button>
           <button class="op-btn backspace" onclick="backspace()">⌫</button>
           <button class="op-btn equals" onclick="evaluate()">=</button>
-        </div>
-        
-        <div class="btn-hint-row" style="margin-top:12px;">
-          <button class="btn-hint" id="hintBtn" onclick="useHint()">💡 Need a hint? — costs ½ point</button>
-          <div class="hint-used-note" id="hintUsedNote">Hint used — 0.5 point deducted</div>
         </div>
         <button class="btn btn-primary full-width" id="submitAnswerBtn" onclick="submitAnswer()" disabled>Submit Answer</button>
       </div>
@@ -190,13 +178,7 @@
 </div>
 
 <script>
-const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-const CSHS_FORM_ID   = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-const CSHS_F_WEEK    = 'rb28fecc633264af694f45d8cf2b3b8c1';
-const CSHS_F_GAME    = 'rdbbd457b83da425e93f978536b950482';
-const CSHS_F_HOUSE   = 'rd04d4cf9da8a4213820791f91cdcf6ba';
-const CSHS_F_GROUP   = 'r3022db1950b649218496e706728c203f';
-const CSHS_F_SCORE   = 'r8b61653d0854482a9e7e329026083f7b';
+const FORM_URL = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
 const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
 const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
 
@@ -288,17 +270,16 @@ const DEFAULT_CONFIG = {
   week: 'Week 1',
   target: 742,
   numbers: [25, 50, 3, 6, 8, 4],
-  timeSecs: 30,
+  timeSecs: 180,
   maxScore: 100
 };
 
 let config = { ...DEFAULT_CONFIG };
 let played = new Set();
 let selectedHouse = null, selectedLetter = null, selectedGroup = null;
-let timerInterval = null, timeLeft = 30;
+let timerInterval = null, timeLeft = 180;
 let calcExpression = '', usedIndices = new Set();
 let currentResult = null, gameActive = false;
-let hintUsed = false;
 window._lastResult = {};
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
@@ -355,7 +336,7 @@ function renderWeekPreview() {
   document.getElementById('weekInfo').innerHTML = `
     <div class="week-chip">${cshsWeekLabel()}</div>
     <div class="week-chip">Target: ${config.target}</div>
-    <div class="week-chip">${config.timeSecs}s round</div>
+    <div class="week-chip">3 min round</div>
     <div class="week-chip">Max 10 pts</div>
   `;
 }
@@ -365,9 +346,7 @@ function startGame() {
   if (!selectedGroup || !lockWeeklyAttempt(selectedGroup)) return;
   document.getElementById('playingGroup').textContent = selectedGroup;
   document.getElementById('targetDisplay').textContent = config.target;
-  calcExpression = ''; currentResult = null; usedIndices = new Set(); gameActive = true; hintUsed = false;
-  document.getElementById('hintBtn').disabled = false;
-  document.getElementById('hintUsedNote').classList.remove('show');
+  calcExpression = ''; currentResult = null; usedIndices = new Set(); gameActive = true;
   buildNumberTiles();
   updateCalcDisplay();
   document.getElementById('submitAnswerBtn').disabled = true;
@@ -464,43 +443,11 @@ function submitAnswer() {
   else if (diff <= 50) { scaled = 6;  label = `${diff} away`; }
   else                 { scaled = 3;  label = `${diff} away — 3 for having a go`; }
 
-  if (hintUsed) scaled = Math.max(0, scaled - 0.5);
-  const displayScore = Number.isInteger(scaled) ? scaled : scaled.toFixed(1);
-  window._lastResult = { group: selectedGroup, score: scaled, house: selectedHouse, detail: `Answer ${currentResult} (target ${config.target}, ${label})${hintUsed?' (hint used)':''}` };
+  window._lastResult = { group: selectedGroup, score: scaled, house: selectedHouse, detail: `Answer ${currentResult} (target ${config.target}, ${label})` };
   document.getElementById('resultEmoji').textContent = diff === 0 ? '🎯' : diff <= 25 ? '👍' : '🙂';
-  document.getElementById('finalScore').textContent = typeof displayScore !== 'undefined' ? displayScore : scaled;
-  document.getElementById('resultDetail').innerHTML = `Your answer: <strong>${currentResult}</strong><br>Target: <strong>${config.target}</strong><br>${label} → ${typeof displayScore!=='undefined'?displayScore:scaled} out of 10${hintUsed?' <span style="color:var(--danger);font-size:12px;">(−½ hint)</span>':''}`;
+  document.getElementById('finalScore').textContent = scaled;
+  document.getElementById('resultDetail').innerHTML = `Your answer: <strong>${currentResult}</strong><br>Target: <strong>${config.target}</strong><br>${label} → ${scaled} out of 10`;
   showScreen('screen-result');
-}
-
-
-// ─── HINT ────────────────────────────────────────────────────────────────────
-function useHint() {
-  if (hintUsed || !gameActive) return;
-  hintUsed = true;
-  document.getElementById('hintBtn').disabled = true;
-  document.getElementById('hintUsedNote').classList.add('show');
-  // Reveal one useful step toward the target
-  // Find largest number that divides evenly into target, or closest pair
-  const nums = config.numbers.slice().sort((a,b) => b-a);
-  let tip = '';
-  for (const n of nums) {
-    if (config.target % n === 0 && config.target / n <= 100) {
-      tip = `Try: ${n} × ${config.target / n} = ${config.target}`;
-      break;
-    }
-  }
-  if (!tip) {
-    // Find pair that sums close to target
-    for (let i=0;i<nums.length;i++){
-      for (let j=i+1;j<nums.length;j++){
-        if (nums[i]+nums[j]===config.target){tip=`Try: ${nums[i]} + ${nums[j]} = ${config.target}`;break;}
-      }
-      if(tip)break;
-    }
-  }
-  if (!tip) tip = `Tip: try using the ${nums[0]} or ${nums[1]} as your starting point`;
-  showToast('💡 ' + tip);
 }
 
 // ─── TIMER ────────────────────────────────────────────────────────────────────
@@ -514,8 +461,10 @@ function startTimer() {
     timeLeft--;
     const pct = (timeLeft / config.timeSecs) * 100;
     bar.style.width = pct + '%';
-    text.textContent = timeLeft;
-    if (timeLeft <= 10) { bar.classList.add('urgent'); text.classList.add('urgent'); }
+    const mins = Math.floor(timeLeft / 60);
+    const secs = timeLeft % 60;
+    text.textContent = mins + ':' + String(secs).padStart(2, '0');
+    if (timeLeft <= 30) { bar.classList.add('urgent'); text.classList.add('urgent'); }
     if (timeLeft <= 0) { clearInterval(timerInterval); timeExpired(); }
   }, 1000);
 }
@@ -534,21 +483,8 @@ function timeExpired() {
 }
 
 // ─── SCORE SUBMIT ─────────────────────────────────────────────────────────────
-function openFormPrefilled(house, group, score, week, game) {
-  const params = new URLSearchParams({
-    id:              CSHS_FORM_ID,
-    [CSHS_F_WEEK]:   week,
-    [CSHS_F_GAME]:   game,
-    [CSHS_F_HOUSE]:  house,
-    [CSHS_F_GROUP]:  group,
-    [CSHS_F_SCORE]:  String(score)
-  });
-  window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
-}
-
 function submitScoreCT() {
-  const r = window._lastResult || {};
-  openFormPrefilled(r.house||selectedHouse||'', r.group||selectedGroup||'', r.score||0, config.week, 'Countdown');
+  window.open(FORM_URL, '_blank');
   document.getElementById('submitConfirm').style.display = 'block';
   document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
   document.getElementById('submitScoreBtn').disabled = true;
