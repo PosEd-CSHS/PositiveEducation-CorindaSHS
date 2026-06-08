@@ -43,7 +43,38 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
   border-bottom:2px solid #b38500;
   position:sticky;top:74px;z-index:199;
   box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease, padding 0.3s ease;
 }
+.find-bar.collapsed {
+  transform: translateY(-100%);
+  padding-top: 0; padding-bottom: 0;
+  pointer-events: none;
+}
+.find-bar-toggle {
+  position: sticky;
+  top: 74px;
+  z-index: 198;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.find-bar-toggle-btn {
+  pointer-events: all;
+  background: rgba(242,180,0,0.95);
+  border: 2px solid #b38500;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: 2px 14px 4px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #00180f;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: background 0.15s;
+}
+.find-bar-toggle-btn:hover { background: #f2b400; }
 .find-bar>span{font-size:0.85rem;font-weight:900;color:#00180f;letter-spacing:0.5px}
 
 .fi{
@@ -225,7 +256,7 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
   <h1>🔍 Where's Smoulder? — Corinda State High School Edition</h1>
   <p>Click every hidden character to find them all! Scroll to explore.</p>
 </header>
-<div class="find-bar">
+<div class="find-bar" id="findBar">
   <span>FIND:</span>
   <div class="fi" id="fi-chicken">🐔 Chickens ×3</div>
   <div class="fi" id="fi-alpaca">🦙 Alpacas ×2</div>
@@ -249,6 +280,9 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
   <button class="how-btn" onclick="toggleInstructions()">❓ How to Play</button>
   <button class="how-btn" onclick="giveUp()" style="background:#3a1a00;font-size:0.75rem;padding:4px 10px;">🏳️ Give up</button>
   <button class="how-btn" onclick="toggleAdmin()" style="background:#001a0f;font-size:0.75rem;padding:4px 10px;">⚙ Admin</button>
+</div>
+<div class="find-bar-toggle">
+  <button class="find-bar-toggle-btn" id="findBarToggleBtn" onclick="toggleFindBar()">▲ Hide</button>
 </div>
 
 <div id="admin-panel" style="display:none;background:#001a0f;border-bottom:2px solid #f2b400;padding:16px 20px;font-family:'Nunito',sans-serif;">
@@ -775,6 +809,13 @@ let totalFound=0;
 let timerInterval=null;
 let timerSeconds=0;
 let timerRunning=false;
+
+function toggleFindBar(){
+  const bar = document.getElementById('findBar');
+  const btn = document.getElementById('findBarToggleBtn');
+  const collapsed = bar.classList.toggle('collapsed');
+  btn.textContent = collapsed ? '▼ Show' : '▲ Hide';
+}
 
 function toggleInstructions(){
   const panel=document.getElementById('instructions-panel');
