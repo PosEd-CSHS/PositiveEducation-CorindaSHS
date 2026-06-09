@@ -412,19 +412,21 @@ function updateCalcDisplay() {
 }
 
 function evaluate() {
-  if (!gameActive || !calcExpression.trim()) return;
+  if (!gameActive || !calcExpression.trim()) { showToast('Enter a calculation first'); return; }
+  const last = calcExpression.trim().slice(-1);
+  if (['+','-','×','÷'].includes(last)) { showToast('Finish your calculation — remove the last operator'); return; }
   try {
     const safe = calcExpression.replace(/×/g,'*').replace(/÷/g,'/');
     const result = Function('"use strict"; return (' + safe + ')')();
-    if (!Number.isFinite(result) || result <= 0 || !Number.isInteger(result)) {
-      showToast('Must be a whole positive number'); return;
-    }
+    if (!Number.isFinite(result)) { showToast('Result must be a number'); return; }
+    if (result <= 0) { showToast('Result must be a positive number'); return; }
+    if (!Number.isInteger(result)) { showToast('Result must be a whole number — check your division'); return; }
     currentResult = result;
     calcExpression = calcExpression + ' = ' + result;
     updateCalcDisplay();
     document.getElementById('submitAnswerBtn').disabled = false;
   } catch(e) {
-    showToast('Invalid calculation');
+    showToast('Invalid calculation — check for missing numbers between operators');
   }
 }
 
