@@ -178,7 +178,11 @@
 </div>
 
 <script>
-const FORM_URL = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
+const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
+const CSHS_FORM_ID = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+const CSHS_F_WEEK = 'rb28fecc633264af694f45d8cf2b3b8c1', CSHS_F_GAME = 'rdbbd457b83da425e93f978536b950482';
+const CSHS_F_HOUSE = 'rd04d4cf9da8a4213820791f91cdcf6ba', CSHS_F_GROUP = 'r3022db1950b649218496e706728c203f';
+const CSHS_F_SCORE = 'r8b61653d0854482a9e7e329026083f7b';
 const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
 const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
 
@@ -486,7 +490,17 @@ function timeExpired() {
 
 // ─── SCORE SUBMIT ─────────────────────────────────────────────────────────────
 function submitScoreCT() {
-  window.open(FORM_URL, '_blank');
+  const r = window._lastResult;
+  if (!r) return;
+  const params = new URLSearchParams({
+    id: CSHS_FORM_ID,
+    [CSHS_F_WEEK]: cshsWeekLabel(),
+    [CSHS_F_GAME]: 'Countdown',
+    [CSHS_F_HOUSE]: r.house,
+    [CSHS_F_GROUP]: r.group,
+    [CSHS_F_SCORE]: String(r.score)
+  });
+  window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
   document.getElementById('submitConfirm').style.display = 'block';
   document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
   document.getElementById('submitScoreBtn').disabled = true;
