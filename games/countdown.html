@@ -146,7 +146,7 @@
           <button class="op-btn" onclick="addOp('÷')">÷</button>
           <button class="op-btn clear" onclick="clearCalc()">Clear</button>
           <button class="op-btn backspace" onclick="backspace()">⌫</button>
-          <button class="op-btn equals" onclick="evaluate()">=</button>
+          <button class="op-btn equals" onclick="evaluateExpression()">=</button>
         </div>
         <button class="btn btn-primary full-width" id="submitAnswerBtn" onclick="submitAnswer()" disabled>Submit Answer</button>
       </div>
@@ -411,7 +411,7 @@ function updateCalcDisplay() {
   el.textContent = calcExpression || 'Select a number to begin...';
 }
 
-function evaluate() {
+function evaluateExpression() {
   if (!gameActive || !calcExpression.trim()) { showToast('Enter a calculation first'); return; }
   const last = calcExpression.trim().slice(-1);
   if (['+','-','×','÷'].includes(last)) { showToast('Finish your calculation — remove the last operator'); return; }
