@@ -74,6 +74,19 @@
   .fc-option:active { transform: translateY(0); }
   .fc-opt-name { font-family: 'DM Serif Display', serif; font-size: 1.15rem; color: var(--green); margin-bottom: 0.4rem; }
   .fc-opt-text { font-size: 0.85rem; line-height: 1.55; color: var(--ink); }
+  .quad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .quad-card { border: 2px solid var(--border); border-radius: 10px; background: var(--cream); padding: 1.1rem 1rem; cursor: pointer; text-align: left; transition: all 0.15s; font-family: 'Inter', sans-serif; position: relative; }
+  .quad-card:hover { border-color: var(--gold); background: var(--white); }
+  .quad-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .quad-card.is-most { border-color: var(--gold); background: var(--white); box-shadow: 0 0 0 2px var(--gold) inset; cursor: default; }
+  .quad-card.is-least { border-color: var(--muted); opacity: 0.55; cursor: default; }
+  .quad-tag { position: absolute; top: -10px; right: 10px; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; }
+  .quad-card.is-most .quad-tag { background: var(--gold); color: var(--ink); }
+  .quad-card.is-least .quad-tag { background: var(--muted); color: var(--white); }
+  .quad-text { font-size: 0.86rem; line-height: 1.55; color: var(--ink); }
+  .quad-redo { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 0.78rem; color: var(--muted); cursor: pointer; text-decoration: underline; }
+  .quad-redo:hover { color: var(--ink); }
+  @media (max-width: 520px) { .quad-grid { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) {
     .fc-option:hover { transform: none; }
     * { transition-duration: 0.01ms !important; }
@@ -98,6 +111,8 @@
   .sig-name { font-family: 'DM Serif Display', serif; font-size: 1.35rem; color: var(--green); }
   .sig-virtue { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin: 0.3rem 0 0.6rem; }
   .sig-desc { font-size: 0.9rem; line-height: 1.6; color: var(--ink); }
+  .sig-link { display: inline-block; margin-top: 0.7rem; font-size: 0.82rem; font-weight: 600; color: var(--green); text-decoration: none; border-bottom: 1.5px solid var(--gold); padding-bottom: 1px; }
+  .sig-link:hover { color: var(--green2); }
 
   .other-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--green); margin: 2.25rem 0 0.35rem; }
   .other-note { font-size: 0.82rem; color: var(--muted); line-height: 1.55; margin-bottom: 1.25rem; }
@@ -434,7 +449,7 @@ const WIN_WEIGHT = 0.6;
 let questions = [];
 const answers = {};       // strengthId -> 1..5
 let contenders = [];      // [{ strength, s1, wins }]
-let fcPairs = [];         // queue of [a, b] (indices into contenders)
+let fcPairs = [];
 let fcDone = 0;
 let fcTotal = 0;
 let fcRound = 1;
@@ -598,6 +613,13 @@ function showResults() {
 
   const sig = document.getElementById('sig-cards');
   sig.innerHTML = '';
+  const DIR_BASE = 'https://posed-cshs.github.io/PositiveEducation-CorindaSHS/character-strengths/index.html';
+  const DIR_ANCHORS = { creativity:'creativity', curiosity:'curiosity', judgement:'judgment', learning:'love-of-learning',
+    perspective:'perspective', bravery:'bravery', perseverance:'perseverance', honesty:'honesty', zest:'zest',
+    love:'love', kindness:'kindness', social:'social-intelligence', teamwork:'teamwork', fairness:'fairness',
+    leadership:'leadership', forgiveness:'forgiveness', humility:'humility', prudence:'prudence',
+    regulation:'self-regulation', appreciation:'appreciation-of-beauty-and-excellence', gratitude:'gratitude',
+    hope:'hope', humour:'humour', spirituality:'spirituality' };
   top5.forEach((c, i) => {
     const s = c.strength;
     const card = document.createElement('div');
@@ -606,7 +628,8 @@ function showResults() {
       <div class="sig-rank">Signature strength ${i + 1}</div>
       <div class="sig-name">${s.name}</div>
       <span class="sig-virtue" style="color:${s.virtueColor}">${s.virtue}</span>
-      <div class="sig-desc">${s.desc}</div>`;
+      <div class="sig-desc">${s.desc}</div>
+      <a class="sig-link" href="${DIR_BASE}#${DIR_ANCHORS[s.id]}" target="_blank" rel="noopener">Explore ${s.name} activities →</a>`;
     sig.appendChild(card);
   });
 
