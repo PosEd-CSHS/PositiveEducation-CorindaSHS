@@ -3322,11 +3322,11 @@ function weeklyLockLabel() {
   for(const term of terms){
     const end=parse(term.end); let mon=mondayOf(parse(term.start)); let w=1;
     while(mon<=end){
-      if(mon<=today) chosen={t:term.t,w}; else return `Term ${chosen.t} Week ${chosen.w}`;
+      if(mon<=today) chosen={t:term.t,w}; else return `Term ${chosen.t} · Week ${chosen.w}`;
       mon=new Date(mon); mon.setDate(mon.getDate()+7); w++;
     }
   }
-  return `Term ${chosen.t} Week ${chosen.w}`;
+  return `Term ${chosen.t} · Week ${chosen.w}`;
 }
 function normaliseGroupName(group) {
   return String(group || '').trim().replace(/\s+/g, ' ');
