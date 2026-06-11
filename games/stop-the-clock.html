@@ -216,7 +216,7 @@
     gd.innerHTML=GROUPS.map(g=>`<button class="group-btn" onclick="selectGroup('${g}')">${g}</button>`).join('');
   }
   function selectHouse(h){ selectedHouse=h; selectedGroup=null; document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h)); document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.remove('selected')); checkForm(); }
-  function selectGroup(g){ selectedGroup=(g==='Staff')?'Staff':(selectedHouse?selectedHouse+' '+g:g); document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g)); checkForm(); }
+  function selectGroup(g){ selectedGroup=g; document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g)); checkForm(); }
   function checkForm(){ submitBtn.disabled=!(selectedHouse&&selectedGroup); }
 
   function getCurrentWeek(){
@@ -248,7 +248,7 @@
   function submitScore(){
     const best=scores.reduce((a,b)=>a.rawScore>b.rawScore?a:b);
     const finalScore=Math.round(best.rawScore/100);
-    const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Stop the Clock',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:selectedGroup,[CSHS_F_SCORE]:String(finalScore)});
+    const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Stop the Clock',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:(selectedGroup==='Staff'?'Staff':selectedHouse+' '+selectedGroup),[CSHS_F_SCORE]:String(finalScore)});
     window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');
     submitBtn.textContent='✓ Submitted'; submitBtn.disabled=true;
   }
