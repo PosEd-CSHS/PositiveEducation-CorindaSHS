@@ -2973,51 +2973,20 @@ function render(){
     });
   });
 
-  // ── Occlusion assignment ──
-  // Tree x positions matching drawBackground tree placements
-  const treeXs=[562,859,1505,1848,2257,2660,2868];
-  // - 'tree': char drawn BEFORE nearest tree repaint, so tree overlaps their upper body.
-  //           Char must be AT the tree base (y≈310) so it's actually behind the canopy.
-  //           Only assign tree occlusion if char x is within 60px of a tree.
-  // - 'crowd': drawn normally in crowd but surrounded — no special handling needed.
-  // - 'none': fully visible in open crowd.
-  // IMPORTANT: every character must have at least 30% of their body visible.
-
-  // Tree canopy data (must match redrawTree / allTreeData below): [tx, ty, cw]
-  const treeCanopy={
-    562:[241,112], 859:[235,130], 1505:[211,124],
-    1848:[205,130], 2257:[211,118], 2660:[223,100], 2868:[223,94]
-  };
-  const MIN_VIS=0.55; // require at least 55% of each occluded figure below the canopy edge
-
-  hiddenDrawList.forEach((h,i)=>{
-    // Find nearest tree and distance
-    const nearTree=treeXs.reduce((a,b)=>Math.abs(b-h.x)<Math.abs(a-h.x)?b:a);
-    const treeDist=Math.abs(nearTree-h.x);
-    // Only flag as tree-occluded if char actually landed near a tree x position.
-    if(i%4===0 && treeDist<120){
-      h.occludeBy='tree';
-      h.treeX=nearTree;
-      // Position the figure so a guaranteed fraction of its body hangs BELOW the
-      // canopy's bottom edge (where it stays visible and clickable). Previously this
-      // forced y high enough that the canopy could cover the figure entirely.
-      const [cty,ccw]=treeCanopy[nearTree]||[220,110];
-      const canopyBottom=cty+0.9*ccw;          // lower edge of the green canopy
-      const rise=CHAR_TOP_RISE[h.key]||1.0;     // figure height above its anchor, in s units
-      h.y=canopyBottom + MIN_VIS*h.s*rise;      // feet/anchor below canopy by 55% of height
-    } else {
-      h.occludeBy='none';
-    }
+  // ── Visibility assignment ──
+  // Hidden characters must be fully visible and clickable for fair house competition play.
+  // Tree occlusion has been disabled so no findable character is deliberately drawn behind
+  // the large tree canopies.
+  hiddenDrawList.forEach(h=>{
+    h.occludeBy='none';
+    delete h.treeX;
   });
 
-  // Clamp all hidden chars to be fully on-screen with margin.
-  // Tree-occluded figures are positioned deliberately high (peeking from the canopy),
-  // so they use a higher top allowance rather than the default 440 floor.
+  // Clamp all hidden chars to be fully on-screen with margin and below the tree canopy zone.
   hiddenDrawList.forEach(h=>{
     const margin=h.s*1.5;
     h.x=Math.max(margin, Math.min(W-margin, h.x));
-    const topFloor = h.occludeBy==='tree' ? 300 : 440;
-    h.y=Math.max(topFloor, Math.min(H-margin, h.y));
+    h.y=Math.max(440, Math.min(H-margin, h.y));
   });
 
   // Widen click target for golf cart (it's wider than a person)
