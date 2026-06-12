@@ -1802,7 +1802,7 @@ let clickTargets=[];
 let foundTargetIds=new Set();
 let targetOrdinals={};
 
-function addTarget(x,y,targetSize,key,label){
+function addTarget(x,y,targetSize,key,label,stableId){
   const scale = CHAR_VISUAL_SCALE[key] || 1.0;
   const yOff  = CHAR_Y_OFFSET[key]    || 1.0;
   const s = targetSize * scale;
@@ -1812,9 +1812,16 @@ function addTarget(x,y,targetSize,key,label){
   const rise  = CHAR_TOP_RISE[key] || 0.5;
   const topY  = y - s * yOff - s * rise;
   const boxH  = (y - topY) + s * 0.15;
-  const ord = targetOrdinals[key] || 0;
-  targetOrdinals[key] = ord + 1;
-  const id = key + '-' + ord;
+  // Use stableId (crowd slot index) if provided, otherwise fall back to draw-order ordinal.
+  // stableId prevents the same character getting a different ID after a re-render.
+  let id;
+  if(stableId !== undefined){
+    id = key + '-' + stableId;
+  } else {
+    const ord = targetOrdinals[key] || 0;
+    targetOrdinals[key] = ord + 1;
+    id = key + '-' + ord;
+  }
   clickTargets.push({
     x: x - boxW/2,
     y: topY,
@@ -3094,12 +3101,12 @@ function render(){
       // Draw before trees get repainted — add at h.y but mark for pre-tree draw
       drawList.push({y:h.y, pre:true, fn:()=>{
         drawHiddenChar(h.key,h.x,h.y,h.s,h.junior,h.genderIdx,null);
-        addTarget(h.x,h.y,h.s,h.key,h.key);
+        addTarget(h.x,h.y,h.s,h.key,h.key,h.idx);
       }});
     } else {
       drawList.push({y:h.y, fn:()=>{
         drawHiddenChar(h.key,h.x,h.y,h.s,h.junior,h.genderIdx,null);
-        addTarget(h.x,h.y,h.s,h.key,h.key);
+        addTarget(h.x,h.y,h.s,h.key,h.key,h.idx);
       }});
     }
   });
