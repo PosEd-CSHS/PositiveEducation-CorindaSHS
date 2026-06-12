@@ -160,27 +160,28 @@
     body > * { display: none !important; }
     #pdf-report { display: block !important; }
 
-    .pdf-page { width: 210mm; min-height: 297mm; padding: 0; background: white; font-family: 'Inter', sans-serif; color: #1a1a1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .pdf-cover { background: #1a4731; padding: 28mm 20mm 16mm; color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .pdf-cover-eyebrow { font-size: 8pt; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #f0d97a; margin-bottom: 6mm; }
-    .pdf-cover h1 { font-family: 'DM Serif Display', serif; font-size: 26pt; line-height: 1.15; margin-bottom: 5mm; }
+    .pdf-page { width: 210mm; height: 297mm; max-height: 297mm; overflow: hidden; page-break-after: avoid; padding: 0; background: white; font-family: 'Inter', sans-serif; color: #1a1a1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pdf-cover { background: #1a4731; padding: 12mm 20mm 9mm; color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pdf-cover-eyebrow { font-size: 8pt; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #f0d97a; margin-bottom: 3mm; }
+    .pdf-cover h1 { font-family: 'DM Serif Display', serif; font-size: 20pt; line-height: 1.15; margin-bottom: 3mm; }
     .pdf-cover-meta { font-size: 9pt; opacity: 0.75; display: flex; gap: 8mm; }
-    .pdf-rule { height: 3mm; background: #c9a227; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .pdf-body { padding: 10mm 20mm 16mm; }
-    .pdf-section-title { font-size: 8pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #1a4731; border-bottom: 1px solid #e2ddd4; padding-bottom: 2mm; margin-bottom: 5mm; margin-top: 8mm; }
+    .pdf-rule { height: 2mm; background: #c9a227; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pdf-body { padding: 6mm 16mm 8mm; }
+    .pdf-section-title { font-size: 8pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #1a4731; border-bottom: 1px solid #e2ddd4; padding-bottom: 1.5mm; margin-bottom: 3mm; margin-top: 4mm; }
     .pdf-section-title:first-child { margin-top: 0; }
-    .pdf-sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-bottom: 2mm; }
-    .pdf-sig-card { border: 1px solid #e2ddd4; border-radius: 3mm; padding: 4mm 5mm; page-break-inside: avoid; }
+    .pdf-sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-bottom: 1mm; }
+    .pdf-sig-card { border: 1px solid #e2ddd4; border-radius: 2.5mm; padding: 3mm 4mm; page-break-inside: avoid; }
     .pdf-sig-rank { font-size: 7pt; font-weight: 700; color: #c9a227; margin-bottom: 1mm; }
     .pdf-sig-name { font-size: 11pt; font-weight: 700; color: #1a4731; margin-bottom: 1mm; }
     .pdf-sig-virtue { font-size: 7pt; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2mm; }
-    .pdf-sig-desc { font-size: 8pt; line-height: 1.5; color: #374151; }
+    .pdf-sig-desc { font-size: 7.5pt; line-height: 1.45; color: #374151; }
     .pdf-sig-card.full-width { grid-column: 1 / -1; }
-    .pdf-virtue-group { margin-bottom: 4mm; page-break-inside: avoid; }
+    .pdf-virtue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 6mm; }
+    .pdf-virtue-group { margin-bottom: 2mm; page-break-inside: avoid; }
     .pdf-virtue-name { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.5mm; }
-    .pdf-virtue-list { font-size: 8.5pt; line-height: 1.6; color: #374151; }
-    .pdf-note { font-size: 7.5pt; color: #6b7280; line-height: 1.5; margin-top: 3mm; font-style: italic; }
-    .pdf-footer { margin-top: 8mm; padding-top: 3mm; border-top: 1px solid #e2ddd4; font-size: 7pt; color: #9ca3af; display: flex; justify-content: space-between; }
+    .pdf-virtue-list { font-size: 8pt; line-height: 1.45; color: #374151; }
+    .pdf-note { font-size: 7pt; color: #6b7280; line-height: 1.4; margin-top: 2mm; font-style: italic; }
+    .pdf-footer { margin-top: 4mm; padding-top: 3mm; border-top: 1px solid #e2ddd4; font-size: 7pt; color: #9ca3af; display: flex; justify-content: space-between; }
   }
 </style>
 </head>
@@ -321,7 +322,7 @@
       <div class="pdf-sig-grid" id="pdf-sig-grid"></div>
 
       <div class="pdf-section-title">Your other strengths, by virtue</div>
-      <div id="pdf-virtue-groups"></div>
+      <div id="pdf-virtue-groups" class="pdf-virtue-grid"></div>
       <div class="pdf-note">Everyone has all 24 strengths. Those outside your top 5 are lesser strengths, not weaknesses — strengths you draw on less often. They are grouped by virtue rather than ranked.</div>
 
       <div class="pdf-footer">
