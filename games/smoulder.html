@@ -1878,7 +1878,7 @@ function drawBuildingStudent(x, y, s, junior, clip) {
 //       = 1.5 / char_visual_height_per_s
 // CHAR_VISUAL_SCALE[key] * crowd_sz = the s to pass to draw function
 const CHAR_VISUAL_SCALE = {
-  chicken:  0.757, // halved from 1.515
+  chicken:  1.200, // increased for visibility (was 0.757)
   alpaca:   1.087,
   goat:     1.119,
   phoenix:  0.917, // feet at y=0, crest top -s*1.66
@@ -1897,7 +1897,7 @@ const CHAR_VISUAL_SCALE = {
   dancer:   0.955,
   // themed props — sized to read like a held object / small figure
   heart:0.95, beaker:1.0, balloons:0.9, bookstack:1.0, apple:1.1, medal:1.0,
-  goggles:1.0, pancake:1.0, shoe:1.0, bouquet:0.95, pinkribbon:1.0, pyjamas:0.95,
+  goggles:1.0, pancake:1.0, shoe:1.0, bouquet:0.95, pinkribbon:1.6, pyjamas:0.95,
   jumper:1.0, speech:0.95, mask:0.95, crazyhair:0.95, gradcap:0.95,
 };
 
@@ -1941,7 +1941,7 @@ const CHAR_TOP_RISE = {
   horse:    1.36, // ear tip ~ -s*1.30 (verified by offline render)
   // themed props — top reach above anchor (approx, generous so click box covers them)
   heart:0.95, beaker:1.0, balloons:1.0, bookstack:0.75, apple:0.9, medal:1.0,
-  goggles:0.6, pancake:0.6, shoe:0.5, bouquet:0.8, pinkribbon:0.85, pyjamas:1.0,
+  goggles:0.6, pancake:0.6, shoe:0.5, bouquet:0.8, pinkribbon:1.35, pyjamas:1.0,
   jumper:0.6, speech:0.9, mask:1.0, crazyhair:0.95, gradcap:0.7,
 };
 
