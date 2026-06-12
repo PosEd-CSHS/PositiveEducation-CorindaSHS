@@ -279,25 +279,11 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
   <div class="timer" id="timer">⏱ 0:00</div>
   <button class="how-btn" onclick="toggleInstructions()">❓ How to Play</button>
   <button class="how-btn" onclick="giveUp()" style="background:#3a1a00;font-size:0.75rem;padding:4px 10px;">🏳️ Give up</button>
-  <button class="how-btn" onclick="toggleAdmin()" style="background:#001a0f;font-size:0.75rem;padding:4px 10px;">⚙ Admin</button>
 </div>
 <div class="find-bar-toggle">
   <button class="find-bar-toggle-btn" id="findBarToggleBtn" onclick="toggleFindBar()">▲ Hide</button>
 </div>
 
-<div id="admin-panel" style="display:none;background:#001a0f;border-bottom:2px solid #f2b400;padding:16px 20px;font-family:'Nunito',sans-serif;">
-  <div style="max-width:600px;margin:0 auto;">
-    <h3 style="color:#f2b400;font-family:'Fredoka One',cursive;margin-bottom:12px;">⚙ Admin Settings</h3>
-    <label style="display:block;font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Microsoft Forms Pre-fill URL</label>
-    <input id="admin-formUrl" type="text" placeholder="https://forms.office.com/Pages/ResponsePage.aspx?id=..."
-      style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid #f2b400;background:#002a14;color:#fff;font-size:12px;margin-bottom:4px;">
-    <div style="font-size:11px;color:#888;margin-bottom:12px;">Use {group}, {house}, {score}, {game}, {week}, {detail} as placeholders.</div>
-    <label style="display:block;font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Week Label (e.g. Week 3 Term 2)</label>
-    <input id="admin-weekLabel" type="text" placeholder="Week 1 Term 3"
-      style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid #f2b400;background:#002a14;color:#fff;font-size:12px;margin-bottom:12px;">
-    <button onclick="saveAdmin()" style="background:#f2b400;color:#00180f;font-weight:900;padding:8px 20px;border:none;border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;">💾 Save &amp; Close</button>
-  </div>
-</div>
 
 <div class="instructions-panel" id="instructions-panel">
   <div class="instr-grid">
@@ -378,8 +364,7 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 const config = {
-  formUrl: 'https://forms.office.com/r/x94vT9B782',          // Admin pastes Microsoft Forms pre-fill URL here
-  adminPass: '',
+  formUrl: 'https://forms.office.com/r/x94vT9B782',
   weekLabel: '',        // e.g. "Week 3 Term 2"
 };
 
@@ -444,7 +429,7 @@ function giveUp(){
   document.getElementById('win').classList.add('show');
 }
 
-// ── ADMIN PANEL ─────────────────────────────────────────────────────────────
+// ── CANVAS SETUP ─────────────────────────────────────────────────────────────
 const W=3200, H=1600;
 const canvas=document.getElementById('scene');
 const ctx=canvas.getContext('2d');
