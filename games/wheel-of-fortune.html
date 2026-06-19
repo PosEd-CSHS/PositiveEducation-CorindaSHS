@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wheel of Fortune – Corinda SHS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&family=Fredoka+One&family=Nunito:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap');
 
   :root {
     --green: #00180f;
@@ -15,6 +15,7 @@
     --red: #b8001f;
     --red2: #e8002b;
     --white: #fdfdfd;
+    --muted: rgba(255,255,255,0.55);
     --green-line: rgba(255,255,255,0.12);
   }
 
@@ -29,21 +30,27 @@
   }
 
   header {
-    background: linear-gradient(135deg, var(--red), var(--red2), var(--red));
-    border-bottom: 6px solid var(--gold);
-    padding: 14px 20px;
+    background: transparent;
     text-align: center;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    padding: 28px 20px 6px;
+    position: relative;
+  }
+  header .header-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
   }
   header h1 {
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.4rem, 4vw, 2.4rem);
-    color: var(--gold);
-    text-shadow: 3px 3px 0 #7a0010, -1px -1px 0 #7a0010;
-    letter-spacing: 1px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 8vw, 3.8rem);
+    color: var(--white);
+    letter-spacing: 0.06em;
+    line-height: 1;
   }
-  header p { color: #fff; font-size: 0.85rem; margin-top: 2px; opacity: 0.9; }
+  header h1 span { color: var(--gold); }
+  header p {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted); font-size: 13px; margin-top: 8px; opacity: 1;
+  }
 
   .admin-btn {
     position: absolute; top: 14px; right: 16px;
@@ -202,8 +209,9 @@
 </head>
 <body>
 <header>
-  <h1>🎡 Wheel of Fortune</h1>
-  <p>Corinda State High School — Six Houses, One Family</p>
+  <div class="header-eyebrow">Corinda State High School</div>
+  <h1>Wheel of <span>Fortune</span></h1>
+  <p>Six Houses, One Family</p>
   <button class="admin-btn" onclick="openAdmin()" title="Admin">⚙</button>
 </header>
 

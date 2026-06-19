@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emoji Decode – CSHS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
+  :root{
+    --green:#00180f;--green-mid:#003d1f;--green-light:#005a2e;
+    --gold:#f2b400;--gold-dim:rgba(242,180,0,0.15);--gold-border:rgba(242,180,0,0.3);
+    --white:#fdfdfd;--muted:rgba(255,255,255,0.55);--danger:#e05252;--correct:#4caf7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--green);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;}
+  .header{text-align:center;margin-bottom:20px;}
+  .header-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,8vw,3.8rem);letter-spacing:.06em;color:var(--white);line-height:1;}
+  .header h1 span{color:var(--gold);}
+  .header-sub{font-size:13px;color:var(--muted);margin-top:8px;}
+  .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:16px;width:100%;max-width:480px;}
+
+  .week-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px;}
+
+  .form-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
+  .group-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
+  .group-btn{background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--white);padding:8px 6px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
+  .group-btn:hover{background:rgba(242,180,0,0.28);border-color:var(--gold);}
+  .group-btn.selected{background:var(--gold);color:var(--green);border-color:var(--gold);}
+
+  .focus-hint{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:12px 16px;margin-bottom:18px;text-align:center;}
+  .focus-hint .fh-label{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .focus-hint .fh-strength{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;color:var(--gold);letter-spacing:.04em;line-height:1.1;margin-top:2px;}
+  .focus-hint .fh-virtue{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+
+  .emoji-display{text-align:center;font-size:clamp(3.2rem,17vw,5.5rem);line-height:1.15;margin-bottom:18px;min-height:1.4em;word-break:break-word;letter-spacing:.06em;}
+
+  .answer-input{width:100%;background:var(--green-mid);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:1.05rem;font-weight:600;padding:13px 14px;outline:none;text-align:center;margin-bottom:14px;}
+  .answer-input:focus{border-color:var(--gold-border);box-shadow:0 0 14px rgba(242,180,0,0.12);}
+  .answer-input::placeholder{color:rgba(255,255,255,0.3);font-weight:400;}
+  .answer-input:disabled{opacity:.6;}
+
+  .feedback{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.04em;text-align:center;margin-bottom:14px;min-height:1.4em;}
+  .feedback.try{color:var(--gold);}
+  .feedback.right{color:var(--correct);}
+  .feedback.wrong{color:var(--danger);}
+
+  .reveal-panel{display:none;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:16px 18px;margin-bottom:16px;text-align:center;}
+  .reveal-panel.show{display:block;}
+  .reveal-answer{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--gold);letter-spacing:.04em;line-height:1.1;}
+  .reveal-score{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--white);letter-spacing:.04em;margin-top:6px;}
+  .reveal-link{font-size:12.5px;color:var(--white);opacity:.9;margin-top:10px;line-height:1.5;}
+  .reveal-link b{color:var(--gold);}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:.02em;width:100%;margin-bottom:10px;}
+  .btn-primary{background:var(--gold);color:var(--green);}
+  .btn-primary:hover{background:#ffc820;transform:translateY(-1px);box-shadow:0 4px 16px rgba(242,180,0,0.3);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold-border);}
+  .btn-outline:hover{background:var(--gold-dim);}
+
+  .lock-notice{display:none;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.35);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:#ffb3b3;text-align:center;font-family:'DM Mono',monospace;line-height:1.5;}
+  .lock-notice.show{display:block;}
+  .warn-line{font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px;font-family:'DM Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-eyebrow">Corinda State High School</div>
+  <h1>Emoji <span>Decode</span></h1>
+  <div class="header-sub">Crack this week's emoji phrase — linked to the focus strength</div>
+</div>
+
+<div class="card">
+  <div class="week-tag" id="weekTag">—</div>
+
+  <!-- ENTRY: pick house + group, then unlock -->
+  <div id="entryView">
+    <span class="form-label">House</span>
+    <div class="group-select" id="houseSelectBtns"></div>
+    <span class="form-label">Home Group</span>
+    <div class="group-select" id="groupSelectBtns"></div>
+    <div class="lock-notice" id="lockNotice"></div>
+    <div class="warn-line">One attempt per home group, per week. Staff can replay freely.</div>
+    <button class="btn btn-primary" id="revealPuzzleBtn" onclick="revealPuzzle()" disabled>Reveal this week's puzzle</button>
+  </div>
+
+  <!-- PLAY -->
+  <div id="playView" style="display:none">
+    <div class="focus-hint" id="focusHint">
+      <div class="fh-label">This fortnight's focus strength</div>
+      <div class="fh-strength" id="fhStrength">—</div>
+      <div class="fh-virtue" id="fhVirtue">—</div>
+    </div>
+    <div class="emoji-display" id="emojiDisplay">❓</div>
+    <input class="answer-input" id="answerInput" type="text" placeholder="Type the phrase…" maxlength="60" autocomplete="off">
+    <div class="feedback" id="feedback"></div>
+    <button class="btn btn-primary" id="guessBtn" onclick="submitGuess()">Guess</button>
+    <button class="btn btn-outline" id="revealAnsBtn" onclick="giveUp()">Reveal answer</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="resultView" style="display:none">
+    <div class="reveal-panel show" id="revealPanel">
+      <div class="reveal-answer" id="revealAnswer"></div>
+      <div class="reveal-score" id="revealScore"></div>
+      <div class="reveal-link" id="revealLink"></div>
+    </div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitScore()">📤 Submit Score</button>
+  </div>
+
+  <button class="btn btn-outline" onclick="resetAll()" style="margin-top:4px">Reset</button>
+</div>
+
+<script>
+  // ════════════════════════════════════════════════════════════════════════
+  //  STRENGTH-LINKED PHRASE BANK — EDIT HERE
+  //  One emoji phrase per VIA strength. The week's focus strength (same logic
+  //  and schedule as Guess the Strength) decides which phrase shows.
+  //  e = emoji clue · s = answer shown on reveal · a = accepted answers
+  //  (matching ignores case/spacing/punctuation) · link = why it ties to the strength.
+  //  EMOJI SIZE: e can be a plain string (all one size, e.g. "🐢🏁"), OR an array
+  //  to size individual emojis — each item is "🙂" (normal) or ["🙂", 1.8] (1.8× bigger).
+  //  e.g. e:["👁️", ["🏞️", 1.8]]  makes the picture big for "see the BIG picture".
+  //  TEST EMOJI ON THE SMARTBOARD — they render differently across devices.
+  // ════════════════════════════════════════════════════════════════════════
+  const PHRASES = {
+    // ── Wisdom ──
+    creativity:  {e:"🧠💡📦", s:"Thinking outside the box", a:["thinking outside the box","outside the box"], link:"finding new ideas instead of the obvious route"},
+    curiosity:   {e:"🐇🕳️",  s:"Down the rabbit hole", a:["down the rabbit hole","the rabbit hole"], link:"following a question wherever it leads"},
+    judgement:   {e:"⚖️🤔",  s:"Weigh it up", a:["weigh it up","weigh the options","weighing it up"], link:"weighing the evidence before deciding"},
+    learning:    {e:"📚⚡",   s:"Knowledge is power", a:["knowledge is power"], link:"the value of what you learn"},
+    perspective: {e:["👁️", ["🏞️", 1.8]], s:"See the big picture", a:["see the big picture","the big picture","big picture"], link:"seeing how the pieces fit together"},
+    // ── Courage ──
+    bravery:     {e:"🦁❤️",  s:"Lionheart", a:["lionheart","lion heart","lionhearted","brave heart"], link:"acting on your convictions despite fear"},
+    perseverance:{e:"🐢🏁",  s:"Slow and steady wins the race", a:["slow and steady wins the race","slow and steady"], link:"sticking at it until it's done"},
+    honesty:     {e:"📖✨",   s:"An open book", a:["an open book","open book"], link:"nothing hidden — what's there is what's real"},
+    zest:        {e:"✊📅",   s:"Seize the day", a:["seize the day","carpe diem"], link:"bringing energy to the day"},
+    // ── Humanity ──
+    love:        {e:"❤️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around"], link:"investing in the people who matter"},
+    kindness:    {e:"🤝🫶",  s:"A helping hand", a:["a helping hand","helping hand","lend a helping hand"], link:"noticing what others need and helping"},
+    social:      {e:"📖🚪",  s:"Read the room", a:["read the room","reading the room"], link:"picking up on mood and unspoken signals"},
+    // ── Justice ──
+    teamwork:    {e:"🧠➕🧠", s:"Two heads are better than one", a:["two heads are better than one"], link:"the group's result is your result"},
+    fairness:    {e:"⚖️🟦",  s:"Fair and square", a:["fair and square"], link:"the same standard for everyone"},
+    leadership:  {e:"👑➡️",  s:"Lead the way", a:["lead the way","leading the way","lead by example"], link:"giving a group direction"},
+    // ── Temperance ──
+    forgiveness: {e:"🙏❌💭", s:"Forgive and forget", a:["forgive and forget"], link:"giving people a way back"},
+    humility:    {e:"⬇️🌍",  s:"Down to earth", a:["down to earth"], link:"not needing to be the headline"},
+    prudence:    {e:"👀➡️🦘", s:"Look before you leap", a:["look before you leap"], link:"weighing where a choice leads"},
+    regulation:  {e:"😌❄️",  s:"Keep your cool", a:["keep your cool","keeping your cool","stay cool"], link:"impulses get a vote, not a veto"},
+    // ── Transcendence ──
+    appreciation:{e:"🛑👃🌹", s:"Stop and smell the roses", a:["stop and smell the roses","smell the roses"], link:"noticing quality and beauty"},
+    gratitude:   {e:"🔢🙏",  s:"Count your blessings", a:["count your blessings","counting your blessings"], link:"tracking the good rather than taking it as given"},
+    hope:        {e:"💡🚇",  s:"Light at the end of the tunnel", a:["light at the end of the tunnel","the light at the end of the tunnel"], link:"treating the future as something to build"},
+    humour:      {e:"😂💊",  s:"Laughter is the best medicine", a:["laughter is the best medicine"], link:"finding and sharing the light side"},
+    spirituality:{e:"🧘☮️",  s:"Inner peace", a:["inner peace","find your inner peace"], link:"a sense of meaning beyond the day-to-day"},
+  };
+
+  // ── Strength + virtue reference (mirrors Guess the Strength) ──
+  const STRENGTHS = [
+    {id:'creativity',name:'Creativity',virtue:'Wisdom'},{id:'curiosity',name:'Curiosity',virtue:'Wisdom'},
+    {id:'judgement',name:'Judgement',virtue:'Wisdom'},{id:'learning',name:'Love of Learning',virtue:'Wisdom'},
+    {id:'perspective',name:'Perspective',virtue:'Wisdom'},{id:'bravery',name:'Bravery',virtue:'Courage'},
+    {id:'perseverance',name:'Perseverance',virtue:'Courage'},{id:'honesty',name:'Honesty',virtue:'Courage'},
+    {id:'zest',name:'Zest',virtue:'Courage'},{id:'love',name:'Love',virtue:'Humanity'},
+    {id:'kindness',name:'Kindness',virtue:'Humanity'},{id:'social',name:'Social Intelligence',virtue:'Humanity'},
+    {id:'teamwork',name:'Teamwork',virtue:'Justice'},{id:'fairness',name:'Fairness',virtue:'Justice'},
+    {id:'leadership',name:'Leadership',virtue:'Justice'},{id:'forgiveness',name:'Forgiveness',virtue:'Temperance'},
+    {id:'humility',name:'Humility',virtue:'Temperance'},{id:'prudence',name:'Prudence',virtue:'Temperance'},
+    {id:'regulation',name:'Self-Regulation',virtue:'Temperance'},{id:'appreciation',name:'Appreciation of Beauty',virtue:'Transcendence'},
+    {id:'gratitude',name:'Gratitude',virtue:'Transcendence'},{id:'hope',name:'Hope',virtue:'Transcendence'},
+    {id:'humour',name:'Humour',virtue:'Transcendence'},{id:'spirituality',name:'Spirituality',virtue:'Transcendence'},
+  ];
+
+  // ── Week + focus resolution (identical schedule to Guess the Strength) ──
+  const CSHS_TERMS=[{t:1,start:"2026-01-27",end:"2026-04-02"},{t:2,start:"2026-04-20",end:"2026-06-26"},{t:3,start:"2026-07-13",end:"2026-09-18"},{t:4,start:"2026-10-06",end:"2026-12-11"}];
+  function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+  function mondayOf(d){const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;}
+  function cshsWeekInfo(){
+    const today=new Date();today.setHours(0,0,0,0);
+    let chosen={t:1,w:1},abs=0,chosenAbs=0;
+    for(const term of CSHS_TERMS){const end=parseISO(term.end);let mon=mondayOf(parseISO(term.start));let w=1;
+      while(mon<=end){abs+=1;if(mon<=today){chosen={t:term.t,w};chosenAbs=abs;}mon=new Date(mon);mon.setDate(mon.getDate()+7);w+=1;}}
+    return {label:`Term ${chosen.t} \u00b7 Week ${chosen.w}`,abs:chosenAbs||1,t:chosen.t,w:chosen.w};
+  }
+  function cshsWeekLabel(){return cshsWeekInfo().label;}
+  const FOCUS_SCHEDULE={
+    '1-3':['love','kindness'],'1-5':['social','love'],'1-7':['forgiveness','kindness','love'],'1-9':['gratitude','hope'],
+    '2-1':['humour','appreciation'],'2-3':['spirituality','gratitude','hope','humour'],'2-5':['curiosity','learning'],'2-7':['judgement','creativity'],'2-9':['perspective','curiosity','judgement','creativity'],
+    '3-1':['fairness','teamwork'],'3-3':['leadership','teamwork'],'3-5':['fairness','teamwork','leadership'],'3-7':['bravery','perseverance'],'3-9':['honesty','zest'],
+    '4-1':['bravery','perseverance','honesty'],'4-3':['regulation','prudence'],'4-5':['humility','regulation'],'4-7':'ALL'
+  };
+  const WEEK_BANK=['kindness','perseverance','humour','judgement','gratitude','bravery','teamwork','prudence','curiosity','leadership','spirituality','zest','fairness','creativity','regulation','love','perspective','forgiveness','appreciation','honesty','social','hope','humility','learning','gratitude','bravery','curiosity','teamwork','humour','prudence','kindness','perspective','zest','fairness','forgiveness','learning','leadership','appreciation','honesty','hope'];
+  function focusForThisWeek(){
+    const info=cshsWeekInfo();
+    const pairStart=info.w%2===0?info.w-1:info.w;
+    let focus=FOCUS_SCHEDULE[info.t+'-'+pairStart];
+    if(focus==='ALL')focus=STRENGTHS.map(s=>s.id);
+    const pool=(focus&&focus.length)?focus:[WEEK_BANK[(info.abs-1)%WEEK_BANK.length]];
+    const idx=(focus&&focus.length)?(info.w-pairStart)%pool.length:0;
+    const id=pool[idx];
+    return STRENGTHS.find(s=>s.id===id);
+  }
+
+  const HOUSES=['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
+  const GROUPS=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
+
+  // Scoring per guess: 1st, 2nd, 3rd… ; a miss or reveal scores 0.
+  // Add or change values here to allow more/fewer guesses.
+  const GUESS_SCORES=[10,7,4];
+  let selectedHouse=null,selectedGroup=null,attempt=0,finalScore=0;
+  let focusStrength=null,puzzle=null;
+
+  const weekTag=document.getElementById('weekTag');
+  const entryView=document.getElementById('entryView'),playView=document.getElementById('playView'),resultView=document.getElementById('resultView');
+  const lockNotice=document.getElementById('lockNotice'),revealPuzzleBtn=document.getElementById('revealPuzzleBtn');
+  const fhStrength=document.getElementById('fhStrength'),fhVirtue=document.getElementById('fhVirtue');
+  const emojiDisplay=document.getElementById('emojiDisplay'),answerInput=document.getElementById('answerInput'),feedback=document.getElementById('feedback');
+  const guessBtn=document.getElementById('guessBtn'),revealAnsBtn=document.getElementById('revealAnsBtn');
+  const revealAnswer=document.getElementById('revealAnswer'),revealScore=document.getElementById('revealScore'),revealLink=document.getElementById('revealLink');
+  const submitBtn=document.getElementById('submitBtn');
+
+  function init(){
+    focusStrength=focusForThisWeek();
+    puzzle=PHRASES[focusStrength.id];
+    weekTag.textContent=cshsWeekLabel();
+    document.getElementById('houseSelectBtns').innerHTML=HOUSES.map(h=>`<button class="group-btn" onclick="selectHouse('${h}')">${h}</button>`).join('');
+    document.getElementById('groupSelectBtns').innerHTML=GROUPS.map(g=>`<button class="group-btn" onclick="selectGroup('${g}')">${g}</button>`).join('');
+  }
+
+  function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+  // Plain emoji string (sizes stripped) — for the reveal line.
+  function emojiText(e){return typeof e==='string'?e:e.map(it=>Array.isArray(it)?it[0]:it).join('');}
+  // Render the big clue, honouring optional per-emoji sizes.
+  function renderEmoji(e){
+    if(typeof e==='string'){emojiDisplay.textContent=e;return;}
+    emojiDisplay.innerHTML=e.map(it=>{
+      const ch=Array.isArray(it)?it[0]:it, sc=Array.isArray(it)?it[1]:1;
+      return `<span style="font-size:${sc}em;line-height:1;display:inline-block;vertical-align:middle;margin:0 .03em">${ch}</span>`;
+    }).join('');
+  }
+  function fullGroupName(){if(!selectedGroup)return '';return selectedGroup==='Staff'?'Staff':((selectedHouse||'')+' '+selectedGroup).trim();}
+
+  function selectHouse(h){selectedHouse=h;document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h));checkEntry();}
+  function selectGroup(g){selectedGroup=g;document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g));checkEntry();}
+  function checkEntry(){
+    const full=fullGroupName();
+    if(full&&isPlayed(full)){
+      lockNotice.textContent=full+' has already played Emoji Decode for '+cshsWeekLabel()+'. Choose Staff to practise, or come back next week.';
+      lockNotice.classList.add('show');revealPuzzleBtn.disabled=true;return;
+    }
+    lockNotice.classList.remove('show');
+    revealPuzzleBtn.disabled=!(selectedHouse&&selectedGroup);
+  }
+
+  function revealPuzzle(){
+    const full=fullGroupName();
+    if(!full)return;
+    if(isPlayed(full)){checkEntry();return;}
+    markPlayedLS(full);              // commit the home group's one attempt now
+    fhStrength.textContent=focusStrength.name;
+    fhVirtue.textContent=focusStrength.virtue;
+    renderEmoji(puzzle.e);
+    attempt=0;feedback.textContent='You get '+GUESS_SCORES.length+' guesses — fewer tries, higher score.';feedback.className='feedback';
+    answerInput.value='';answerInput.disabled=false;
+    guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';
+    entryView.style.display='none';playView.style.display='';
+    answerInput.focus();
+  }
+
+  answerInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!guessBtn.disabled)submitGuess();});
+
+  function submitGuess(){
+    const guess=norm(answerInput.value);
+    if(!guess){answerInput.focus();return;}
+    const hit=puzzle.a.some(ans=>norm(ans)===guess);
+    if(hit){
+      finalScore=GUESS_SCORES[attempt];
+      const msg=['✓ Correct! Full marks.','✓ Nice — second try.','✓ Got there on the third try.'][attempt]||'✓ Correct!';
+      feedback.textContent=msg+' (+'+finalScore+')';
+      feedback.className='feedback right';
+      finish(true);
+    } else if(attempt<GUESS_SCORES.length-1){
+      attempt++;
+      const left=GUESS_SCORES.length-attempt;
+      feedback.textContent=left===1?'Not quite — last guess!':('Not quite — '+left+' guesses left.');
+      feedback.className='feedback try';
+      answerInput.select();answerInput.focus();
+    } else {
+      finalScore=0;feedback.textContent='✗ Out of guesses.';feedback.className='feedback wrong';
+      finish(false);
+    }
+  }
+
+  function giveUp(){finalScore=0;finish(false);}
+
+  function finish(solved){
+    answerInput.disabled=true;guessBtn.disabled=true;revealAnsBtn.style.display='none';
+    revealAnswer.textContent=emojiText(puzzle.e)+'  —  '+puzzle.s;
+    revealScore.textContent='Score: '+finalScore+' / 10';
+    revealLink.innerHTML=`Links to <b>${focusStrength.name}</b> (${focusStrength.virtue}) — ${puzzle.link}.`;
+    playView.style.display='none';resultView.style.display='';
+    submitBtn.focus();
+  }
+
+  // ── Form ──
+  const CSHS_FORM_BASE='https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_ID='xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+  const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1',CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
+  const CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba',CSHS_F_GROUP='r3022db1950b649218496e706728c203f';
+  const CSHS_F_SCORE='r8b61653d0854482a9e7e329026083f7b';
+  function submitScore(){
+    const full=fullGroupName();
+    const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:cshsWeekLabel(),[CSHS_F_GAME]:'Emoji Decode',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:full,[CSHS_F_SCORE]:String(finalScore)});
+    window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');
+    submitBtn.textContent='✓ Submitted';submitBtn.disabled=true;
+  }
+
+  function resetAll(){
+    selectedHouse=null;selectedGroup=null;attempt=0;finalScore=0;
+    document.querySelectorAll('.group-btn').forEach(b=>b.classList.remove('selected'));
+    lockNotice.classList.remove('show');revealPuzzleBtn.disabled=true;
+    feedback.textContent='';feedback.className='feedback';
+    answerInput.value='';answerInput.disabled=false;
+    guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';
+    submitBtn.textContent='📤 Submit Score';submitBtn.disabled=false;
+    resultView.style.display='none';playView.style.display='none';entryView.style.display='';
+  }
+
+  // ─── WEEKLY ATTEMPT LOCK (localStorage, per-device per-week) ───────────────
+  // Each home group gets one attempt per week. Staff is always unlimited.
+  // ?reset clears this game's locks for the week.
+  function normaliseGroupName(group){return String(group||'').trim().replace(/\s+/g,' ');}
+  function isStaffGroup(group){const g=normaliseGroupName(group);return g==='Staff'||g.endsWith(' Staff');}
+  function getPlayedKey(){return 'emoji:played:'+cshsWeekLabel();}
+  (function(){
+    if(location.search.includes('reset')){
+      try{Object.keys(localStorage).filter(k=>k.startsWith('emoji:played:')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+      history.replaceState(null,'',location.pathname);
+    }
+  })();
+  function readPlayedList(){try{const d=JSON.parse(localStorage.getItem(getPlayedKey())||'[]');return Array.isArray(d)?d:[];}catch(e){return [];}}
+  function writePlayedList(d){try{localStorage.setItem(getPlayedKey(),JSON.stringify([...new Set(d.map(normaliseGroupName))]));}catch(e){}}
+  function isPlayed(group){const g=normaliseGroupName(group);if(!g||isStaffGroup(g))return false;return readPlayedList().includes(g);}
+  function markPlayedLS(group){const g=normaliseGroupName(group);if(!g||isStaffGroup(g))return;const d=readPlayedList();if(!d.includes(g)){d.push(g);writePlayedList(d);}}
+
+  init();
+</script>
+</body>
+</html>
