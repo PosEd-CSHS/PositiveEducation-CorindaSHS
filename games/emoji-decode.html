@@ -88,7 +88,7 @@
   <!-- PLAY -->
   <div id="playView" style="display:none">
     <div class="focus-hint" id="focusHint">
-      <div class="fh-label">This fortnight's focus strength</div>
+      <div class="fh-label" id="fhLabel">This week's focus</div>
       <div class="fh-strength" id="fhStrength">—</div>
       <div class="fh-virtue" id="fhVirtue">—</div>
     </div>
@@ -126,35 +126,35 @@
   // ════════════════════════════════════════════════════════════════════════
   const PHRASES = {
     // ── Wisdom ──
-    creativity:  {e:"🧠💡📦", s:"Thinking outside the box", a:["thinking outside the box","outside the box"], link:"finding new ideas instead of the obvious route"},
-    curiosity:   {e:"🐇🕳️",  s:"Down the rabbit hole", a:["down the rabbit hole","the rabbit hole"], link:"following a question wherever it leads"},
-    judgement:   {e:"⚖️🤔",  s:"Weigh it up", a:["weigh it up","weigh the options","weighing it up"], link:"weighing the evidence before deciding"},
+    creativity:  {e:"🧠💡📦", s:"Thinking outside the box", a:["thinking outside the box","think outside the box","outside the box"], link:"finding new ideas instead of the obvious route"},
+    curiosity:   {e:"🐇🕳️",  s:"Down the rabbit hole", a:["down the rabbit hole","the rabbit hole","rabbit hole"], link:"following a question wherever it leads"},
+    judgement:   {e:"⚖️🤔",  s:"Weigh it up", a:["weigh it up","weigh the options","weighing it up","weigh up","weigh things up","weigh up the options"], link:"weighing the evidence before deciding"},
     learning:    {e:"📚⚡",   s:"Knowledge is power", a:["knowledge is power"], link:"the value of what you learn"},
-    perspective: {e:["👁️", ["🏞️", 1.8]], s:"See the big picture", a:["see the big picture","the big picture","big picture"], link:"seeing how the pieces fit together"},
+    perspective: {e:["👁️", ["🏞️", 1.8]], s:"See the big picture", a:["see the big picture","the big picture","big picture","look at the big picture"], link:"seeing how the pieces fit together"},
     // ── Courage ──
-    bravery:     {e:"🦁❤️",  s:"Lionheart", a:["lionheart","lion heart","lionhearted","brave heart"], link:"acting on your convictions despite fear"},
-    perseverance:{e:"🐢🏁",  s:"Slow and steady wins the race", a:["slow and steady wins the race","slow and steady"], link:"sticking at it until it's done"},
-    honesty:     {e:"📖✨",   s:"An open book", a:["an open book","open book"], link:"nothing hidden — what's there is what's real"},
+    bravery:     {e:"🦁❤️‍🔥",  s:"Lionheart", a:["lionheart","lion heart","lionhearted","brave heart","braveheart"], link:"acting on your convictions despite fear"},
+    perseverance:{e:"🐢🏁",  s:"Slow and steady wins the race", a:["slow and steady wins the race","slow and steady","slow but steady wins the race"], link:"sticking at it until it's done"},
+    honesty:     {e:"📖🔓",   s:"An open book", a:["an open book","open book","like an open book"], link:"nothing hidden — what's there is what's real"},
     zest:        {e:"✊📅",   s:"Seize the day", a:["seize the day","carpe diem"], link:"bringing energy to the day"},
     // ── Humanity ──
-    love:        {e:"❤️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around"], link:"investing in the people who matter"},
-    kindness:    {e:"🤝🫶",  s:"A helping hand", a:["a helping hand","helping hand","lend a helping hand"], link:"noticing what others need and helping"},
-    social:      {e:"📖🚪",  s:"Read the room", a:["read the room","reading the room"], link:"picking up on mood and unspoken signals"},
+    love:        {e:"❤️➡️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around"], link:"investing in the people who matter"},
+    kindness:    {e:"🤝🫶",  s:"A helping hand", a:["a helping hand","helping hand","lend a helping hand","helping hands","give a helping hand"], link:"noticing what others need and helping"},
+    social:      {e:"👀🧑‍🤝‍🧑",  s:"Read the room", a:["read the room","reading the room","read the situation"], link:"picking up on mood and unspoken signals"},
     // ── Justice ──
-    teamwork:    {e:"🧠➕🧠", s:"Two heads are better than one", a:["two heads are better than one"], link:"the group's result is your result"},
+    teamwork:    {e:"🧠➕🧠", s:"Two heads are better than one", a:["two heads are better than one","2 heads are better than one"], link:"the group's result is your result"},
     fairness:    {e:"⚖️🟦",  s:"Fair and square", a:["fair and square"], link:"the same standard for everyone"},
-    leadership:  {e:"👑➡️",  s:"Lead the way", a:["lead the way","leading the way","lead by example"], link:"giving a group direction"},
+    leadership:  {e:"👑🛣️",  s:"Lead the way", a:["lead the way","leading the way","lead by example","show the way"], link:"giving a group direction"},
     // ── Temperance ──
     forgiveness: {e:"🙏❌💭", s:"Forgive and forget", a:["forgive and forget"], link:"giving people a way back"},
-    humility:    {e:"⬇️🌍",  s:"Down to earth", a:["down to earth"], link:"not needing to be the headline"},
+    humility:    {e:"⬇️➡️🌍",  s:"Down to earth", a:["down to earth","be down to earth"], link:"not needing to be the headline"},
     prudence:    {e:"👀➡️🦘", s:"Look before you leap", a:["look before you leap"], link:"weighing where a choice leads"},
-    regulation:  {e:"😌❄️",  s:"Keep your cool", a:["keep your cool","keeping your cool","stay cool"], link:"impulses get a vote, not a veto"},
+    regulation:  {e:"😎❄️",  s:"Keep your cool", a:["keep your cool","keeping your cool","stay cool","keep cool","stay calm","keep calm","chill out"], link:"impulses get a vote, not a veto"},
     // ── Transcendence ──
-    appreciation:{e:"🛑👃🌹", s:"Stop and smell the roses", a:["stop and smell the roses","smell the roses"], link:"noticing quality and beauty"},
-    gratitude:   {e:"🔢🙏",  s:"Count your blessings", a:["count your blessings","counting your blessings"], link:"tracking the good rather than taking it as given"},
-    hope:        {e:"💡🚇",  s:"Light at the end of the tunnel", a:["light at the end of the tunnel","the light at the end of the tunnel"], link:"treating the future as something to build"},
-    humour:      {e:"😂💊",  s:"Laughter is the best medicine", a:["laughter is the best medicine"], link:"finding and sharing the light side"},
-    spirituality:{e:"🧘☮️",  s:"Inner peace", a:["inner peace","find your inner peace"], link:"a sense of meaning beyond the day-to-day"},
+    appreciation:{e:"🛑👃🌹", s:"Stop and smell the roses", a:["stop and smell the roses","smell the roses","stop to smell the roses"], link:"noticing quality and beauty"},
+    gratitude:   {e:"🔢🙏",  s:"Count your blessings", a:["count your blessings","counting your blessings","count my blessings"], link:"tracking the good rather than taking it as given"},
+    hope:        {e:"💡🚇",  s:"Light at the end of the tunnel", a:["light at the end of the tunnel","the light at the end of the tunnel","theres light at the end of the tunnel"], link:"treating the future as something to build"},
+    humour:      {e:"😂💊",  s:"Laughter is the best medicine", a:["laughter is the best medicine","laughters the best medicine"], link:"finding and sharing the light side"},
+    spirituality:{e:"🧠☮️",  s:"Inner peace", a:["inner peace","find inner peace","find your inner peace","at peace","peace within"], link:"a sense of meaning beyond the day-to-day"},
   };
 
   // ── Strength + virtue reference (mirrors Guess the Strength) ──
@@ -185,22 +185,69 @@
     return {label:`Term ${chosen.t} \u00b7 Week ${chosen.w}`,abs:chosenAbs||1,t:chosen.t,w:chosen.w};
   }
   function cshsWeekLabel(){return cshsWeekInfo().label;}
-  const FOCUS_SCHEDULE={
-    '1-3':['love','kindness'],'1-5':['social','love'],'1-7':['forgiveness','kindness','love'],'1-9':['gratitude','hope'],
-    '2-1':['humour','appreciation'],'2-3':['spirituality','gratitude','hope','humour'],'2-5':['curiosity','learning'],'2-7':['judgement','creativity'],'2-9':['perspective','curiosity','judgement','creativity'],
-    '3-1':['fairness','teamwork'],'3-3':['leadership','teamwork'],'3-5':['fairness','teamwork','leadership'],'3-7':['bravery','perseverance'],'3-9':['honesty','zest'],
-    '4-1':['bravery','perseverance','honesty'],'4-3':['regulation','prudence'],'4-5':['humility','regulation'],'4-7':'ALL'
+  // ════════════════════════════════════════════════════════════════════════
+  //  EVENT & WELLBEING PUZZLES — EDIT HERE
+  //  Shown on weeks that aren't tied to a single strength (awareness days,
+  //  celebrations, reviews). Same fields as strengths, plus title/sub for the hint.
+  //  ⚠ naidoc and reconciliation touch First Nations culture — review/replace
+  //  these with input from the school's First Nations staff/community.
+  // ════════════════════════════════════════════════════════════════════════
+  const EVENTS = {
+    freshstart:   {e:"🔄🍃",   s:"Turn over a new leaf", a:["turn over a new leaf","new leaf","a new leaf","fresh start","clean slate"], title:"Fresh start", cat:"Welcome back", sub:"Start of the year", link:"a clean slate for the new school year"},
+    friendships:  {e:"🧊🔨",   s:"Break the ice", a:["break the ice","breaking the ice","ice breaker","icebreaker"], title:"New connections", cat:"Getting to know each other", sub:"Settling in", link:"making the first move to connect with someone new"},
+    pancake:      {e:"🥞📅",   s:"Pancake Tuesday", a:["pancake tuesday","pancake day","shrove tuesday","pancakes"], title:"Pancake Tuesday", cat:"Celebration", sub:"17 February", link:"the feast day before Lent — time to flip some pancakes"},
+    iwd:          {e:"🌍👩📅", s:"International Women's Day", a:["international womens day","womens day","iwd"], title:"International Women's Day", cat:"Awareness day", sub:"8 March", link:"celebrating women's achievements and equality"},
+    harmony:      {e:"❤️🤝🌏", s:"Everyone belongs", a:["everyone belongs","harmony day","we all belong","everybody belongs","harmony"], title:"Harmony Day", cat:"Awareness day", sub:"21 March", link:"Harmony Day celebrates cultural diversity — everyone belongs"},
+    anzac:        {e:"🕯️🎖️🌅", s:"Lest we forget", a:["lest we forget","anzac day","anzac","we will remember them"], title:"ANZAC Day", cat:"Day of remembrance", sub:"25 April", link:"honouring all who served and sacrificed"},
+    reconciliation:{e:"🚶🚶🤝",  s:"Walk together", a:["walk together","walking together","reconciliation week","reconciliation","national reconciliation week","come together"], title:"National Reconciliation Week", cat:"Awareness week", sub:"27 May – 3 June", link:"building respect between Aboriginal and Torres Strait Islander peoples and all Australians"},
+    naidoc:       {e:"🎉🌏🎭", s:"Celebrate culture", a:["celebrate culture","celebrating culture","naidoc week","naidoc","celebrate first nations"], title:"NAIDOC Week", cat:"Awareness week", sub:"July · First Nations", link:"celebrating the history, culture and achievements of Aboriginal and Torres Strait Islander peoples"},
+    wellbeing1:   {e:"😮‍💨🧘", s:"Take a deep breath", a:["take a deep breath","deep breath","breathe","just breathe","take a breath"], title:"Wellbeing check-in", cat:"Wellbeing check-in", sub:"Mid-term reset", link:"a moment to pause, reset and look after yourself"},
+    bullying:     {e:"🗣️⬆️",  s:"Speak up", a:["speak up","speaking up","stand up","say something"], title:"Bullying No Way Week", cat:"Awareness week", sub:"August", link:"stand up and speak up — bullying is never okay"},
+    ruok:         {e:"👀❓🆗", s:"Are you OK?", a:["are you ok","r u ok","ru ok","are you okay","you ok","ruok","r u ok day"], title:"R U OK?Day", cat:"Wellbeing day", sub:"10 September", link:"a genuine conversation can change a life — just ask"},
+    teachersday:  {e:"🙏🍎👩‍🏫", s:"Thank a teacher", a:["thank a teacher","thank your teacher","thank you teacher","world teachers day","teachers day"], title:"World Teachers' Day", cat:"Celebration", sub:"Late October", link:"saying thanks to the teachers who help you grow"},
+    wellbeing2:   {e:"🔋⚡",   s:"Recharge your batteries", a:["recharge your batteries","recharge","recharge the batteries","power up"], title:"Wellbeing check-in", cat:"Wellbeing check-in", sub:"Term 4 reset", link:"topping up your energy for the run to the end of the year"},
+    remembrance:  {e:"🕚🌹🕊️", s:"We will remember them", a:["we will remember them","remembrance day","lest we forget","remember them"], title:"Remembrance Day", cat:"Day of remembrance", sub:"11 November", link:"a minute's silence for those who served"},
+    reflect:      {e:"🪞💭",   s:"Time to reflect", a:["time to reflect","reflect","look back","reflect on the year"], title:"Year in review", cat:"Year in review", sub:"Final fortnight", link:"looking back on how far you've grown this year"},
+    wrap:         {e:"🎬🌯",   s:"That's a wrap", a:["thats a wrap","that is a wrap","the end","all done","wrap","done for the year"], title:"Last week!", cat:"End of year", sub:"Final week", link:"that's a wrap on the year — well done, everyone"},
+    _default:     {e:"😊🤝",   s:"We're all in this together", a:["were all in this together","all in this together","in this together"], title:"Wellbeing & relationships", cat:"Wellbeing & relationships", sub:"This week", link:"looking out for yourself and each other"},
   };
-  const WEEK_BANK=['kindness','perseverance','humour','judgement','gratitude','bravery','teamwork','prudence','curiosity','leadership','spirituality','zest','fairness','creativity','regulation','love','perspective','forgiveness','appreciation','honesty','social','hope','humility','learning','gratitude','bravery','curiosity','teamwork','humour','prudence','kindness','perspective','zest','fairness','forgiveness','learning','leadership','appreciation','honesty','hope'];
-  function focusForThisWeek(){
+
+  // Virtue → CSHS Learner Value
+  const LEARNER_VALUE={Wisdom:'Curiosity & Drive',Transcendence:'Curiosity & Drive',Humanity:'Compassion',Justice:'Integrity',Courage:'Integrity',Temperance:'Integrity'};
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  40-WEEK PLAN — EDIT HERE.  Each week is either {s:'strengthId'} or {ev:'eventKey'}.
+  //  Keyed "term-week". Strengths appear once each; events/wellbeing fill the rest.
+  // ════════════════════════════════════════════════════════════════════════
+  const WEEK_PLAN={
+    // Review (start)
+    '1-1':{ev:'freshstart'}, '1-2':{ev:'friendships'},
+    // Humanity (Compassion)
+    '1-3':{s:'love'}, '1-4':{ev:'pancake'}, '1-5':{s:'kindness'}, '1-6':{ev:'iwd'}, '1-7':{s:'social'}, '1-8':{ev:'harmony'},
+    // Transcendence (Curiosity & Drive)
+    '1-9':{s:'gratitude'}, '1-10':{s:'appreciation'}, '2-1':{ev:'anzac'}, '2-2':{s:'hope'}, '2-3':{s:'humour'}, '2-4':{s:'spirituality'},
+    // Wisdom (Curiosity & Drive)
+    '2-5':{s:'curiosity'}, '2-6':{ev:'reconciliation'}, '2-7':{s:'creativity'}, '2-8':{s:'judgement'}, '2-9':{s:'perspective'}, '2-10':{s:'learning'},
+    // Justice (Integrity)
+    '3-1':{ev:'naidoc'}, '3-2':{s:'teamwork'}, '3-3':{s:'fairness'}, '3-4':{s:'leadership'}, '3-5':{ev:'wellbeing1'}, '3-6':{ev:'bullying'},
+    // Courage (Integrity)
+    '3-7':{s:'bravery'}, '3-8':{s:'perseverance'}, '3-9':{ev:'ruok'}, '3-10':{s:'honesty'}, '4-1':{s:'zest'}, '4-2':{ev:'teachersday'},
+    // Temperance (Integrity)
+    '4-3':{s:'forgiveness'}, '4-4':{ev:'wellbeing2'}, '4-5':{s:'humility'}, '4-6':{ev:'remembrance'}, '4-7':{s:'prudence'}, '4-8':{s:'regulation'},
+    // Review (end)
+    '4-9':{ev:'reflect'}, '4-10':{ev:'wrap'},
+  };
+
+  function planForThisWeek(){
     const info=cshsWeekInfo();
-    const pairStart=info.w%2===0?info.w-1:info.w;
-    let focus=FOCUS_SCHEDULE[info.t+'-'+pairStart];
-    if(focus==='ALL')focus=STRENGTHS.map(s=>s.id);
-    const pool=(focus&&focus.length)?focus:[WEEK_BANK[(info.abs-1)%WEEK_BANK.length]];
-    const idx=(focus&&focus.length)?(info.w-pairStart)%pool.length:0;
-    const id=pool[idx];
-    return STRENGTHS.find(s=>s.id===id);
+    const cell=WEEK_PLAN[info.t+'-'+info.w];
+    if(cell&&cell.s){
+      const st=STRENGTHS.find(x=>x.id===cell.s); const ph=PHRASES[cell.s];
+      return {puzzle:ph, title:st.name, sub:st.virtue+' · '+(LEARNER_VALUE[st.virtue]||''),
+              label:"This week's focus strength", linkHtml:`Links to <b>${st.name}</b> (${st.virtue}) — ${ph.link}.`};
+    }
+    const ev=EVENTS[(cell&&cell.ev)]||EVENTS._default;
+    return {puzzle:ev, title:ev.cat||ev.title, sub:ev.sub, label:"This week", linkHtml:`<b>${ev.title}</b> — ${ev.link}.`};
   }
 
   const HOUSES=['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
@@ -210,20 +257,20 @@
   // Add or change values here to allow more/fewer guesses.
   const GUESS_SCORES=[10,7,4];
   let selectedHouse=null,selectedGroup=null,attempt=0,finalScore=0;
-  let focusStrength=null,puzzle=null;
+  let puzzle=null,current=null;
 
   const weekTag=document.getElementById('weekTag');
   const entryView=document.getElementById('entryView'),playView=document.getElementById('playView'),resultView=document.getElementById('resultView');
   const lockNotice=document.getElementById('lockNotice'),revealPuzzleBtn=document.getElementById('revealPuzzleBtn');
-  const fhStrength=document.getElementById('fhStrength'),fhVirtue=document.getElementById('fhVirtue');
+  const fhStrength=document.getElementById('fhStrength'),fhVirtue=document.getElementById('fhVirtue'),fhLabel=document.getElementById('fhLabel');
   const emojiDisplay=document.getElementById('emojiDisplay'),answerInput=document.getElementById('answerInput'),feedback=document.getElementById('feedback');
   const guessBtn=document.getElementById('guessBtn'),revealAnsBtn=document.getElementById('revealAnsBtn');
   const revealAnswer=document.getElementById('revealAnswer'),revealScore=document.getElementById('revealScore'),revealLink=document.getElementById('revealLink');
   const submitBtn=document.getElementById('submitBtn');
 
   function init(){
-    focusStrength=focusForThisWeek();
-    puzzle=PHRASES[focusStrength.id];
+    current=planForThisWeek();
+    puzzle=current.puzzle;
     weekTag.textContent=cshsWeekLabel();
     document.getElementById('houseSelectBtns').innerHTML=HOUSES.map(h=>`<button class="group-btn" onclick="selectHouse('${h}')">${h}</button>`).join('');
     document.getElementById('groupSelectBtns').innerHTML=GROUPS.map(g=>`<button class="group-btn" onclick="selectGroup('${g}')">${g}</button>`).join('');
@@ -259,8 +306,9 @@
     if(!full)return;
     if(isPlayed(full)){checkEntry();return;}
     markPlayedLS(full);              // commit the home group's one attempt now
-    fhStrength.textContent=focusStrength.name;
-    fhVirtue.textContent=focusStrength.virtue;
+    fhLabel.textContent=current.label;
+    fhStrength.textContent=current.title;
+    fhVirtue.textContent=current.sub;
     renderEmoji(puzzle.e);
     attempt=0;feedback.textContent='You get '+GUESS_SCORES.length+' guesses — fewer tries, higher score.';feedback.className='feedback';
     answerInput.value='';answerInput.disabled=false;
@@ -299,7 +347,7 @@
     answerInput.disabled=true;guessBtn.disabled=true;revealAnsBtn.style.display='none';
     revealAnswer.textContent=emojiText(puzzle.e)+'  —  '+puzzle.s;
     revealScore.textContent='Score: '+finalScore+' / 10';
-    revealLink.innerHTML=`Links to <b>${focusStrength.name}</b> (${focusStrength.virtue}) — ${puzzle.link}.`;
+    revealLink.innerHTML=current.linkHtml;
     playView.style.display='none';resultView.style.display='';
     submitBtn.focus();
   }
