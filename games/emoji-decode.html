@@ -9,29 +9,29 @@
   :root{
     --green:#00180f;--green-mid:#003d1f;--green-light:#005a2e;
     --gold:#f2b400;--gold-dim:rgba(242,180,0,0.15);--gold-border:rgba(242,180,0,0.3);
-    --white:#fdfdfd;--muted:rgba(255,255,255,0.55);--danger:#e05252;--correct:#4caf7a;
+    --white:#fdfdfd;--muted:rgba(255,255,255,0.62);--danger:#e05252;--correct:#4caf7a;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background:var(--green);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;}
   .header{text-align:center;margin-bottom:20px;}
-  .header-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .header-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
   .header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,8vw,3.8rem);letter-spacing:.06em;color:var(--white);line-height:1;}
   .header h1 span{color:var(--gold);}
   .header-sub{font-size:13px;color:var(--muted);margin-top:8px;}
   .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:16px;width:100%;max-width:480px;}
 
-  .week-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px;}
+  .week-tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px;}
 
-  .form-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
+  .form-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
   .group-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
   .group-btn{background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--white);padding:8px 6px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
   .group-btn:hover{background:rgba(242,180,0,0.28);border-color:var(--gold);}
   .group-btn.selected{background:var(--gold);color:var(--green);border-color:var(--gold);}
 
   .focus-hint{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:12px 16px;margin-bottom:18px;text-align:center;}
-  .focus-hint .fh-label{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .focus-hint .fh-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
   .focus-hint .fh-strength{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;color:var(--gold);letter-spacing:.04em;line-height:1.1;margin-top:2px;}
-  .focus-hint .fh-virtue{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+  .focus-hint .fh-virtue{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
 
   .emoji-display{text-align:center;font-size:clamp(3.2rem,17vw,5.5rem);line-height:1.15;margin-bottom:18px;min-height:1.4em;word-break:break-word;letter-spacing:.06em;}
 
@@ -58,10 +58,11 @@
   .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
   .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold-border);}
   .btn-outline:hover{background:var(--gold-dim);}
+  .group-btn:focus-visible,.btn:focus-visible,.answer-input:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
 
   .lock-notice{display:none;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.35);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:#ffb3b3;text-align:center;font-family:'DM Mono',monospace;line-height:1.5;}
   .lock-notice.show{display:block;}
-  .warn-line{font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px;font-family:'DM Mono',monospace;}
+  .warn-line{font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;font-family:'DM Mono',monospace;}
 </style>
 </head>
 <body>
@@ -80,7 +81,7 @@
     <div class="group-select" id="houseSelectBtns"></div>
     <span class="form-label">Home Group</span>
     <div class="group-select" id="groupSelectBtns"></div>
-    <div class="lock-notice" id="lockNotice"></div>
+    <div class="lock-notice" id="lockNotice" role="status" aria-live="polite"></div>
     <div class="warn-line">One attempt per home group, per week. Staff can replay freely.</div>
     <button class="btn btn-primary" id="revealPuzzleBtn" onclick="revealPuzzle()" disabled>Reveal this week's puzzle</button>
   </div>
@@ -92,16 +93,16 @@
       <div class="fh-strength" id="fhStrength">—</div>
       <div class="fh-virtue" id="fhVirtue">—</div>
     </div>
-    <div class="emoji-display" id="emojiDisplay">❓</div>
-    <input class="answer-input" id="answerInput" type="text" placeholder="Type the phrase…" maxlength="60" autocomplete="off">
-    <div class="feedback" id="feedback"></div>
+    <div class="emoji-display" id="emojiDisplay" aria-live="polite">❓</div>
+    <input class="answer-input" id="answerInput" aria-label="Type your answer to the emoji clue" type="text" placeholder="Type the phrase…" maxlength="60" autocomplete="off">
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
     <button class="btn btn-primary" id="guessBtn" onclick="submitGuess()">Guess</button>
     <button class="btn btn-outline" id="revealAnsBtn" onclick="giveUp()">Reveal answer</button>
   </div>
 
   <!-- RESULT -->
   <div id="resultView" style="display:none">
-    <div class="reveal-panel show" id="revealPanel">
+    <div class="reveal-panel show" id="revealPanel" aria-live="polite">
       <div class="reveal-answer" id="revealAnswer"></div>
       <div class="reveal-score" id="revealScore"></div>
       <div class="reveal-link" id="revealLink"></div>
@@ -137,7 +138,7 @@
     honesty:     {e:"📖🔓",   s:"An open book", a:["an open book","open book","like an open book"], link:"nothing hidden — what's there is what's real"},
     zest:        {e:"✊📅",   s:"Seize the day", a:["seize the day","carpe diem"], link:"bringing energy to the day"},
     // ── Humanity ──
-    love:        {e:"❤️➡️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around"], link:"investing in the people who matter"},
+    love:        {e:"❤️➡️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around","love makes the world spin"], link:"investing in the people who matter"},
     kindness:    {e:"🤝🫶",  s:"A helping hand", a:["a helping hand","helping hand","lend a helping hand","helping hands","give a helping hand"], link:"noticing what others need and helping"},
     social:      {e:"👀🧑‍🤝‍🧑",  s:"Read the room", a:["read the room","reading the room","read the situation"], link:"picking up on mood and unspoken signals"},
     // ── Justice ──
@@ -196,8 +197,8 @@
     freshstart:   {e:"🔄🍃",   s:"Turn over a new leaf", a:["turn over a new leaf","new leaf","a new leaf","fresh start","clean slate"], title:"Fresh start", cat:"Welcome back", sub:"Start of the year", link:"a clean slate for the new school year"},
     friendships:  {e:"🧊🔨",   s:"Break the ice", a:["break the ice","breaking the ice","ice breaker","icebreaker"], title:"New connections", cat:"Getting to know each other", sub:"Settling in", link:"making the first move to connect with someone new"},
     pancake:      {e:"🥞📅",   s:"Pancake Tuesday", a:["pancake tuesday","pancake day","shrove tuesday","pancakes"], title:"Pancake Tuesday", cat:"Celebration", sub:"17 February", link:"the feast day before Lent — time to flip some pancakes"},
-    iwd:          {e:"🌍👩📅", s:"International Women's Day", a:["international womens day","womens day","iwd"], title:"International Women's Day", cat:"Awareness day", sub:"8 March", link:"celebrating women's achievements and equality"},
-    harmony:      {e:"❤️🤝🌏", s:"Everyone belongs", a:["everyone belongs","harmony day","we all belong","everybody belongs","harmony"], title:"Harmony Day", cat:"Awareness day", sub:"21 March", link:"Harmony Day celebrates cultural diversity — everyone belongs"},
+    iwd:          {e:"🌍👩🎉", s:"International Women's Day", a:["international womens day","womens day","iwd"], title:"International Women's Day", cat:"Awareness day", sub:"8 March", link:"celebrating women's achievements and equality"},
+    harmony:      {e:"❤️🤝🌏", s:"Everyone belongs", a:["everyone belongs","harmony day","we all belong","everybody belongs","harmony","everyone fits in"], title:"Harmony Day", cat:"Awareness day", sub:"21 March", link:"Harmony Day celebrates cultural diversity — everyone belongs"},
     anzac:        {e:"🕯️🎖️🌅", s:"Lest we forget", a:["lest we forget","anzac day","anzac","we will remember them"], title:"ANZAC Day", cat:"Day of remembrance", sub:"25 April", link:"honouring all who served and sacrificed"},
     reconciliation:{e:"🚶🚶🤝",  s:"Walk together", a:["walk together","walking together","reconciliation week","reconciliation","national reconciliation week","come together"], title:"National Reconciliation Week", cat:"Awareness week", sub:"27 May – 3 June", link:"building respect between Aboriginal and Torres Strait Islander peoples and all Australians"},
     naidoc:       {e:"🎉🌏🎭", s:"Celebrate culture", a:["celebrate culture","celebrating culture","naidoc week","naidoc","celebrate first nations"], title:"NAIDOC Week", cat:"Awareness week", sub:"July · First Nations", link:"celebrating the history, culture and achievements of Aboriginal and Torres Strait Islander peoples"},
