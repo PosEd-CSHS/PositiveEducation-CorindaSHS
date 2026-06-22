@@ -245,33 +245,32 @@ const QUESTIONS = [
    in that fortnight so the secret is always valid. Review fortnights at the
    very end of year draw from all 24 strengths by absolute-week cycling. */
 const WEEK_PLAN_GTS = {
-  /* T1 Review → Humanity block */
-  '1-1':'love',        '1-2':'love',
+  /* T1 PERMAH overview weeks */
+  '1-1':'love',        '1-2':'love',        '1-3':'love',        '1-4':'love',
   /* Humanity */
-  '1-3':'love',        '1-4':'love',
-  '1-5':'social',      '1-6':'social',
-  '1-7':'kindness',    '1-8':'kindness',
+  '1-5':'love',        '1-6':'love',
+  '1-7':'social',      '1-8':'kindness',
   /* Transcendence */
-  '1-9':'humour',      '1-10':'spirituality',
-  '2-1':'appreciation','2-2':'hope',
-  '2-3':'gratitude',   '2-4':'gratitude',
+  '1-9':'humour',      '1-10':'humour',
+  '2-1':'spirituality','2-2':'appreciation',
+  '2-3':'hope',        '2-4':'gratitude',
   /* Wisdom */
-  '2-5':'learning',    '2-6':'perspective',
-  '2-7':'curiosity',   '2-8':'creativity',
-  '2-9':'judgement',   '2-10':'judgement',
+  '2-5':'learning',    '2-6':'learning',
+  '2-7':'perspective', '2-8':'curiosity',
+  '2-9':'creativity',  '2-10':'judgement',
+  /* T3 PERMAH recap */
+  '3-1':'ALL',         '3-2':'ALL',
   /* Justice */
-  '3-1':'leadership',  '3-2':'leadership',
-  '3-3':'fairness',    '3-4':'fairness',
-  '3-5':'teamwork',    '3-6':'teamwork',
+  '3-3':'leadership',  '3-4':'leadership',
+  '3-5':'fairness',    '3-6':'teamwork',
   /* Courage */
-  '3-7':'zest',        '3-8':'bravery',
-  '3-9':'perseverance','3-10':'perseverance',
+  '3-7':'zest',        '3-8':'zest',
+  '3-9':'bravery',     '3-10':'perseverance',
   '4-1':'honesty',     '4-2':'honesty',
   /* Temperance */
   '4-3':'prudence',    '4-4':'humility',
   '4-5':'regulation',  '4-6':'forgiveness',
-  /* Year review — cycles through all 24 by abs week */
-  '4-7':'ALL', '4-8':'ALL', '4-9':'ALL', '4-10':'ALL',
+  '4-7':'forgiveness', '4-8':'ALL',
 };
 function secretForThisWeek(){
   const info = cshsWeekInfo();

@@ -221,24 +221,26 @@
   //  Keyed "term-week". Strengths appear once each; events/wellbeing fill the rest.
   // ════════════════════════════════════════════════════════════════════════
   const WEEK_PLAN={
-    // Review (start)
-    '1-1':{ev:'freshstart'}, '1-2':{ev:'friendships'},
+    // PERMAH overview (T1 W1–4)
+    '1-1':{ev:'_default'}, '1-2':{ev:'_default'}, '1-3':{ev:'_default'}, '1-4':{ev:'_default'},
     // Humanity (Compassion)
-    '1-3':{s:'love'}, '1-4':{ev:'pancake'}, '1-5':{s:'social'}, '1-6':{ev:'iwd'}, '1-7':{s:'kindness'}, '1-8':{ev:'harmony'},
+    '1-5':{ev:'_default'}, '1-6':{s:'love'}, '1-7':{s:'social'}, '1-8':{s:'kindness'},
     // Transcendence (Curiosity & Drive)
-    '1-9':{s:'humour'}, '1-10':{s:'spirituality'},
-    '2-1':{s:'appreciation'}, '2-2':{s:'hope'}, '2-3':{s:'gratitude'}, '2-4':{ev:'mothersday'},
+    '1-9':{ev:'_default'}, '1-10':{s:'humour'},
+    '2-1':{s:'spirituality'}, '2-2':{s:'appreciation'}, '2-3':{s:'hope'}, '2-4':{s:'gratitude'},
     // Wisdom (Curiosity & Drive)
-    '2-5':{s:'learning'}, '2-6':{s:'perspective'}, '2-7':{s:'curiosity'}, '2-8':{s:'creativity'}, '2-9':{s:'judgement'}, '2-10':{ev:'pyjama'},
+    '2-5':{ev:'_default'}, '2-6':{s:'learning'}, '2-7':{s:'perspective'}, '2-8':{s:'curiosity'},
+    '2-9':{s:'creativity'}, '2-10':{s:'judgement'},
+    // PERMAH recap (T3 W1–2)
+    '3-1':{ev:'_default'}, '3-2':{ev:'_default'},
     // Justice (Integrity)
-    '3-1':{ev:'naidoc'}, '3-2':{s:'leadership'}, '3-3':{s:'fairness'}, '3-4':{ev:'daggyjumper'}, '3-5':{s:'teamwork'}, '3-6':{ev:'bullying'},
+    '3-3':{ev:'_default'}, '3-4':{s:'leadership'}, '3-5':{s:'fairness'}, '3-6':{s:'teamwork'},
     // Courage (Integrity)
-    '3-7':{s:'zest'}, '3-8':{s:'bravery'}, '3-9':{s:'perseverance'}, '3-10':{ev:'ruok'},
-    '4-1':{s:'honesty'}, '4-2':{ev:'teachersday'},
+    '3-7':{ev:'_default'}, '3-8':{s:'zest'}, '3-9':{s:'bravery'}, '3-10':{s:'perseverance'},
+    '4-1':{s:'honesty'}, '4-2':{ev:'_default'},
     // Temperance (Integrity)
-    '4-3':{s:'prudence'}, '4-4':{s:'humility'}, '4-5':{s:'regulation'}, '4-6':{s:'forgiveness'}, '4-7':{ev:'socialinclusion'}, '4-8':{ev:'reflect'},
-    // Review (end)
-    '4-9':{ev:'athletics'}, '4-10':{ev:'wrap'},
+    '4-3':{ev:'_default'}, '4-4':{s:'prudence'}, '4-5':{s:'humility'}, '4-6':{s:'regulation'},
+    '4-7':{s:'forgiveness'}, '4-8':{ev:'_default'},
   };
 
   function planForThisWeek(){
