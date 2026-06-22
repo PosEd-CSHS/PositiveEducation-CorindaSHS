@@ -240,53 +240,46 @@ const QUESTIONS = [
 ];
 
 /* ── WEEKLY SECRET ──
-   Aligned to the homegroup-lessons focus schedule: the secret is one of the
-   fortnight's focus strengths (alternating across the two weeks). Review
-   fortnights draw from the focus virtue's strengths. Unscheduled weeks fall
-   back to a fixed bank. Same strength for every homegroup in a given week. */
-const FOCUS_SCHEDULE = {
-  /* Term 1 */
-  '1-3': ['love','kindness'],
-  '1-5': ['social','love'],
-  '1-7': ['forgiveness','kindness','love'],
-  '1-9': ['gratitude','hope'],
-  /* Term 2 */
-  '2-1': ['humour','appreciation'],
-  '2-3': ['spirituality','gratitude','hope','humour'],
-  '2-5': ['curiosity','learning'],
-  '2-7': ['judgement','creativity'],
-  '2-9': ['perspective','curiosity','judgement','creativity'],
-  /* Term 3 */
-  '3-1': ['fairness','teamwork'],
-  '3-3': ['leadership','teamwork'],
-  '3-5': ['fairness','teamwork','leadership'],
-  '3-7': ['bravery','perseverance'],
-  '3-9': ['honesty','zest'],
-  /* Term 4 */
-  '4-1': ['bravery','perseverance','honesty'],
-  '4-3': ['regulation','prudence'],
-  '4-5': ['humility','regulation'],
-  '4-7': 'ALL'  /* Year Review — any of the 24 */
+   Week-by-week schedule aligned to the 2026 Corinda SHS focus strength plan.
+   Event and review weeks use the same strength as the nearest strength week
+   in that fortnight so the secret is always valid. Review fortnights at the
+   very end of year draw from all 24 strengths by absolute-week cycling. */
+const WEEK_PLAN_GTS = {
+  /* T1 Review → Humanity block */
+  '1-1':'love',        '1-2':'love',
+  /* Humanity */
+  '1-3':'love',        '1-4':'love',
+  '1-5':'social',      '1-6':'social',
+  '1-7':'kindness',    '1-8':'kindness',
+  /* Transcendence */
+  '1-9':'humour',      '1-10':'spirituality',
+  '2-1':'appreciation','2-2':'hope',
+  '2-3':'gratitude',   '2-4':'gratitude',
+  /* Wisdom */
+  '2-5':'learning',    '2-6':'perspective',
+  '2-7':'curiosity',   '2-8':'creativity',
+  '2-9':'judgement',   '2-10':'judgement',
+  /* Justice */
+  '3-1':'leadership',  '3-2':'leadership',
+  '3-3':'fairness',    '3-4':'fairness',
+  '3-5':'teamwork',    '3-6':'teamwork',
+  /* Courage */
+  '3-7':'zest',        '3-8':'bravery',
+  '3-9':'perseverance','3-10':'perseverance',
+  '4-1':'honesty',     '4-2':'honesty',
+  /* Temperance */
+  '4-3':'prudence',    '4-4':'humility',
+  '4-5':'regulation',  '4-6':'forgiveness',
+  /* Year review — cycles through all 24 by abs week */
+  '4-7':'ALL', '4-8':'ALL', '4-9':'ALL', '4-10':'ALL',
 };
-const WEEK_BANK = [
- 'kindness','perseverance','humour','judgement','gratitude','bravery','teamwork','prudence',
- 'curiosity','leadership','spirituality','zest','fairness','creativity','regulation','love',
- 'perspective','forgiveness','appreciation','honesty','social','hope','humility','learning',
- 'gratitude','bravery','curiosity','teamwork','humour','prudence','kindness','perspective',
- 'zest','fairness','forgiveness','learning','leadership','appreciation','honesty','hope'
-];
 function secretForThisWeek(){
   const info = cshsWeekInfo();
-  const pairStart = info.w % 2 === 0 ? info.w - 1 : info.w;
-  let focus = FOCUS_SCHEDULE[info.t + '-' + pairStart];
-  if (focus === 'ALL') focus = STRENGTHS.map(s => s.id);
-  const pool = (focus && focus.length)
-    ? focus
-    : [WEEK_BANK[(info.abs - 1) % WEEK_BANK.length]];
-  /* Week 1 of a fortnight = the headline focus strength; week 2 = the alternate.
-     Unscheduled (bank-fallback) weeks keep the abs-week index. */
-  const idx = (focus && focus.length) ? (info.w - pairStart) % pool.length : 0;
-  const id = pool[idx];
+  const id = WEEK_PLAN_GTS[info.t + '-' + info.w];
+  if (!id || id === 'ALL') {
+    /* Year-review weeks: deterministic cycle through all 24 strengths */
+    return STRENGTHS[(info.abs - 1) % STRENGTHS.length];
+  }
   return STRENGTHS.find(s => s.id === id);
 }
 
