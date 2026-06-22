@@ -9,29 +9,29 @@
   :root{
     --green:#00180f;--green-mid:#003d1f;--green-light:#005a2e;
     --gold:#f2b400;--gold-dim:rgba(242,180,0,0.15);--gold-border:rgba(242,180,0,0.3);
-    --white:#fdfdfd;--muted:rgba(255,255,255,0.62);--danger:#e05252;--correct:#4caf7a;
+    --white:#fdfdfd;--muted:rgba(255,255,255,0.55);--danger:#e05252;--correct:#4caf7a;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'DM Sans',sans-serif;background:var(--green);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;}
   .header{text-align:center;margin-bottom:20px;}
-  .header-eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .header-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
   .header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,8vw,3.8rem);letter-spacing:.06em;color:var(--white);line-height:1;}
   .header h1 span{color:var(--gold);}
   .header-sub{font-size:13px;color:var(--muted);margin-top:8px;}
   .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:16px;width:100%;max-width:480px;}
 
-  .week-tag{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px;}
+  .week-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px;}
 
-  .form-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
+  .form-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
   .group-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
   .group-btn{background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--white);padding:8px 6px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
   .group-btn:hover{background:rgba(242,180,0,0.28);border-color:var(--gold);}
   .group-btn.selected{background:var(--gold);color:var(--green);border-color:var(--gold);}
 
   .focus-hint{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:12px 16px;margin-bottom:18px;text-align:center;}
-  .focus-hint .fh-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .focus-hint .fh-label{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
   .focus-hint .fh-strength{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;color:var(--gold);letter-spacing:.04em;line-height:1.1;margin-top:2px;}
-  .focus-hint .fh-virtue{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+  .focus-hint .fh-virtue{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
 
   .emoji-display{text-align:center;font-size:clamp(3.2rem,17vw,5.5rem);line-height:1.15;margin-bottom:18px;min-height:1.4em;word-break:break-word;letter-spacing:.06em;}
 
@@ -44,6 +44,9 @@
   .feedback.try{color:var(--gold);}
   .feedback.right{color:var(--correct);}
   .feedback.wrong{color:var(--danger);}
+  .hint-panel{display:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:center;font-size:13px;line-height:1.45;color:var(--white);}
+  .hint-panel.show{display:block;}
+  .hint-panel b{color:var(--gold);}
 
   .reveal-panel{display:none;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:16px 18px;margin-bottom:16px;text-align:center;}
   .reveal-panel.show{display:block;}
@@ -58,18 +61,17 @@
   .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
   .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold-border);}
   .btn-outline:hover{background:var(--gold-dim);}
-  .group-btn:focus-visible,.btn:focus-visible,.answer-input:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
 
   .lock-notice{display:none;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.35);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:#ffb3b3;text-align:center;font-family:'DM Mono',monospace;line-height:1.5;}
   .lock-notice.show{display:block;}
-  .warn-line{font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;font-family:'DM Mono',monospace;}
+  .warn-line{font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px;font-family:'DM Mono',monospace;}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="header-eyebrow">Corinda State High School</div>
   <h1>Emoji <span>Decode</span></h1>
-  <div class="header-sub">Crack this week's emoji phrase — linked to the focus strength</div>
+  <div class="header-sub">Crack this week's emoji phrase — hints appear after incorrect guesses</div>
 </div>
 
 <div class="card">
@@ -81,7 +83,7 @@
     <div class="group-select" id="houseSelectBtns"></div>
     <span class="form-label">Home Group</span>
     <div class="group-select" id="groupSelectBtns"></div>
-    <div class="lock-notice" id="lockNotice" role="status" aria-live="polite"></div>
+    <div class="lock-notice" id="lockNotice"></div>
     <div class="warn-line">One attempt per home group, per week. Staff can replay freely.</div>
     <button class="btn btn-primary" id="revealPuzzleBtn" onclick="revealPuzzle()" disabled>Reveal this week's puzzle</button>
   </div>
@@ -93,16 +95,18 @@
       <div class="fh-strength" id="fhStrength">—</div>
       <div class="fh-virtue" id="fhVirtue">—</div>
     </div>
-    <div class="emoji-display" id="emojiDisplay" aria-live="polite">❓</div>
-    <input class="answer-input" id="answerInput" aria-label="Type your answer to the emoji clue" type="text" placeholder="Type the phrase…" maxlength="60" autocomplete="off">
-    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+    <div class="emoji-display" id="emojiDisplay">❓</div>
+    <input class="answer-input" id="answerInput" type="text" placeholder="Type the phrase…" maxlength="60" autocomplete="off">
+    <div class="hint-panel" id="hintPanel"></div>
+    <div class="feedback" id="feedback"></div>
     <button class="btn btn-primary" id="guessBtn" onclick="submitGuess()">Guess</button>
+    <button class="btn btn-outline" id="clueBtn" onclick="showTeacherClue()">Need a clue?</button>
     <button class="btn btn-outline" id="revealAnsBtn" onclick="giveUp()">Reveal answer</button>
   </div>
 
   <!-- RESULT -->
   <div id="resultView" style="display:none">
-    <div class="reveal-panel show" id="revealPanel" aria-live="polite">
+    <div class="reveal-panel show" id="revealPanel">
       <div class="reveal-answer" id="revealAnswer"></div>
       <div class="reveal-score" id="revealScore"></div>
       <div class="reveal-link" id="revealLink"></div>
@@ -127,35 +131,35 @@
   // ════════════════════════════════════════════════════════════════════════
   const PHRASES = {
     // ── Wisdom ──
-    creativity:  {e:"🧠💡📦", s:"Thinking outside the box", a:["thinking outside the box","think outside the box","outside the box"], link:"finding new ideas instead of the obvious route"},
-    curiosity:   {e:"🐇🕳️",  s:"Down the rabbit hole", a:["down the rabbit hole","the rabbit hole","rabbit hole"], link:"following a question wherever it leads"},
-    judgement:   {e:"⚖️🤔",  s:"Weigh it up", a:["weigh it up","weigh the options","weighing it up","weigh up","weigh things up","weigh up the options"], link:"weighing the evidence before deciding"},
-    learning:    {e:"📚⚡",   s:"Knowledge is power", a:["knowledge is power"], link:"the value of what you learn"},
-    perspective: {e:["👁️", ["🏞️", 1.8]], s:"See the big picture", a:["see the big picture","the big picture","big picture","look at the big picture"], link:"seeing how the pieces fit together"},
+    creativity:  {e:"🧠💡📦", s:"Thinking outside the box", a:["thinking outside the box","think outside the box","outside the box"], cat:"Common phrase about creative thinking", hint:"Think about finding a new or unusual solution.", link:"finding new ideas instead of the obvious route"},
+    curiosity:   {e:"🐇🕳️",  s:"Down the rabbit hole", a:["down the rabbit hole","the rabbit hole","rabbit hole"], cat:"Common phrase about curiosity", hint:"Think about following one question into many more questions.", link:"following a question wherever it leads"},
+    judgement:   {e:"⚖️🤔",  s:"Weigh it up", a:["weigh it up","weigh the options","weighing it up","weigh up","weigh things up","weigh up the options"], cat:"Common phrase about making a decision", hint:"Think about considering the pros and cons.", link:"weighing the evidence before deciding"},
+    learning:    {e:[["📚",1.2],["⚡",1.8]],   s:"Knowledge is power", a:["knowledge is power","learning is power"], cat:"Common saying about learning", hint:"Think about why learning gives people strength and choices.", link:"the value of what you learn"},
+    perspective: {e:["👁️", ["🏞️", 1.8]], s:"See the big picture", a:["see the big picture","the big picture","big picture","look at the big picture"], cat:"Common phrase about perspective", hint:"Think about stepping back and seeing the whole situation.", link:"seeing how the pieces fit together"},
     // ── Courage ──
-    bravery:     {e:"🦁❤️‍🔥",  s:"Lionheart", a:["lionheart","lion heart","lionhearted","brave heart","braveheart"], link:"acting on your convictions despite fear"},
-    perseverance:{e:"🐢🏁",  s:"Slow and steady wins the race", a:["slow and steady wins the race","slow and steady","slow but steady wins the race"], link:"sticking at it until it's done"},
-    honesty:     {e:"📖🔓",   s:"An open book", a:["an open book","open book","like an open book"], link:"nothing hidden — what's there is what's real"},
-    zest:        {e:"✊📅",   s:"Seize the day", a:["seize the day","carpe diem"], link:"bringing energy to the day"},
+    bravery:     {e:[["🦁",1.5],["❤️‍🔥",1.5]],  s:"Lionheart", a:["lionheart","lion heart","lionhearted","brave heart","braveheart"], cat:"Common word linked to courage", hint:"Think of a brave person described with the heart of a lion.", link:"acting on your convictions despite fear"},
+    perseverance:{e:"🐢🏁",  s:"Slow and steady wins the race", a:["slow and steady wins the race","slow and steady","slow but steady wins the race"], cat:"Common saying about perseverance", hint:"Think of the tortoise and the hare.", link:"sticking at it until it's done"},
+    honesty:     {e:"📖🔓",   s:"An open book", a:["an open book","open book","like an open book"], cat:"Common phrase about being transparent", hint:"Think about someone who has nothing to hide.", link:"nothing hidden — what's there is what's real"},
+    zest:        {e:[["✊",1.5],["📅",1.2]],   s:"Seize the day", a:["seize the day","carpe diem","make the most of the day"], cat:"Common phrase about energy and action", hint:"Think about making the most of today.", link:"bringing energy to the day"},
     // ── Humanity ──
-    love:        {e:"❤️➡️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around","love makes the world spin"], link:"investing in the people who matter"},
-    kindness:    {e:"🤝🫶",  s:"A helping hand", a:["a helping hand","helping hand","lend a helping hand","helping hands","give a helping hand"], link:"noticing what others need and helping"},
-    social:      {e:"👀🧑‍🤝‍🧑",  s:"Read the room", a:["read the room","reading the room","read the situation"], link:"picking up on mood and unspoken signals"},
+    love:        {e:"❤️➡️🌍🔄", s:"Love makes the world go round", a:["love makes the world go round","love makes the world go around","love makes the world spin","makes the world go round","makes the world go around"], cat:"Common saying about love", hint:"Think about love being what keeps people and the world moving.", link:"investing in the people who matter"},
+    kindness:    {e:"🤝🫶",  s:"A helping hand", a:["a helping hand","helping hand","lend a helping hand","helping hands","give a helping hand"], cat:"Common phrase about helping others", hint:"Think about offering support to someone who needs it.", link:"noticing what others need and helping"},
+    social:      {e:"👀🧑‍🤝‍🧑",  s:"Read the room", a:["read the room","reading the room","read the situation","read people","read the crowd"], cat:"Common phrase about understanding people", hint:"Think about noticing the mood before you speak or act.", link:"picking up on mood and unspoken signals"},
     // ── Justice ──
-    teamwork:    {e:"🧠➕🧠", s:"Two heads are better than one", a:["two heads are better than one","2 heads are better than one"], link:"the group's result is your result"},
-    fairness:    {e:"⚖️🟦",  s:"Fair and square", a:["fair and square"], link:"the same standard for everyone"},
-    leadership:  {e:"👑🛣️",  s:"Lead the way", a:["lead the way","leading the way","lead by example","show the way"], link:"giving a group direction"},
+    teamwork:    {e:"🧠➕🧠", s:"Two heads are better than one", a:["two heads are better than one","2 heads are better than one","two minds are better than one"], cat:"Common saying about teamwork", hint:"Think about solving something with another person.", link:"the group's result is your result"},
+    fairness:    {e:"⚖️🟦",  s:"Fair and square", a:["fair and square","fair square"], cat:"Common phrase about fairness", hint:"Think about playing by the rules.", link:"the same standard for everyone"},
+    leadership:  {e:"👑🛣️",  s:"Lead the way", a:["lead the way","leading the way","lead by example","show the way"], cat:"Common phrase about leadership", hint:"Think about guiding others forward.", link:"giving a group direction"},
     // ── Temperance ──
-    forgiveness: {e:"🙏❌💭", s:"Forgive and forget", a:["forgive and forget"], link:"giving people a way back"},
-    humility:    {e:"⬇️➡️🌍",  s:"Down to earth", a:["down to earth","be down to earth"], link:"not needing to be the headline"},
-    prudence:    {e:"👀➡️🦘", s:"Look before you leap", a:["look before you leap"], link:"weighing where a choice leads"},
-    regulation:  {e:"😎❄️",  s:"Keep your cool", a:["keep your cool","keeping your cool","stay cool","keep cool","stay calm","keep calm","chill out"], link:"impulses get a vote, not a veto"},
+    forgiveness: {e:"🙏❌💭", s:"Forgive and forget", a:["forgive and forget","forgive forget","forgive someone and forget"], cat:"Common phrase about forgiveness", hint:"Think about letting go of what happened.", link:"giving people a way back"},
+    humility:    {e:"⬇️➡️🌍",  s:"Down to earth", a:["down to earth","be down to earth","stay grounded","grounded"], cat:"Common phrase about humility", hint:"Think about someone who stays grounded and not full of themselves.", link:"not needing to be the headline"},
+    prudence:    {e:"👀➡️🦘", s:"Look before you leap", a:["look before you leap","think before you leap","look before leaping"], cat:"Common saying about careful choices", hint:"Think about checking first before jumping into something.", link:"weighing where a choice leads"},
+    regulation:  {e:"😎❄️",  s:"Keep your cool", a:["keep your cool","keeping your cool","stay cool","keep cool","stay calm","keep calm","chill out"], cat:"Common phrase about self-control", hint:"Think about staying calm when emotions rise.", link:"impulses get a vote, not a veto"},
     // ── Transcendence ──
-    appreciation:{e:"🛑👃🌹", s:"Stop and smell the roses", a:["stop and smell the roses","smell the roses","stop to smell the roses"], link:"noticing quality and beauty"},
-    gratitude:   {e:"🔢🙏",  s:"Count your blessings", a:["count your blessings","counting your blessings","count my blessings"], link:"tracking the good rather than taking it as given"},
-    hope:        {e:"💡🚇",  s:"Light at the end of the tunnel", a:["light at the end of the tunnel","the light at the end of the tunnel","theres light at the end of the tunnel"], link:"treating the future as something to build"},
-    humour:      {e:"😂💊",  s:"Laughter is the best medicine", a:["laughter is the best medicine","laughters the best medicine"], link:"finding and sharing the light side"},
-    spirituality:{e:"🧠☮️",  s:"Inner peace", a:["inner peace","find inner peace","find your inner peace","at peace","peace within"], link:"a sense of meaning beyond the day-to-day"},
+    appreciation:{e:"🛑👃🌹", s:"Stop and smell the roses", a:["stop and smell the roses","smell the roses","stop to smell the roses"], cat:"Common saying about appreciating life", hint:"Think about slowing down to notice good things around you.", link:"noticing quality and beauty"},
+    gratitude:   {e:"🔢🙏",  s:"Count your blessings", a:["count your blessings","counting your blessings","count my blessings","be grateful"], cat:"Common phrase about gratitude", hint:"Think about noticing what you are thankful for.", link:"tracking the good rather than taking it as given"},
+    hope:        {e:"💡🚇",  s:"Light at the end of the tunnel", a:["light at the end of the tunnel","the light at the end of the tunnel","theres light at the end of the tunnel","there is light at the end of the tunnel"], cat:"Common phrase about hope", hint:"Think about a difficult time ending soon.", link:"treating the future as something to build"},
+    humour:      {e:"😂💊",  s:"Laughter is the best medicine", a:["laughter is the best medicine","laughters the best medicine","laughing is the best medicine"], cat:"Common saying about humour", hint:"Think about laughing making people feel better.", link:"finding and sharing the light side"},
+    spirituality:{e:"🧠☮️",  s:"Inner peace", a:["inner peace","find inner peace","find your inner peace","at peace","peace within"], cat:"Common phrase about calm and meaning", hint:"Think about feeling calm on the inside.", link:"a sense of meaning beyond the day-to-day"},
   };
 
   // ── Strength + virtue reference (mirrors Guess the Strength) ──
@@ -194,22 +198,22 @@
   //  these with input from the school's First Nations staff/community.
   // ════════════════════════════════════════════════════════════════════════
   const EVENTS = {
-    freshstart:   {e:"🔄🍃",   s:"Turn over a new leaf", a:["turn over a new leaf","new leaf","a new leaf","fresh start","clean slate"], title:"Fresh start", cat:"Welcome back", sub:"Start of the year", link:"a clean slate for the new school year"},
-    friendships:  {e:"🧊🔨",   s:"Break the ice", a:["break the ice","breaking the ice","ice breaker","icebreaker"], title:"New connections", cat:"Getting to know each other", sub:"Settling in", link:"making the first move to connect with someone new"},
-    pancake:      {e:"🥞📅",   s:"Pancake Tuesday", a:["pancake tuesday","pancake day","shrove tuesday","pancakes"], title:"Pancake Tuesday", cat:"Celebration", sub:"17 February", link:"the feast day before Lent — time to flip some pancakes"},
-    iwd:          {e:"🌍👩🎉", s:"International Women's Day", a:["international womens day","womens day","iwd"], title:"International Women's Day", cat:"Awareness day", sub:"8 March", link:"celebrating women's achievements and equality"},
-    harmony:      {e:"❤️🤝🌏", s:"Everyone belongs", a:["everyone belongs","harmony day","we all belong","everybody belongs","harmony","everyone fits in"], title:"Harmony Day", cat:"Awareness day", sub:"21 March", link:"Harmony Day celebrates cultural diversity — everyone belongs"},
-    anzac:        {e:"🕯️🎖️🌅", s:"Lest we forget", a:["lest we forget","anzac day","anzac","we will remember them"], title:"ANZAC Day", cat:"Day of remembrance", sub:"25 April", link:"honouring all who served and sacrificed"},
-    reconciliation:{e:"🚶🚶🤝",  s:"Walk together", a:["walk together","walking together","reconciliation week","reconciliation","national reconciliation week","come together"], title:"National Reconciliation Week", cat:"Awareness week", sub:"27 May – 3 June", link:"building respect between Aboriginal and Torres Strait Islander peoples and all Australians"},
-    naidoc:       {e:"🎉🌏🎭", s:"Celebrate culture", a:["celebrate culture","celebrating culture","naidoc week","naidoc","celebrate first nations"], title:"NAIDOC Week", cat:"Awareness week", sub:"July · First Nations", link:"celebrating the history, culture and achievements of Aboriginal and Torres Strait Islander peoples"},
-    wellbeing1:   {e:"😮‍💨🧘", s:"Take a deep breath", a:["take a deep breath","deep breath","breathe","just breathe","take a breath"], title:"Wellbeing check-in", cat:"Wellbeing check-in", sub:"Mid-term reset", link:"a moment to pause, reset and look after yourself"},
-    bullying:     {e:"🗣️⬆️",  s:"Speak up", a:["speak up","speaking up","stand up","say something"], title:"Bullying No Way Week", cat:"Awareness week", sub:"August", link:"stand up and speak up — bullying is never okay"},
-    ruok:         {e:"👀❓🆗", s:"Are you OK?", a:["are you ok","r u ok","ru ok","are you okay","you ok","ruok","r u ok day"], title:"R U OK?Day", cat:"Wellbeing day", sub:"10 September", link:"a genuine conversation can change a life — just ask"},
-    teachersday:  {e:"🙏🍎👩‍🏫", s:"Thank a teacher", a:["thank a teacher","thank your teacher","thank you teacher","world teachers day","teachers day"], title:"World Teachers' Day", cat:"Celebration", sub:"Late October", link:"saying thanks to the teachers who help you grow"},
-    wellbeing2:   {e:"🔋⚡",   s:"Recharge your batteries", a:["recharge your batteries","recharge","recharge the batteries","power up"], title:"Wellbeing check-in", cat:"Wellbeing check-in", sub:"Term 4 reset", link:"topping up your energy for the run to the end of the year"},
-    remembrance:  {e:"🕚🌹🕊️", s:"We will remember them", a:["we will remember them","remembrance day","lest we forget","remember them"], title:"Remembrance Day", cat:"Day of remembrance", sub:"11 November", link:"a minute's silence for those who served"},
-    reflect:      {e:"🪞💭",   s:"Time to reflect", a:["time to reflect","reflect","look back","reflect on the year"], title:"Year in review", cat:"Year in review", sub:"Final fortnight", link:"looking back on how far you've grown this year"},
-    wrap:         {e:"🎬🌯",   s:"That's a wrap", a:["thats a wrap","that is a wrap","the end","all done","wrap","done for the year"], title:"Last week!", cat:"End of year", sub:"Final week", link:"that's a wrap on the year — well done, everyone"},
+    freshstart:   {e:"🔄🍃",   s:"Turn over a new leaf", a:["turn over a new leaf","new leaf","a new leaf","fresh start","clean slate"], title:"Fresh start", cat:"Welcome back", sub:"Start of the year", hint:"Think about starting again with a clean slate.", link:"a clean slate for the new school year"},
+    friendships:  {e:"🧊🔨",   s:"Break the ice", a:["break the ice","breaking the ice","ice breaker","icebreaker"], title:"New connections", cat:"Getting to know each other", sub:"Settling in", hint:"Think about the first thing you do when meeting new people.", link:"making the first move to connect with someone new"},
+    pancake:      {e:"🥞📅",   s:"Pancake Tuesday", a:["pancake tuesday","pancake day","shrove tuesday","pancakes"], title:"Pancake Tuesday", cat:"Celebration", sub:"17 February", hint:"Think about a celebration day involving pancakes.", link:"the feast day before Lent — time to flip some pancakes"},
+    iwd:          {e:"🌍👩🎉", s:"International Women's Day", a:["international womens day","womens day","iwd","international woman day"], title:"International Women's Day", cat:"Awareness day", sub:"8 March", hint:"Think about a global celebration of women.", link:"celebrating women's achievements and equality"},
+    harmony:      {e:"❤️🤝🌏", s:"Everyone belongs", a:["everyone belongs","harmony day","we all belong","everybody belongs","harmony","everyone fits in","all belong"], title:"Harmony Day", cat:"Awareness day", sub:"21 March", hint:"Think about inclusion and belonging.", link:"Harmony Day celebrates cultural diversity — everyone belongs"},
+    anzac:        {e:"🕯️💭🪖", s:"Lest we forget", a:["lest we forget","anzac day","anzac","we will remember them","remember them"], title:"ANZAC Day", cat:"Day of remembrance", sub:"25 April", hint:"Think about remembering people who served.", link:"honouring all who served and sacrificed"},
+    reconciliation:{e:"🚶🚶🤝",  s:"Walk together", a:["walk together","walking together","reconciliation week","reconciliation","national reconciliation week","come together"], title:"National Reconciliation Week", cat:"Awareness week", sub:"27 May – 3 June", hint:"Think about moving forward together.", link:"building respect between Aboriginal and Torres Strait Islander peoples and all Australians"},
+    naidoc:       {e:"🎉🌏🎭", s:"Celebrate culture", a:["celebrate culture","celebrating culture","naidoc week","naidoc","celebrate first nations"], title:"NAIDOC Week", cat:"Awareness week", sub:"July · First Nations", hint:"Think about celebrating culture, stories and identity.", link:"celebrating the history, culture and achievements of Aboriginal and Torres Strait Islander peoples"},
+    wellbeing1:   {e:"😮‍💨🧘", s:"Take a deep breath", a:["take a deep breath","deep breath","breathe","just breathe","take a breath"], title:"Wellbeing check-in", cat:"Wellbeing check-in", sub:"Mid-term reset", hint:"Think about pausing and calming your body.", link:"a moment to pause, reset and look after yourself"},
+    bullying:     {e:"🗣️⬆️",  s:"Speak up", a:["speak up","speaking up","stand up","say something"], title:"Bullying No Way Week", cat:"Awareness week", sub:"August", hint:"Think about saying something when something is not okay.", link:"stand up and speak up — bullying is never okay"},
+    ruok:         {e:"👀❓🆗", s:"Are you OK?", a:["are you ok","r u ok","ru ok","are you okay","you ok","ruok","r u ok day"], title:"R U OK?Day", cat:"Wellbeing day", sub:"10 September", hint:"Think about checking in on someone.", link:"a genuine conversation can change a life — just ask"},
+    teachersday:  {e:"🙏🍎👩‍🏫", s:"Thank a teacher", a:["thank a teacher","thank your teacher","thank you teacher","world teachers day","teachers day"], title:"World Teachers' Day", cat:"Celebration", sub:"Late October", hint:"Think about showing appreciation to teachers.", link:"saying thanks to the teachers who help you grow"},
+    wellbeing2:   {e:"🔋⚡",   s:"Recharge your batteries", a:["recharge your batteries","recharge","recharge the batteries","power up"], title:"Wellbeing check-in", cat:"Wellbeing check-in", sub:"Term 4 reset", hint:"Think about restoring your energy.", link:"topping up your energy for the run to the end of the year"},
+    remembrance:  {e:"🕯️💭🪖", s:"We will remember them", a:["we will remember them","remembrance day","lest we forget","remember them","we remember them"], title:"Remembrance Day", cat:"Day of remembrance", sub:"11 November", hint:"Think about remembrance and service.", link:"a minute's silence for those who served"},
+    reflect:      {e:"🪞💭",   s:"Time to reflect", a:["time to reflect","reflect","look back","reflect on the year"], title:"Year in review", cat:"Year in review", sub:"Final fortnight", hint:"Think about looking back on the year.", link:"looking back on how far you've grown this year"},
+    wrap:         {e:"🎬🌯",   s:"That's a wrap", a:["thats a wrap","that is a wrap","the end","all done","wrap","done for the year"], title:"Last week!", cat:"End of year", sub:"Final week", hint:"Think about the phrase people say when something is finished.", link:"that's a wrap on the year — well done, everyone"},
     _default:     {e:"😊🤝",   s:"We're all in this together", a:["were all in this together","all in this together","in this together"], title:"Wellbeing & relationships", cat:"Wellbeing & relationships", sub:"This week", link:"looking out for yourself and each other"},
   };
 
@@ -244,11 +248,11 @@
     const cell=WEEK_PLAN[info.t+'-'+info.w];
     if(cell&&cell.s){
       const st=STRENGTHS.find(x=>x.id===cell.s); const ph=PHRASES[cell.s];
-      return {puzzle:ph, title:st.name, sub:st.virtue+' · '+(LEARNER_VALUE[st.virtue]||''),
-              label:"This week's focus strength", linkHtml:`Links to <b>${st.name}</b> (${st.virtue}) — ${ph.link}.`};
+      return {puzzle:ph, title:ph.cat||st.name, sub:st.name+' · '+st.virtue+' · '+(LEARNER_VALUE[st.virtue]||''),
+              label:"Clue category", linkHtml:`Links to <b>${st.name}</b> (${st.virtue}) — ${ph.link}.`};
     }
     const ev=EVENTS[(cell&&cell.ev)]||EVENTS._default;
-    return {puzzle:ev, title:ev.cat||ev.title, sub:ev.sub, label:"This week", linkHtml:`<b>${ev.title}</b> — ${ev.link}.`};
+    return {puzzle:ev, title:ev.cat||ev.title, sub:ev.sub, label:"Clue category", linkHtml:`<b>${ev.title}</b> — ${ev.link}.`};
   }
 
   const HOUSES=['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
@@ -264,8 +268,8 @@
   const entryView=document.getElementById('entryView'),playView=document.getElementById('playView'),resultView=document.getElementById('resultView');
   const lockNotice=document.getElementById('lockNotice'),revealPuzzleBtn=document.getElementById('revealPuzzleBtn');
   const fhStrength=document.getElementById('fhStrength'),fhVirtue=document.getElementById('fhVirtue'),fhLabel=document.getElementById('fhLabel');
-  const emojiDisplay=document.getElementById('emojiDisplay'),answerInput=document.getElementById('answerInput'),feedback=document.getElementById('feedback');
-  const guessBtn=document.getElementById('guessBtn'),revealAnsBtn=document.getElementById('revealAnsBtn');
+  const emojiDisplay=document.getElementById('emojiDisplay'),answerInput=document.getElementById('answerInput'),feedback=document.getElementById('feedback'),hintPanel=document.getElementById('hintPanel');
+  const guessBtn=document.getElementById('guessBtn'),clueBtn=document.getElementById('clueBtn'),revealAnsBtn=document.getElementById('revealAnsBtn');
   const revealAnswer=document.getElementById('revealAnswer'),revealScore=document.getElementById('revealScore'),revealLink=document.getElementById('revealLink');
   const submitBtn=document.getElementById('submitBtn');
 
@@ -280,6 +284,18 @@
   function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
   // Plain emoji string (sizes stripped) — for the reveal line.
   function emojiText(e){return typeof e==='string'?e:e.map(it=>Array.isArray(it)?it[0]:it).join('');}
+  function answerWords(){return String(puzzle.s||'').trim().split(/\s+/).filter(Boolean);}
+  function firstLetters(){return answerWords().map(w=>w.replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()).filter(Boolean).join(' ');}
+  function showAutoHint(level){
+    const words=answerWords();
+    if(level===1){hintPanel.innerHTML='<b>Hint:</b> '+words.length+' word'+(words.length===1?'':'s')+'.';}
+    if(level===2){hintPanel.innerHTML='<b>Hint:</b> First letters: '+firstLetters()+'.';}
+    hintPanel.classList.add('show');
+  }
+  function showTeacherClue(){
+    hintPanel.innerHTML='<b>Teacher clue:</b> '+(puzzle.hint||'Use the focus/category and read the emojis from left to right.');
+    hintPanel.classList.add('show');
+  }
   // Render the big clue, honouring optional per-emoji sizes.
   function renderEmoji(e){
     if(typeof e==='string'){emojiDisplay.textContent=e;return;}
@@ -311,9 +327,9 @@
     fhStrength.textContent=current.title;
     fhVirtue.textContent=current.sub;
     renderEmoji(puzzle.e);
-    attempt=0;feedback.textContent='You get '+GUESS_SCORES.length+' guesses — fewer tries, higher score.';feedback.className='feedback';
+    attempt=0;feedback.textContent='You get '+GUESS_SCORES.length+' guesses — fewer tries, higher score.';feedback.className='feedback';hintPanel.textContent='';hintPanel.classList.remove('show');
     answerInput.value='';answerInput.disabled=false;
-    guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';
+    guessBtn.disabled=false;guessBtn.textContent='Guess';clueBtn.style.display='';revealAnsBtn.style.display='';
     entryView.style.display='none';playView.style.display='';
     answerInput.focus();
   }
@@ -335,6 +351,7 @@
       const left=GUESS_SCORES.length-attempt;
       feedback.textContent=left===1?'Not quite — last guess!':('Not quite — '+left+' guesses left.');
       feedback.className='feedback try';
+      showAutoHint(attempt);
       answerInput.select();answerInput.focus();
     } else {
       finalScore=0;feedback.textContent='✗ Out of guesses.';feedback.className='feedback wrong';
@@ -345,7 +362,7 @@
   function giveUp(){finalScore=0;finish(false);}
 
   function finish(solved){
-    answerInput.disabled=true;guessBtn.disabled=true;revealAnsBtn.style.display='none';
+    answerInput.disabled=true;guessBtn.disabled=true;revealAnsBtn.style.display='none';clueBtn.style.display='none';
     revealAnswer.textContent=emojiText(puzzle.e)+'  —  '+puzzle.s;
     revealScore.textContent='Score: '+finalScore+' / 10';
     revealLink.innerHTML=current.linkHtml;
@@ -370,9 +387,9 @@
     selectedHouse=null;selectedGroup=null;attempt=0;finalScore=0;
     document.querySelectorAll('.group-btn').forEach(b=>b.classList.remove('selected'));
     lockNotice.classList.remove('show');revealPuzzleBtn.disabled=true;
-    feedback.textContent='';feedback.className='feedback';
+    feedback.textContent='';feedback.className='feedback';hintPanel.textContent='';hintPanel.classList.remove('show');
     answerInput.value='';answerInput.disabled=false;
-    guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';
+    guessBtn.disabled=false;guessBtn.textContent='Guess';clueBtn.style.display='';revealAnsBtn.style.display='';
     submitBtn.textContent='📤 Submit Score';submitBtn.disabled=false;
     resultView.style.display='none';playView.style.display='none';entryView.style.display='';
   }
