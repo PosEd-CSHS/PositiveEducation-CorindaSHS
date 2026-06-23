@@ -620,46 +620,44 @@ function cshsWeekLabel(){ const w=cshsCurrentWeek(); return `Term ${w.t} · Week
 // 40-week word schedule (date-driven, same word for everyone, holds last week in holidays).
 // To change a week's answer, edit its `word` (must be letters only; 6 letters recommended).
 const WEEKLY_WORDS = [
-  { t:1, w:1, word:"HAPPY" },
-  { t:1, w:2, word:"BRAVE" },
-  { t:1, w:3, word:"TRUST" },
-  { t:1, w:4, word:"HEART" },
-  { t:1, w:5, word:"SMILE" },
-  { t:1, w:6, word:"LEARN" },
-  { t:1, w:7, word:"REACH" },
-  { t:1, w:8, word:"PEACE" },
-  { t:1, w:9, word:"DREAM" },
-  { t:1, w:10, word:"GRACE" },
-  { t:2, w:1, word:"NOBLE" },
-  { t:2, w:2, word:"PRIDE" },
-  { t:2, w:3, word:"SHARE" },
-  { t:2, w:4, word:"UNITY" },
-  { t:2, w:5, word:"FOCUS" },
-  { t:2, w:6, word:"ALERT" },
-  { t:2, w:7, word:"CHEER" },
-  { t:2, w:8, word:"QUIET" },
-  { t:2, w:9, word:"SPARK" },
-  { t:2, w:10, word:"THANK" },
-  { t:3, w:1, word:"VITAL" },
-  { t:3, w:2, word:"WORTH" },
-  { t:3, w:3, word:"ENJOY" },
-  { t:3, w:4, word:"EAGER" },
-  { t:3, w:5, word:"MERIT" },
-  { t:3, w:6, word:"GREAT" },
-  { t:3, w:7, word:"STEEL" },
-  { t:3, w:8, word:"BLOOM" },
-  { t:3, w:9, word:"SHINE" },
-  { t:3, w:10, word:"AWARE" },
-  { t:4, w:1, word:"BEGIN" },
-  { t:4, w:2, word:"BUILD" },
-  { t:4, w:3, word:"DRIVE" },
-  { t:4, w:4, word:"FAITH" },
-  { t:4, w:5, word:"GUIDE" },
-  { t:4, w:6, word:"IDEAL" },
-  { t:4, w:7, word:"LOFTY" },
-  { t:4, w:8, word:"ALIVE" },
-  { t:4, w:9, word:"BLISS" },
-  { t:4, w:10, word:"CHARM" }
+  { t:1, w:1,  word:"FRESH" },  // Welcome back — fresh start
+  { t:1, w:2,  word:"LEARN" },  // Positive Education intro
+  { t:1, w:3,  word:"BLOOM" },  // PERMAH overview — flourishing
+  { t:1, w:4,  word:"MERIT" },  // Virtues & strengths overview
+  { t:1, w:5,  word:"SHARE" },  // Virtue of Humanity
+  { t:1, w:6,  word:"HEART" },  // Love
+  { t:1, w:7,  word:"SAVVY" },  // Social Intelligence — read the room
+  { t:1, w:8,  word:"GRACE" },  // Kindness
+  { t:1, w:9,  word:"REACH" },  // Virtue of Transcendence — aim high
+  { t:1, w:10, word:"MIRTH" },  // Humour — mirth = joyful laughter
+  { t:2, w:1,  word:"FAITH" },  // Spirituality / Meaning
+  { t:2, w:2,  word:"GLEAM" },  // Appreciation of Beauty
+  { t:2, w:3,  word:"LIGHT" },  // Hope — light at end of tunnel
+  { t:2, w:4,  word:"THANK" },  // Gratitude
+  { t:2, w:5,  word:"LOGIC" },  // Virtue of Wisdom
+  { t:2, w:6,  word:"STUDY" },  // Love of Learning
+  { t:2, w:7,  word:"VISTA" },  // Perspective — big picture
+  { t:2, w:8,  word:"QUERY" },  // Curiosity — question everything
+  { t:2, w:9,  word:"SPARK" },  // Creativity — creative spark
+  { t:2, w:10, word:"WEIGH" },  // Judgement — weigh it up
+  { t:3, w:1,  word:"PRIDE" },  // Virtues recap
+  { t:3, w:2,  word:"WORTH" },  // PERMAH recap — self-worth
+  { t:3, w:3,  word:"EQUAL" },  // Virtue of Justice
+  { t:3, w:4,  word:"GUIDE" },  // Leadership — lead the way
+  { t:3, w:5,  word:"LEVEL" },  // Fairness — level playing field
+  { t:3, w:6,  word:"TROOP" },  // Teamwork — work as a troop
+  { t:3, w:7,  word:"STEEL" },  // Virtue of Courage — steel yourself
+  { t:3, w:8,  word:"GUSTO" },  // Zest — do it with gusto
+  { t:3, w:9,  word:"BRAVE" },  // Bravery
+  { t:3, w:10, word:"GRIND" },  // Perseverance — keep grinding
+  { t:4, w:1,  word:"TRUTH" },  // Honesty
+  { t:4, w:2,  word:"NERVE" },  // Courage review — hold your nerve
+  { t:4, w:3,  word:"PAUSE" },  // Virtue of Temperance — pause before acting
+  { t:4, w:4,  word:"SCOUT" },  // Prudence — look before you leap
+  { t:4, w:5,  word:"STOIC" },  // Humility — stoic/grounded
+  { t:4, w:6,  word:"REIGN" },  // Self-Regulation — reign it in
+  { t:4, w:7,  word:"PEACE" },  // Forgiveness
+  { t:4, w:8,  word:"GROWN" },  // Year in review — how we've grown
 ];
 function resolveWeekWord(){
   const abs = cshsCurrentWeek().abs;

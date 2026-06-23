@@ -177,286 +177,272 @@ let config = { ...DEFAULT_CONFIG };
 
 
 const PUZZLE_BANK = [
-  // Week 1
+  // T1 W1 — Welcome back
   { categories: [
-    { name: 'Things in a kitchen', words: ['Whisk','Colander','Spatula','Ladle'] },
-    { name: 'Australian animals', words: ['Quokka','Numbat','Bilby','Dugong'] },
-    { name: '___ ball', words: ['Basket','Cannon','Snow','Odd'] },
-    { name: 'Types of cloud', words: ['Cirrus','Cumulus','Stratus','Nimbus'] }
+    { name: 'Words meaning a fresh start', words: ['Reset', 'Renewal', 'Relaunch', 'Reboot'] },
+    { name: 'Things in a kitchen', words: ['Whisk', 'Colander', 'Spatula', 'Ladle'] },
+    { name: 'Australian animals', words: ['Quokka', 'Numbat', 'Bilby', 'Dugong'] },
+    { name: '___ ball', words: ['Basket', 'Cannon', 'Snow', 'Odd'] }
   ]},
-  // Week 2
+  // T1 W2 — Positive Education intro
   { categories: [
-    { name: 'Things that are black and white', words: ['Zebra','Panda','Magpie','Piano'] },
-    { name: 'Olympic sports', words: ['Fencing','Luge','Heptathlon','Dressage'] },
-    { name: '___ fish', words: ['Sword','Star','Cat','Blow'] },
-    { name: 'Famous Queenslanders', words: ['Cathy Freeman','Steve Irwin','Wally Lewis','Anna Meares'] }
+    { name: 'PERMAH pillars', words: ['Positive emotion', 'Engagement', 'Relationships', 'Meaning'] },
+    { name: 'Things that are black and white', words: ['Zebra', 'Panda', 'Magpie', 'Piano'] },
+    { name: 'Olympic sports', words: ['Fencing', 'Luge', 'Heptathlon', 'Dressage'] },
+    { name: '___ fish', words: ['Sword', 'Star', 'Cat', 'Blow'] }
   ]},
-  // Week 3
+  // T1 W3 — PERMAH overview
   { categories: [
-    { name: 'Parts of a cell', words: ['Nucleus','Mitochondria','Ribosome','Vacuole'] },
-    { name: 'Types of pasta', words: ['Penne','Fusilli','Rigatoni','Orzo'] },
-    { name: 'Shakespeare plays', words: ['Othello','Macbeth','Prospero','Hamlet'] },
-    { name: '___ light', words: ['Sun','Moon','Torch','Flash'] }
+    { name: 'Things that build positive emotion', words: ['Gratitude', 'Laughter', 'Savouring', 'Celebration'] },
+    { name: 'Parts of a cell', words: ['Nucleus', 'Mitochondria', 'Ribosome', 'Vacuole'] },
+    { name: 'Types of pasta', words: ['Penne', 'Fusilli', 'Rigatoni', 'Orzo'] },
+    { name: '___ light', words: ['Sun', 'Moon', 'Torch', 'Flash'] }
   ]},
-  // Week 4
+  // T1 W4 — Virtues & character strengths
   { categories: [
-    { name: 'Things with rings', words: ['Saturn','Olympics','Tree','Boxing'] },
-    { name: 'Dances', words: ['Tango','Foxtrot','Waltz','Quickstep'] },
-    { name: 'Australian slang', words: ['Arvo','Servo','Maccas','Rego'] },
-    { name: '___ house', words: ['Green','Power','Tree','Full'] }
+    { name: 'Wisdom strengths', words: ['Curiosity', 'Creativity', 'Judgement', 'Perspective'] },
+    { name: 'Things with rings', words: ['Saturn', 'Olympics', 'Tree', 'Boxing'] },
+    { name: 'Dances', words: ['Tango', 'Foxtrot', 'Waltz', 'Quickstep'] },
+    { name: '___ house', words: ['Green', 'Power', 'Tree', 'Full'] }
   ]},
-  // Week 5
+  // T1 W5 — Virtue of Humanity
   { categories: [
-    { name: 'Bones in the human body', words: ['Femur','Clavicle','Patella','Tibia'] },
-    { name: 'Types of triangle', words: ['Scalene','Isosceles','Equilateral','Obtuse'] },
-    { name: 'Things you find at the beach', words: ['Dune','Jetty','Rock pool','Seagrass'] },
-    { name: '___ bridge', words: ['Cam','Draw','Foot','Stone'] }
+    { name: 'Humanity strengths', words: ['Love', 'Kindness', 'Social intelligence', 'Empathy'] },
+    { name: 'Bones in the human body', words: ['Femur', 'Clavicle', 'Patella', 'Tibia'] },
+    { name: 'Types of triangle', words: ['Scalene', 'Isosceles', 'Equilateral', 'Obtuse'] },
+    { name: '___ bridge', words: ['Cam', 'Draw', 'Foot', 'Stone'] }
   ]},
-  // Week 6
+  // T1 W6 — Love
   { categories: [
-    { name: 'VIA Character Strengths', words: ['Curiosity','Bravery','Kindness','Gratitude'] },
-    { name: 'Types of music', words: ['Bluegrass','Grime','Bossa nova','Ska'] },
-    { name: 'Things that can be raw', words: ['Deal','Talent','Sewage','Egg'] },
-    { name: '___ stone', words: ['Lime','Sand','Cobble','Kerb'] }
+    { name: 'Words meaning love', words: ['Adore', 'Cherish', 'Treasure', 'Devotion'] },
+    { name: 'Types of music', words: ['Bluegrass', 'Grime', 'Bossa nova', 'Ska'] },
+    { name: 'Things that can be raw', words: ['Deal', 'Talent', 'Sewage', 'Egg'] },
+    { name: '___ stone', words: ['Lime', 'Sand', 'Cobble', 'Kerb'] }
   ]},
-  // Week 7
+  // T1 W7 — Social Intelligence
   { categories: [
-    { name: 'Planets in order from the Sun', words: ['Mercury','Venus','Earth','Mars'] },
-    { name: 'Famous Australians named Chris', words: ['Hemsworth','Judd','Martin','Lilley'] },
-    { name: '___ king', words: ['Lion','Drug','Sea','Drag'] },
-    { name: 'Things with a shell', words: ['Tortoise','Walnut','Egg','Snail'] }
+    { name: 'Ways to read the room', words: ['Body language', 'Tone of voice', 'Eye contact', 'Silence'] },
+    { name: 'Planets in order from the Sun', words: ['Mercury', 'Venus', 'Earth', 'Mars'] },
+    { name: 'Famous Australians named Chris', words: ['Hemsworth', 'Judd', 'Martin', 'Lilley'] },
+    { name: 'Things with a shell', words: ['Tortoise', 'Walnut', 'Egg', 'Snail'] }
   ]},
-  // Week 8
+  // T1 W8 — Kindness
   { categories: [
-    { name: 'Things that rise', words: ['Dough','Sun','Tide','Smoke'] },
-    { name: 'Collective nouns', words: ['Murder','Bloat','Parliament','Crash'] },
-    { name: 'Things you charge', words: ['Phone','Battery','Rhino','Credit card'] },
-    { name: 'Brisbane landmarks', words: ['Story Bridge','South Bank','GOMA','Eagle Street'] }
+    { name: 'Random acts of kindness', words: ['Hold the door', 'Write a note', 'Share lunch', 'Give a compliment'] },
+    { name: 'Things that rise', words: ['Dough', 'Sun', 'Tide', 'Smoke'] },
+    { name: 'Collective nouns', words: ['Murder', 'Bloat', 'Parliament', 'Crash'] },
+    { name: 'Brisbane landmarks', words: ['Story Bridge', 'South Bank', 'GOMA', 'Eagle Street'] }
   ]},
-  // Week 9
+  // T1 W9 — Virtue of Transcendence
   { categories: [
-    { name: 'Types of energy', words: ['Kinetic','Thermal','Nuclear','Elastic'] },
-    { name: 'Things that have a face', words: ['Clock','Cliff','Coin','Card'] },
-    { name: 'Famous scientists', words: ['Curie','Faraday','Turing','Lovelace'] },
-    { name: '___ wave', words: ['Heat','Crime','Tidal','Micro'] }
+    { name: 'Transcendence strengths', words: ['Gratitude', 'Hope', 'Humour', 'Spirituality'] },
+    { name: 'Types of energy', words: ['Kinetic', 'Thermal', 'Nuclear', 'Elastic'] },
+    { name: 'Famous scientists', words: ['Curie', 'Faraday', 'Turing', 'Lovelace'] },
+    { name: '___ wave', words: ['Heat', 'Crime', 'Tidal', 'Micro'] }
   ]},
-  // Week 10
+  // T1 W10 — Humour
   { categories: [
-    { name: 'Things in a rainforest', words: ['Canopy','Epiphyte','Termite','Bromiliad'] },
-    { name: 'Sports played on a court', words: ['Squash','Netball','Volleyball','Badminton'] },
-    { name: 'Words meaning brave', words: ['Valiant','Daring','Gallant','Audacious'] },
-    { name: '___ fall', words: ['Water','Down','Free','Foot'] }
+    { name: 'Types of humour', words: ['Satire', 'Slapstick', 'Irony', 'Wit'] },
+    { name: 'Things in a rainforest', words: ['Canopy', 'Epiphyte', 'Termite', 'Bromiliad'] },
+    { name: 'Sports played on a court', words: ['Squash', 'Netball', 'Volleyball', 'Badminton'] },
+    { name: '___ fall', words: ['Water', 'Down', 'Free', 'Foot'] }
   ]},
-  // Week 1 Term 2
+  // T2 W1 — Spirituality / Meaning
   { categories: [
-    { name: 'Things that can be cold', words: ['Shoulder','Turkey','Blooded','Case'] },
-    { name: 'Animals that lay eggs', words: ['Platypus','Echidna','Seahorse','Octopus'] },
-    { name: 'Types of government', words: ['Republic','Monarchy','Democracy','Theocracy'] },
-    { name: '___ run', words: ['Bull','Home','Dry','Fun'] }
+    { name: 'Words meaning inner peace', words: ['Serenity', 'Calm', 'Stillness', 'Tranquility'] },
+    { name: 'Things that can be cold', words: ['Shoulder', 'Turkey', 'Blooded', 'Case'] },
+    { name: 'Animals that lay eggs', words: ['Platypus', 'Echidna', 'Seahorse', 'Octopus'] },
+    { name: '___ run', words: ['Bull', 'Home', 'Dry', 'Fun'] }
   ]},
-  // Week 2 Term 2
+  // T2 W2 — Appreciation of beauty
   { categories: [
-    { name: 'Famous paintings', words: ['Starry Night','The Scream','Guernica','Nighthawks'] },
-    { name: 'Things with a trunk', words: ['Elephant','Car','Tree','Swimmer'] },
-    { name: 'Words meaning happy', words: ['Elated','Content','Jubilant','Serene'] },
-    { name: '___ bank', words: ['River','Food','Blood','Memory'] }
+    { name: 'Things considered beautiful in nature', words: ['Sunset', 'Aurora', 'Coral reef', 'Rainforest'] },
+    { name: 'Famous paintings', words: ['Starry Night', 'The Scream', 'Guernica', 'Nighthawks'] },
+    { name: 'Things with a trunk', words: ['Elephant', 'Car', 'Tree', 'Swimmer'] },
+    { name: '___ bank', words: ['River', 'Food', 'Blood', 'Memory'] }
   ]},
-  // Week 3 Term 2
+  // T2 W3 — Hope
   { categories: [
-    { name: 'Parts of a plant', words: ['Stigma','Anther','Sepal','Petiole'] },
-    { name: 'Things that can be broken', words: ['Record','Promise','Silence','Ice'] },
-    { name: 'Types of rock', words: ['Granite','Basalt','Obsidian','Shale'] },
-    { name: '___ pool', words: ['Car','Dead','Rock','Gene'] }
+    { name: 'Famous symbols of hope', words: ['Dove', 'Rainbow', 'Candle', 'Anchor'] },
+    { name: 'Parts of a plant', words: ['Stigma', 'Anther', 'Sepal', 'Petiole'] },
+    { name: 'Things that can be broken', words: ['Record', 'Promise', 'Silence', 'Ice'] },
+    { name: '___ pool', words: ['Car', 'Dead', 'Rock', 'Gene'] }
   ]},
-  // Week 4 Term 2
+  // T2 W4 — Gratitude
   { categories: [
-    { name: 'Things with keys', words: ['Piano','Lock','Map','Cipher'] },
-    { name: 'Words for a group of people', words: ['Cohort','Posse','Rabble','Troupe'] },
-    { name: 'Things that can be flat', words: ['Earth','Tyre','Battery','Note'] },
-    { name: 'Australian birds', words: ['Kookaburra','Boobook','Cassowary','Brolga'] }
+    { name: 'Ways to show gratitude', words: ['Thank-you note', 'Acknowledgement', 'Compliment', 'Hug'] },
+    { name: 'Things with keys', words: ['Piano', 'Lock', 'Map', 'Cipher'] },
+    { name: 'Words for a group of people', words: ['Cohort', 'Posse', 'Rabble', 'Troupe'] },
+    { name: 'Australian birds', words: ['Kookaburra', 'Boobook', 'Cassowary', 'Brolga'] }
   ]},
-  // Week 5 Term 2
+  // T2 W5 — Virtue of Wisdom
   { categories: [
-    { name: 'Things with a mouth', words: ['River','Cave','Jar','Volcano'] },
-    { name: 'Prefixes meaning against', words: ['Anti','Counter','Contra','Versus'] },
-    { name: 'Types of cheese', words: ['Gruyere','Manchego','Haloumi','Brie'] },
-    { name: '___ work', words: ['Team','Net','Frame','Ground'] }
+    { name: 'Wisdom strengths', words: ['Curiosity', 'Creativity', 'Judgement', 'Perspective'] },
+    { name: 'Things with a mouth', words: ['River', 'Cave', 'Jar', 'Volcano'] },
+    { name: 'Types of cheese', words: ['Gruyere', 'Manchego', 'Haloumi', 'Brie'] },
+    { name: '___ work', words: ['Team', 'Net', 'Frame', 'Ground'] }
   ]},
-  // Week 6 Term 2
+  // T2 W6 — Love of Learning
   { categories: [
-    { name: 'Things that can be sharp', words: ['Mind','Knife','Turn','Tongue'] },
-    { name: 'Famous Queenslanders in sport', words: ['Sam Kerr','Pat Rafter','Jai Arrow','Kalyn Ponga'] },
-    { name: 'Things that spin', words: ['Top','Gyroscope','Wheel','Turbine'] },
-    { name: '___ star', words: ['Gold','Rock','Pop','All'] }
+    { name: 'Famous learners who changed the world', words: ['Einstein', 'Curie', 'Da Vinci', 'Turing'] },
+    { name: 'Things that can be sharp', words: ['Mind', 'Knife', 'Turn', 'Tongue'] },
+    { name: 'Famous Queenslanders in sport', words: ['Sam Kerr', 'Pat Rafter', 'Jai Arrow', 'Kalyn Ponga'] },
+    { name: '___ star', words: ['Gold', 'Rock', 'Pop', 'All'] }
   ]},
-  // Week 7 Term 2
+  // T2 W7 — Perspective
   { categories: [
-    { name: 'Things you can catch', words: ['Bus','Cold','Fish','Break'] },
-    { name: 'Types of map', words: ['Topographic','Choropleth','Mercator','Isoline'] },
-    { name: 'PERMAH elements', words: ['Positive emotion','Engagement','Relationships','Meaning'] },
-    { name: '___ force', words: ['Air','Task','Work','Brute'] }
+    { name: 'Words meaning a point of view', words: ['Standpoint', 'Outlook', 'Lens', 'Angle'] },
+    { name: 'Things you can catch', words: ['Bus', 'Cold', 'Fish', 'Break'] },
+    { name: 'Types of map', words: ['Topographic', 'Choropleth', 'Mercator', 'Isoline'] },
+    { name: '___ force', words: ['Air', 'Task', 'Work', 'Brute'] }
   ]},
-  // Week 8 Term 2
+  // T2 W8 — Curiosity
   { categories: [
-    { name: 'Things with a point', words: ['Compass','Argument','Pencil','Needle'] },
-    { name: 'Words for clever', words: ['Astute','Shrewd','Savvy','Perspicacious'] },
-    { name: 'Things that are recycled', words: ['Glass','Paper','Aluminium','Plastic'] },
-    { name: '___ change', words: ['Climate','Sea','Free','Pocket'] }
+    { name: 'Things curious people do', words: ['Question', 'Explore', 'Experiment', 'Wonder'] },
+    { name: 'Things with a point', words: ['Compass', 'Argument', 'Pencil', 'Needle'] },
+    { name: 'Things that are recycled', words: ['Glass', 'Paper', 'Aluminium', 'Plastic'] },
+    { name: '___ change', words: ['Climate', 'Sea', 'Free', 'Pocket'] }
   ]},
-  // Week 9 Term 2
+  // T2 W9 — Creativity
   { categories: [
-    { name: 'Things that can be stacked', words: ['Pancakes','Chips','Odds','Deck'] },
-    { name: 'Elements on the periodic table', words: ['Cobalt','Neon','Tungsten','Iodine'] },
-    { name: 'Words meaning to look carefully', words: ['Scrutinise','Inspect','Observe','Examine'] },
-    { name: '___ room', words: ['Show','Boom','Mush','Chat'] }
+    { name: 'Words meaning original or inventive', words: ['Innovative', 'Imaginative', 'Inventive', 'Novel'] },
+    { name: 'Things that can be stacked', words: ['Pancakes', 'Chips', 'Odds', 'Deck'] },
+    { name: 'Elements on the periodic table', words: ['Cobalt', 'Neon', 'Tungsten', 'Iodine'] },
+    { name: '___ room', words: ['Show', 'Boom', 'Mush', 'Chat'] }
   ]},
-  // Week 10 Term 2
+  // T2 W10 — Judgement
   { categories: [
-    { name: 'Things that flow', words: ['Lava','Traffic','Conversation','Current'] },
-    { name: 'Parts of a school', words: ['Canteen','Oval','Tuckshop','Staffroom'] },
-    { name: 'Words for a difficult situation', words: ['Predicament','Quandary','Dilemma','Bind'] },
-    { name: '___ time', words: ['Over','Bed','Half','Prime'] }
+    { name: 'Things that can cloud your judgement', words: ['Bias', 'Emotion', 'Pressure', 'Misinformation'] },
+    { name: 'Things that flow', words: ['Lava', 'Traffic', 'Conversation', 'Current'] },
+    { name: 'Parts of a school', words: ['Canteen', 'Oval', 'Tuckshop', 'Staffroom'] },
+    { name: '___ time', words: ['Over', 'Bed', 'Half', 'Prime'] }
   ]},
-  // Week 21
+  // T3 W1 — Virtues recap
   { categories: [
-    { name: 'Things in a jungle', words: ['Canopy','Liana','Jaguar','Toucan'] },
-    { name: '___ pool', words: ['Car','Swimming','Rock','Gene'] },
-    { name: 'Types of bridge', words: ['Suspension','Arch','Truss','Cable-stay'] },
-    { name: 'Famous scientists', words: ['Curie','Darwin','Newton','Einstein'] }
+    { name: 'Courage strengths', words: ['Bravery', 'Perseverance', 'Honesty', 'Zest'] },
+    { name: 'Things in a jungle', words: ['Canopy', 'Liana', 'Jaguar', 'Toucan'] },
+    { name: 'Types of bridge', words: ['Suspension', 'Arch', 'Truss', 'Cable-stay'] },
+    { name: 'Famous scientists', words: ['Curie', 'Darwin', 'Newton', 'Einstein'] }
   ]},
-  // Week 22
+  // T3 W2 — PERMAH recap
   { categories: [
-    { name: 'Things that are sticky', words: ['Honey','Tape','Glue','Sap'] },
-    { name: 'Types of rock', words: ['Granite','Basalt','Marble','Shale'] },
-    { name: '___ ring', words: ['Boxing','Wedding','Ear','Key'] },
-    { name: 'Australian prime ministers', words: ['Whitlam','Hawke','Howard','Keating'] }
+    { name: 'Things that build Relationships', words: ['Trust', 'Empathy', 'Time', 'Listening'] },
+    { name: 'Things that are sticky', words: ['Honey', 'Tape', 'Glue', 'Sap'] },
+    { name: 'Australian prime ministers', words: ['Whitlam', 'Hawke', 'Howard', 'Keating'] },
+    { name: '___ ring', words: ['Boxing', 'Wedding', 'Ear', 'Key'] }
   ]},
-  // Week 23
+  // T3 W3 — Virtue of Justice
   { categories: [
-    { name: 'Things in a theatre', words: ['Wings','Backdrop','Footlights','Prompt'] },
-    { name: 'Types of triangle', words: ['Scalene','Isosceles','Equilateral','Right'] },
-    { name: '___ dog', words: ['Hot','Corn','Bull','Grey'] },
-    { name: 'Things that orbit Earth', words: ['Moon','ISS','Hubble','GPS'] }
+    { name: 'Justice strengths', words: ['Teamwork', 'Fairness', 'Leadership', 'Citizenship'] },
+    { name: 'Things in a theatre', words: ['Wings', 'Backdrop', 'Footlights', 'Prompt'] },
+    { name: 'Things that orbit Earth', words: ['Moon', 'ISS', 'Hubble', 'GPS'] },
+    { name: '___ dog', words: ['Hot', 'Corn', 'Bull', 'Grey'] }
   ]},
-  // Week 24
+  // T3 W4 — Leadership
   { categories: [
-    { name: 'Things that float', words: ['Cork','Iceberg','Raft','Balloon'] },
-    { name: 'Dances', words: ['Salsa','Waltz','Foxtrot','Lindy'] },
-    { name: '___ bank', words: ['River','Blood','Memory','Piggy'] },
-    { name: 'Ancient wonders', words: ['Colossus','Lighthouse','Mausoleum','Pyramids'] }
+    { name: 'Qualities of a good leader', words: ['Vision', 'Empathy', 'Decisiveness', 'Integrity'] },
+    { name: 'Things that float', words: ['Cork', 'Iceberg', 'Raft', 'Balloon'] },
+    { name: 'Dances', words: ['Salsa', 'Waltz', 'Foxtrot', 'Lindy'] },
+    { name: 'Ancient wonders', words: ['Colossus', 'Lighthouse', 'Mausoleum', 'Pyramids'] }
   ]},
-  // Week 25
+  // T3 W5 — Fairness
   { categories: [
-    { name: 'Things with keys', words: ['Piano','Lock','Map','Computer'] },
-    { name: 'Types of cheese', words: ['Brie','Gouda','Havarti','Gruyere'] },
-    { name: '___ wave', words: ['Heat','Tidal','Crime','Brain'] },
-    { name: 'Things found in a desert', words: ['Dune','Oasis','Mirage','Cactus'] }
+    { name: 'Words meaning fairness', words: ['Equity', 'Justice', 'Impartiality', 'Balance'] },
+    { name: 'Things with keys', words: ['Piano', 'Lock', 'Map', 'Computer'] },
+    { name: 'Things found in a desert', words: ['Dune', 'Oasis', 'Mirage', 'Cactus'] },
+    { name: '___ wave', words: ['Heat', 'Tidal', 'Crime', 'Brain'] }
   ]},
-  // Week 26
+  // T3 W6 — Teamwork
   { categories: [
-    { name: 'Things with shells', words: ['Snail','Tortoise','Oyster','Walnut'] },
-    { name: 'Types of poetry', words: ['Haiku','Sonnet','Limerick','Ballad'] },
-    { name: '___ park', words: ['Car','Theme','National','Skate'] },
-    { name: 'Things that are transparent', words: ['Glass','Cellophane','Ice','Jellyfish'] }
+    { name: 'Things a great team has', words: ['Trust', 'Communication', 'Roles', 'Shared goals'] },
+    { name: 'Things with shells', words: ['Snail', 'Tortoise', 'Oyster', 'Walnut'] },
+    { name: 'Types of poetry', words: ['Haiku', 'Sonnet', 'Limerick', 'Ballad'] },
+    { name: '___ park', words: ['Car', 'Theme', 'National', 'Skate'] }
   ]},
-  // Week 27
+  // T3 W7 — Virtue of Courage
   { categories: [
-    { name: 'Things in a hospital', words: ['Scalpel','Stethoscope','Ward','Gurney'] },
-    { name: 'Types of pasta sauce', words: ['Pesto','Arrabbiata','Carbonara','Bolognese'] },
-    { name: '___ fire', words: ['Camp','Cross','Open','Rapid'] },
-    { name: 'Famous explorers', words: ['Columbus','Magellan','Cook','Amundsen'] }
+    { name: 'Courage strengths', words: ['Bravery', 'Perseverance', 'Honesty', 'Zest'] },
+    { name: 'Things in a hospital', words: ['Scalpel', 'Stethoscope', 'Ward', 'Gurney'] },
+    { name: 'Famous explorers', words: ['Columbus', 'Magellan', 'Cook', 'Amundsen'] },
+    { name: '___ fire', words: ['Camp', 'Cross', 'Open', 'Rapid'] }
   ]},
-  // Week 28
+  // T3 W8 — Zest
   { categories: [
-    { name: 'Things with teeth', words: ['Comb','Saw','Zip','Gear'] },
-    { name: 'Types of election', words: ['Federal','State','Local','By'] },
-    { name: '___ house', words: ['Green','Ice','Warehouse','Fire'] },
-    { name: 'Things found underground', words: ['Roots','Aquifer','Magma','Burrow'] }
+    { name: 'Words meaning enthusiasm', words: ['Gusto', 'Vigour', 'Verve', 'Passion'] },
+    { name: 'Things with teeth', words: ['Comb', 'Saw', 'Zip', 'Gear'] },
+    { name: 'Types of election', words: ['Federal', 'State', 'Local', 'By'] },
+    { name: '___ house', words: ['Green', 'Ice', 'Warehouse', 'Fire'] }
   ]},
-  // Week 29
+  // T3 W9 — Bravery
   { categories: [
-    { name: 'Things that can be raw', words: ['Data','Talent','Egg','Deal'] },
-    { name: 'Types of map', words: ['Topographic','Political','Climate','Road'] },
-    { name: '___ cap', words: ['Ice','Hub','Knee','Night'] },
-    { name: 'Things in a library', words: ['Catalogue','Stacks','Microfiche','Folio'] }
+    { name: 'Words meaning brave', words: ['Valiant', 'Daring', 'Gallant', 'Audacious'] },
+    { name: 'Things that can be raw', words: ['Data', 'Talent', 'Egg', 'Deal'] },
+    { name: 'Types of map', words: ['Topographic', 'Political', 'Climate', 'Road'] },
+    { name: 'Things in a library', words: ['Catalogue', 'Stacks', 'Microfiche', 'Folio'] }
   ]},
-  // Week 30
+  // T3 W10 — Perseverance
   { categories: [
-    { name: 'Things that are hollow', words: ['Flute','Cave','Bone','Log'] },
-    { name: 'Types of government', words: ['Democracy','Republic','Monarchy','Federation'] },
-    { name: '___ net', words: ['Hair','Safety','Fishing','Inter'] },
-    { name: 'Things associated with speed', words: ['Cheetah','Bullet','Lightning','Falcon'] }
+    { name: 'Words meaning to keep going', words: ['Persist', 'Endure', 'Grind', 'Push through'] },
+    { name: 'Things that are hollow', words: ['Flute', 'Cave', 'Bone', 'Log'] },
+    { name: 'Types of government', words: ['Democracy', 'Republic', 'Monarchy', 'Federation'] },
+    { name: '___ net', words: ['Hair', 'Safety', 'Fishing', 'Inter'] }
   ]},
-  // Week 31
+  // T4 W1 — Honesty
   { categories: [
-    { name: 'Things that are layered', words: ['Cake','Sediment','Onion','Atmosphere'] },
-    { name: 'Types of coffee', words: ['Espresso','Lungo','Ristretto','Macchiato'] },
-    { name: '___ point', words: ['Gun','Needle','Ball','Flash'] },
-    { name: 'Things associated with cold', words: ['Frost','Igloo','Penguin','Blizzard'] }
+    { name: 'Words meaning honest', words: ['Truthful', 'Sincere', 'Frank', 'Candid'] },
+    { name: 'Things that are layered', words: ['Cake', 'Sediment', 'Onion', 'Atmosphere'] },
+    { name: 'Types of coffee', words: ['Espresso', 'Lungo', 'Ristretto', 'Macchiato'] },
+    { name: '___ point', words: ['Gun', 'Needle', 'Ball', 'Flash'] }
   ]},
-  // Week 32
+  // T4 W2 — Courage review
   { categories: [
-    { name: 'Things that can be blind', words: ['Spot','Date','Test','Side'] },
-    { name: 'Types of energy', words: ['Kinetic','Thermal','Nuclear','Solar'] },
-    { name: '___ board', words: ['Skate','Card','Surf','Key'] },
-    { name: 'Famous Australians in sport', words: ['Thorpe','Healy','Barty','Freeman'] }
+    { name: 'All four Courage strengths', words: ['Bravery', 'Perseverance', 'Honesty', 'Zest'] },
+    { name: 'Things that can be blind', words: ['Spot', 'Date', 'Test', 'Side'] },
+    { name: 'Types of energy', words: ['Kinetic', 'Thermal', 'Nuclear', 'Solar'] },
+    { name: 'Famous Australians in sport', words: ['Thorpe', 'Healy', 'Barty', 'Freeman'] }
   ]},
-  // Week 33
+  // T4 W3 — Virtue of Temperance
   { categories: [
-    { name: 'Things you can pitch', words: ['Tent','Ball','Idea','Voice'] },
-    { name: 'Types of fabric', words: ['Denim','Linen','Velvet','Tweed'] },
-    { name: '___ stone', words: ['Sand','Lime','Key','Corner'] },
-    { name: 'Things in outer space', words: ['Nebula','Pulsar','Quasar','Comet'] }
+    { name: 'Temperance strengths', words: ['Forgiveness', 'Humility', 'Prudence', 'Self-regulation'] },
+    { name: 'Things you can pitch', words: ['Tent', 'Ball', 'Idea', 'Voice'] },
+    { name: 'Types of fabric', words: ['Denim', 'Linen', 'Velvet', 'Tweed'] },
+    { name: 'Things in outer space', words: ['Nebula', 'Pulsar', 'Quasar', 'Comet'] }
   ]},
-  // Week 34
+  // T4 W4 — Prudence
   { categories: [
-    { name: 'Things that can be flat', words: ['Tyre','Battery','Earth','Rate'] },
-    { name: 'Types of market', words: ['Stock','Farmers','Flea','Bull'] },
-    { name: '___ field', words: ['Mine','Air','Corn','Battle'] },
-    { name: 'Things associated with water', words: ['Tide','Current','Eddy','Ripple'] }
+    { name: 'Words meaning prudent', words: ['Cautious', 'Careful', 'Wise', 'Sensible'] },
+    { name: 'Things that can be flat', words: ['Tyre', 'Battery', 'Earth', 'Rate'] },
+    { name: 'Types of market', words: ['Stock', 'Farmers', 'Flea', 'Bull'] },
+    { name: '___ field', words: ['Mine', 'Air', 'Corn', 'Battle'] }
   ]},
-  // Week 35
+  // T4 W5 — Humility
   { categories: [
-    { name: 'Things with a crown', words: ['King','Tooth','Tree','Trophy'] },
-    { name: 'Types of cloud computing', words: ['Server','Cluster','Node','Instance'] },
-    { name: '___ break', words: ['Jail','Day','Ground','Tax'] },
-    { name: 'Things that can be viral', words: ['Video','Post','Trend','Meme'] }
+    { name: 'Words meaning humble', words: ['Modest', 'Grounded', 'Unpretentious', 'Reserved'] },
+    { name: 'Things with a crown', words: ['King', 'Tooth', 'Tree', 'Trophy'] },
+    { name: '___ break', words: ['Jail', 'Day', 'Ground', 'Tax'] },
+    { name: 'Things that can be viral', words: ['Video', 'Post', 'Trend', 'Meme'] }
   ]},
-  // Week 36
+  // T4 W6 — Self-Regulation
   { categories: [
-    { name: 'Things that spin', words: ['Top','Turbine','Roulette','Gyroscope'] },
-    { name: 'Types of humour', words: ['Satire','Irony','Slapstick','Parody'] },
-    { name: '___ line', words: ['Finish','Base','Dead','Power'] },
-    { name: 'Things associated with learning', words: ['Curiosity','Practice','Feedback','Reflection'] }
+    { name: 'Ways to regulate your emotions', words: ['Deep breathing', 'Grounding', 'Journalling', 'Exercise'] },
+    { name: 'Things that spin', words: ['Top', 'Turbine', 'Roulette', 'Gyroscope'] },
+    { name: 'Types of humour', words: ['Satire', 'Irony', 'Slapstick', 'Parody'] },
+    { name: '___ line', words: ['Finish', 'Base', 'Dead', 'Power'] }
   ]},
-  // Week 37
+  // T4 W7 — Forgiveness
   { categories: [
-    { name: 'Things that can be acute', words: ['Angle','Pain','Awareness','Shortage'] },
-    { name: 'Types of font', words: ['Serif','Gothic','Italic','Monospace'] },
-    { name: '___ run', words: ['Home','Dry','Bull','Ski'] },
-    { name: 'Things found at a market', words: ['Stall','Haggle','Produce','Vendor'] }
+    { name: 'Words meaning to forgive', words: ['Pardon', 'Absolve', 'Release', 'Let go'] },
+    { name: 'Things that can be acute', words: ['Angle', 'Pain', 'Awareness', 'Shortage'] },
+    { name: 'Types of font', words: ['Serif', 'Gothic', 'Italic', 'Monospace'] },
+    { name: '___ run', words: ['Home', 'Dry', 'Bull', 'Ski'] }
   ]},
-  // Week 38
+  // T4 W8 — Year in review
   { categories: [
-    { name: 'Things that can be charged', words: ['Battery','Fee','Crime','Particle'] },
-    { name: 'Types of soil', words: ['Loam','Clay','Sandy','Silt'] },
-    { name: '___ game', words: ['Board','Ball','War','Mind'] },
-    { name: 'Things associated with strength', words: ['Steel','Titanium','Oak','Diamond'] }
-  ]},
-  // Week 39
-  { categories: [
-    { name: 'Things that can be planted', words: ['Seed','Idea','Spy','Flag'] },
-    { name: 'Types of tax', words: ['Income','GST','Carbon','Stamp'] },
-    { name: '___ work', words: ['Team','Frame','Net','Field'] },
-    { name: 'Things associated with celebration', words: ['Confetti','Toast','Fireworks','Ribbon'] }
-  ]},
-  // Week 40
-  { categories: [
-    { name: 'Things that can be bright', words: ['Star','Idea','Colour','Future'] },
-    { name: 'Types of award', words: ['Oscar','Nobel','Pulitzer','Grammy'] },
-    { name: '___ power', words: ['Man','Will','Fire','Solar'] },
-    { name: 'Things associated with endings', words: ['Sunset','Graduation','Finale','Harvest'] }
-  ]},
+    { name: 'Things to reflect on at year end', words: ['Growth', 'Challenges', 'Highlights', 'Gratitude'] },
+    { name: 'Things that can be charged', words: ['Battery', 'Fee', 'Crime', 'Particle'] },
+    { name: 'Types of soil', words: ['Loam', 'Clay', 'Sandy', 'Silt'] },
+    { name: 'Things associated with endings', words: ['Sunset', 'Graduation', 'Finale', 'Harvest'] }
+  ]}
 ];
 
 
