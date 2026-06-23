@@ -210,6 +210,23 @@
     athletics:    {e:"🏃‍♀️🏅🏁", s:"Go the distance", a:["go the distance","athletics carnival","athletics","sports carnival","finish line"], title:"Athletics Carnival", cat:"Celebration", sub:"End of year", link:"giving everything right to the finish line"},
     reflect:      {e:"🪞💭",   s:"Time to reflect", a:["time to reflect","reflect","look back","reflect on the year"], title:"Year in review", cat:"Year in review", sub:"Final fortnight", link:"looking back on how far you've grown this year"},
     wrap:         {e:"🎬🌯",   s:"That's a wrap", a:["thats a wrap","that is a wrap","the end","all done","wrap","done for the year"], title:"Last week!", cat:"End of year", sub:"Final week", link:"that's a wrap on the year — well done, everyone"},
+
+    // ── 2026 Positive Education non-strength focus weeks ──
+    welcomeBack:       {e:"👋🎒🌱", s:"Welcome back", a:["welcome back","back to school","start of year"], title:"Welcome back", cat:"Start of year", sub:"Term 1 · Week 1", link:"settling in and starting the year well"},
+    posEdIntro:        {e:"😊📚✨", s:"Positive Education", a:["positive education","pos ed","positive ed"], title:"Positive Education introduction", cat:"Positive Education", sub:"Term 1 · Week 2", link:"learning how wellbeing and character strengths support school life"},
+    permahOverview:    {e:"🧩🌱💪", s:"PERMAH pillars", a:["permah pillars","permah","perma h","wellbeing pillars"], title:"PERMAH pillars overview", cat:"PERMAH overview", sub:"Positive Emotion · Engagement · Relationships · Meaning · Accomplishment · Health", link:"the wellbeing framework behind the Home Group program"},
+    virtuesOverview:   {e:"6️⃣⭐🧭", s:"Character strengths", a:["character strengths","virtues and character strengths","virtues","strengths"], title:"Virtues and character strengths overview", cat:"Virtues overview", sub:"Six virtues · 24 strengths", link:"introducing the six virtues and 24 character strengths"},
+    humanityIntro:     {e:"❤️🤝👥", s:"Kind connections", a:["kind connections","humanity","virtue of humanity","positive relationships"], title:"Virtue of Humanity", cat:"Virtue focus", sub:"Love · Social Intelligence · Kindness", link:"building kind, positive connections with other people"},
+    transcendIntro:    {e:"🌟🌈🧭", s:"Positive purpose", a:["positive purpose","transcendence","virtue of transcendence","purpose"], title:"Virtue of Transcendence", cat:"Virtue focus", sub:"Humour · Spirituality · Appreciation · Hope · Gratitude", link:"connecting with meaning, hope and what is bigger than ourselves"},
+    wisdomIntro:       {e:"🧠🔍💡", s:"Curious thinking", a:["curious thinking","wisdom","virtue of wisdom","thinking and learning"], title:"Virtue of Wisdom", cat:"Virtue focus", sub:"Love of Learning · Perspective · Curiosity · Creativity · Judgement", link:"thinking, learning and making sense of the world"},
+    virtuesRecap:      {e:"🔁❤️🌟🧠", s:"Virtues recap", a:["virtues recap","recap","humanity transcendence wisdom"], title:"Virtues recap", cat:"Review", sub:"Humanity · Transcendence · Wisdom", link:"revisiting the first three virtues before moving forward"},
+    permahRecap:       {e:"🔁🧩🌱", s:"PERMAH overview", a:["permah overview","permah recap","permah","wellbeing overview"], title:"PERMAH overview", cat:"Review", sub:"Wellbeing framework", link:"reviewing the PERMAH wellbeing framework"},
+    justiceIntro:      {e:"⚖️🤝👑", s:"Fair community", a:["fair community","justice","virtue of justice","fairness teamwork leadership"], title:"Virtue of Justice", cat:"Virtue focus", sub:"Leadership · Fairness · Teamwork", link:"helping groups work fairly and effectively"},
+    courageIntro:      {e:"🦁🔥🏁", s:"Brave action", a:["brave action","courage","virtue of courage","bravery"], title:"Virtue of Courage", cat:"Virtue focus", sub:"Zest · Bravery · Perseverance · Honesty", link:"acting with energy, bravery and persistence through challenge"},
+    courageReview:     {e:"🔁🦁💪", s:"Courage review", a:["courage review","review courage","courage"], title:"Courage review", cat:"Review", sub:"Zest · Bravery · Perseverance · Honesty", link:"reviewing the Courage strengths covered in the program"},
+    temperanceIntro:   {e:"⚖️🧘🛑", s:"Self control and balance", a:["self control and balance","self-control and balance","temperance","virtue of temperance","balance"], title:"Virtue of Temperance", cat:"Virtue focus", sub:"Prudence · Humility · Self-Regulation · Forgiveness", link:"showing balance, self-control and thoughtful choices"},
+    yearReview:        {e:"🪞📅🌟", s:"Year in review", a:["year in review","review the year","time to reflect","reflection"], title:"Year in review", cat:"Year in review", sub:"PERMAH and virtues", link:"looking back at PERMAH, the six virtues and the strengths explored this year"},
+
     _default:     {e:"😊🤝",   s:"We're all in this together", a:["were all in this together","all in this together","in this together"], title:"Wellbeing & relationships", cat:"Wellbeing & relationships", sub:"This week", link:"looking out for yourself and each other"},
   };
 
@@ -221,26 +238,26 @@
   //  Keyed "term-week". Strengths appear once each; events/wellbeing fill the rest.
   // ════════════════════════════════════════════════════════════════════════
   const WEEK_PLAN={
-    // PERMAH overview (T1 W1–4)
-    '1-1':{ev:'_default'}, '1-2':{ev:'_default'}, '1-3':{ev:'_default'}, '1-4':{ev:'_default'},
+    // Term 1 introduction weeks
+    '1-1':{ev:'welcomeBack'}, '1-2':{ev:'posEdIntro'}, '1-3':{ev:'permahOverview'}, '1-4':{ev:'virtuesOverview'},
     // Humanity (Compassion)
-    '1-5':{ev:'_default'}, '1-6':{s:'love'}, '1-7':{s:'social'}, '1-8':{s:'kindness'},
+    '1-5':{ev:'humanityIntro'}, '1-6':{s:'love'}, '1-7':{s:'social'}, '1-8':{s:'kindness'},
     // Transcendence (Curiosity & Drive)
-    '1-9':{ev:'_default'}, '1-10':{s:'humour'},
+    '1-9':{ev:'transcendIntro'}, '1-10':{s:'humour'},
     '2-1':{s:'spirituality'}, '2-2':{s:'appreciation'}, '2-3':{s:'hope'}, '2-4':{s:'gratitude'},
     // Wisdom (Curiosity & Drive)
-    '2-5':{ev:'_default'}, '2-6':{s:'learning'}, '2-7':{s:'perspective'}, '2-8':{s:'curiosity'},
+    '2-5':{ev:'wisdomIntro'}, '2-6':{s:'learning'}, '2-7':{s:'perspective'}, '2-8':{s:'curiosity'},
     '2-9':{s:'creativity'}, '2-10':{s:'judgement'},
-    // PERMAH recap (T3 W1–2)
-    '3-1':{ev:'_default'}, '3-2':{ev:'_default'},
+    // Term 3 recap weeks
+    '3-1':{ev:'virtuesRecap'}, '3-2':{ev:'permahRecap'},
     // Justice (Integrity)
-    '3-3':{ev:'_default'}, '3-4':{s:'leadership'}, '3-5':{s:'fairness'}, '3-6':{s:'teamwork'},
+    '3-3':{ev:'justiceIntro'}, '3-4':{s:'leadership'}, '3-5':{s:'fairness'}, '3-6':{s:'teamwork'},
     // Courage (Integrity)
-    '3-7':{ev:'_default'}, '3-8':{s:'zest'}, '3-9':{s:'bravery'}, '3-10':{s:'perseverance'},
-    '4-1':{s:'honesty'}, '4-2':{ev:'_default'},
+    '3-7':{ev:'courageIntro'}, '3-8':{s:'zest'}, '3-9':{s:'bravery'}, '3-10':{s:'perseverance'},
+    '4-1':{s:'honesty'}, '4-2':{ev:'courageReview'},
     // Temperance (Integrity)
-    '4-3':{ev:'_default'}, '4-4':{s:'prudence'}, '4-5':{s:'humility'}, '4-6':{s:'regulation'},
-    '4-7':{s:'forgiveness'}, '4-8':{ev:'_default'},
+    '4-3':{ev:'temperanceIntro'}, '4-4':{s:'prudence'}, '4-5':{s:'humility'}, '4-6':{s:'regulation'},
+    '4-7':{s:'forgiveness'}, '4-8':{ev:'yearReview'},
   };
 
   function planForThisWeek(){

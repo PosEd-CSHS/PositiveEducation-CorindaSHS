@@ -96,7 +96,7 @@
     </div>
     <div class="panel">
       <div class="card-title">How to play</div>
-      <p style="font-size:0.9rem; line-height:1.6; color:var(--muted);">One of the 24 character strengths is hidden. Ask yes/no questions to narrow it down — clue questions cost <b style="color:var(--gold)">1 point</b>, virtue questions cost <b style="color:var(--gold)">2</b>. Start with 10 points; a wrong guess costs 2. Tap a strength card when your homegroup is ready to lock in a guess. Same hidden strength for every homegroup this week — choose your questions wisely!</p>
+      <p style="font-size:0.9rem; line-height:1.6; color:var(--muted);">During Character Strength weeks, one of the 24 character strengths is hidden. Ask yes/no questions to narrow it down — clue questions cost <b style="color:var(--gold)">1 point</b>, virtue questions cost <b style="color:var(--gold)">2</b>. Start with 10 points; a wrong guess costs 2. Tap a strength card when your homegroup is ready to lock in a guess. Same hidden strength for every homegroup this week — choose your questions wisely!</p>
     </div>
   </div>
 
@@ -119,6 +119,24 @@
     <div class="panel">
       <div class="card-title">The suspects — tap one to lock in a guess</div>
       <div class="strength-board" id="board"></div>
+    </div>
+  </div>
+
+
+  <!-- NON-STRENGTH WEEK -->
+  <div class="screen" id="screen-nonplay">
+    <div class="panel" style="text-align:center;">
+      <div class="card-title">This week's focus</div>
+      <div class="result-emoji">🎮</div>
+      <div class="reveal-name" id="nonPlayTitle">Not a Character Strength week</div>
+      <div class="reveal-virtue" id="nonPlayWeek"></div>
+      <div class="reveal-desc" id="nonPlayDesc" style="margin-top:12px;"></div>
+      <p style="font-size:0.92rem; line-height:1.6; color:var(--muted); margin-top:16px;">
+        Guess the Strength is only available during weeks with a specific Character Strength focus.
+        Head back to the games page and choose another Home Group game for this week.
+      </p>
+      <button class="btn" onclick="goToGamesPage()">Back to Games Page</button>
+      <button class="btn btn-ghost" onclick="resetToSignin()">Back to sign-in</button>
     </div>
   </div>
 
@@ -240,48 +258,74 @@ const QUESTIONS = [
 ];
 
 /* ── WEEKLY SECRET ──
-   Week-by-week schedule aligned to the 2026 Corinda SHS focus strength plan.
-   Event and review weeks use the same strength as the nearest strength week
-   in that fortnight so the secret is always valid. Review fortnights at the
-   very end of year draw from all 24 strengths by absolute-week cycling. */
-const WEEK_PLAN_GTS = {
-  /* T1 PERMAH overview weeks */
-  '1-1':'love',        '1-2':'love',        '1-3':'love',        '1-4':'love',
-  /* Humanity */
-  '1-5':'love',        '1-6':'love',
-  '1-7':'social',      '1-8':'kindness',
-  /* Transcendence */
-  '1-9':'humour',      '1-10':'humour',
-  '2-1':'spirituality','2-2':'appreciation',
-  '2-3':'hope',        '2-4':'gratitude',
-  /* Wisdom */
-  '2-5':'learning',    '2-6':'learning',
-  '2-7':'perspective', '2-8':'curiosity',
-  '2-9':'creativity',  '2-10':'judgement',
-  /* T3 PERMAH recap */
-  '3-1':'ALL',         '3-2':'ALL',
-  /* Justice */
-  '3-3':'leadership',  '3-4':'leadership',
-  '3-5':'fairness',    '3-6':'teamwork',
-  /* Courage */
-  '3-7':'zest',        '3-8':'zest',
-  '3-9':'bravery',     '3-10':'perseverance',
-  '4-1':'honesty',     '4-2':'honesty',
-  /* Temperance */
-  '4-3':'prudence',    '4-4':'humility',
-  '4-5':'regulation',  '4-6':'forgiveness',
-  '4-7':'forgiveness', '4-8':'ALL',
-};
-function secretForThisWeek(){
-  const info = cshsWeekInfo();
-  const id = WEEK_PLAN_GTS[info.t + '-' + info.w];
-  if (!id || id === 'ALL') {
-    /* Year-review weeks: deterministic cycle through all 24 strengths */
-    return STRENGTHS[(info.abs - 1) % STRENGTHS.length];
-  }
-  return STRENGTHS.find(s => s.id === id);
-}
+   Playable only on weeks with a specific Character Strength focus, aligned
+   to the 2026 Corinda SHS Positive Education focus-strength schedule. */
+const GAMES_HUB_URL = 'https://qed05.instructure.com/courses/103375/pages/homegroup-games';
 
+const WEEK_PLAN_GTS = {
+  /* Humanity */
+  '1-6':'love',
+  '1-7':'social',
+  '1-8':'kindness',
+  /* Transcendence */
+  '1-10':'humour',
+  '2-1':'spirituality',
+  '2-2':'appreciation',
+  '2-3':'hope',
+  '2-4':'gratitude',
+  /* Wisdom */
+  '2-6':'learning',
+  '2-7':'perspective',
+  '2-8':'curiosity',
+  '2-9':'creativity',
+  '2-10':'judgement',
+  /* Justice */
+  '3-4':'leadership',
+  '3-5':'fairness',
+  '3-6':'teamwork',
+  /* Courage */
+  '3-8':'zest',
+  '3-9':'bravery',
+  '3-10':'perseverance',
+  '4-1':'honesty',
+  /* Temperance */
+  '4-4':'prudence',
+  '4-5':'humility',
+  '4-6':'regulation',
+  '4-7':'forgiveness'
+};
+
+const NON_PLAY_WEEKS = {
+  '1-1':{title:'Welcome back', desc:'This week is about settling in and starting the year well.'},
+  '1-2':{title:'Positive Education introduction', desc:'This week introduces Positive Education and why it matters in Home Group.'},
+  '1-3':{title:'PERMAH pillars overview', desc:'This week explores the PERMAH pillars that support wellbeing.'},
+  '1-4':{title:'Virtues and character strengths overview', desc:'This week introduces the six virtues and the 24 character strengths.'},
+  '1-5':{title:'Virtue of Humanity', desc:'This week introduces Humanity: the strengths that help us build kind, positive connections.'},
+  '1-9':{title:'Virtue of Transcendence', desc:'This week introduces Transcendence: the strengths that connect us with purpose, hope and meaning.'},
+  '2-5':{title:'Virtue of Wisdom', desc:'This week introduces Wisdom: the strengths that help us think, learn and make sense of the world.'},
+  '3-1':{title:'Virtues recap', desc:'This week revisits Humanity, Transcendence and Wisdom before moving into the next virtues.'},
+  '3-2':{title:'PERMAH overview', desc:'This week recaps the PERMAH wellbeing framework.'},
+  '3-3':{title:'Virtue of Justice', desc:'This week introduces Justice: the strengths that help groups work fairly and effectively.'},
+  '3-7':{title:'Virtue of Courage', desc:'This week introduces Courage: the strengths that help us act bravely and persist through challenge.'},
+  '4-2':{title:'Courage review', desc:'This week reviews the Courage strengths covered in the program.'},
+  '4-3':{title:'Virtue of Temperance', desc:'This week introduces Temperance: the strengths that help us show balance, self-control and good judgement.'},
+  '4-8':{title:'Year in review', desc:'This week reviews PERMAH, the six virtues and the character strengths explored this year.'}
+};
+
+function weekKey(){
+  const info = cshsWeekInfo();
+  return info.t + '-' + info.w;
+}
+function secretForThisWeek(){
+  const id = WEEK_PLAN_GTS[weekKey()];
+  return id ? STRENGTHS.find(s => s.id === id) : null;
+}
+function nonPlayForThisWeek(){
+  return NON_PLAY_WEEKS[weekKey()] || {title:'Not a Character Strength week', desc:'This week does not have one specific Character Strength focus.'};
+}
+function goToGamesPage(){
+  window.location.href = GAMES_HUB_URL;
+}
 /* ── STATE ── */
 const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
 const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
@@ -325,6 +369,11 @@ function checkSignin(){
 function beginGame(){
   if (selectedGroup !== 'Staff' && !selectedHouse) return;
   const g = groupName();
+  secret = secretForThisWeek();
+  if (!secret) {
+    showNonPlayScreen();
+    return;
+  }
   if (selectedGroup !== 'Staff') {
     const played = readPlayed();
     if (played.includes(g)) {
@@ -332,7 +381,6 @@ function beginGame(){
       return;
     }
   }
-  secret = secretForThisWeek();
   score = 10; eliminated = new Set(); askedCount = 0; gameOver = false;
   document.getElementById('playerLabel').textContent = g;
   document.getElementById('weekLabel').textContent = cshsWeekLabel();
@@ -340,6 +388,14 @@ function beginGame(){
   document.getElementById('answerLog').innerHTML = '<div class="log-row" style="color:var(--muted)">No questions asked yet.</div>';
   buildBoard(); buildQuestions();
   showScreen('screen-play');
+}
+
+function showNonPlayScreen(){
+  const info = nonPlayForThisWeek();
+  document.getElementById('nonPlayTitle').textContent = info.title;
+  document.getElementById('nonPlayWeek').textContent = cshsWeekLabel();
+  document.getElementById('nonPlayDesc').textContent = info.desc;
+  showScreen('screen-nonplay');
 }
 
 function showScreen(id){
@@ -425,6 +481,7 @@ function confirmGuess(){
     eliminated.add(sid);
     document.getElementById('sc-' + sid).classList.add('eliminated');
     logAnswer('Is it ' + STRENGTHS.find(s => s.id === sid).name + '?', false);
+    if (score === 0) { finishGame(false); return; }
   }
 }
 
