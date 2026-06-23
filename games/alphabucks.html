@@ -1018,17 +1018,32 @@ function showResult(total, breakdown, group, correctCount, attempted, fast) {
   const cats = config.categoriesPerGame || 6;
   const scaled = alphabucksScore(correctCount, attempted, fast);
   document.getElementById('finalScore').textContent = scaled;
+
   const bd = document.getElementById('resultBreakdown');
-  bd.innerHTML = breakdown.map(b => `
-    <div class="category-row">
-      <div class="category-label">${b.cat}</div>
-      <div style="font-size:13px;color:${b.valid?'#4caf7a':'var(--muted)'};">
-        ${b.val || '(no answer)'}
-      </div>
-      <div class="pts-badge" style="color:${b.valid?'var(--gold)':'var(--muted)'};">${b.valid?'✓':'—'}</div>
-    </div>
-  `).join('');
-  // breakdown line
+  bd.innerHTML = breakdown.map(b => {
+    const isEmpty = !b.val || b.val.length === 0;
+    const bg     = b.valid ? 'rgba(76,175,122,0.08)' : isEmpty ? 'rgba(255,255,255,0.02)' : 'rgba(224,82,82,0.08)';
+    const border = b.valid ? 'rgba(76,175,122,0.3)'  : isEmpty ? 'rgba(255,255,255,0.06)' : 'rgba(224,82,82,0.3)';
+    const icon   = b.valid ? '✓' : isEmpty ? '—' : '✗';
+    const iconColor = b.valid ? '#4caf7a' : isEmpty ? 'var(--muted)' : 'var(--danger)';
+    const answerColor = b.valid ? '#4caf7a' : isEmpty ? 'var(--muted)' : 'var(--danger)';
+    const answerText = isEmpty ? 'no answer' : b.val;
+    const reasonHtml = (!b.valid && !isEmpty && b.reason)
+      ? `<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:3px;">${b.reason}</div>`
+      : '';
+    return `
+      <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;
+                  padding:12px 14px;border-radius:10px;background:${bg};border:1px solid ${border};">
+        <div>
+          <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.12em;
+                      text-transform:uppercase;color:var(--muted);margin-bottom:4px;">${b.cat}</div>
+          <div style="font-size:15px;font-weight:700;color:${answerColor};">${answerText}</div>
+          ${reasonHtml}
+        </div>
+        <div style="font-size:22px;font-weight:700;color:${iconColor};padding-top:2px;">${icon}</div>
+      </div>`;
+  }).join('');
+
   const line = document.getElementById('alphaBreakdownLine');
   if (line) {
     if (correctCount >= 1) {
