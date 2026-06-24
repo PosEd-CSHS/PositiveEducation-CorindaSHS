@@ -2267,7 +2267,7 @@ function submitAssessment() {
         </div>
         <h2 style="font-family:'Playfair Display',serif;font-size:28px;color:#6ee7a0;margin-bottom:10px;">Congratulations, ${nameVal.split(' ')[0]}! 🎉</h2>
         <p style="color:var(--white-dim);max-width:480px;margin:0 auto 24px;font-size:15px;">You passed with ${score} out of 10 correct. Your certificate of completion is ready below.</p>
-        <button class="btn btn-primary" style="font-size:15px;padding:14px 32px;" onclick="generateCertificate()">🏅 Generate My Certificate</button>
+        <button class="btn btn-primary" style="font-size:15px;padding:14px 32px;" onclick="submitCompletionAndGenerate()">🏅 Generate My Certificate</button>
       </div>`;
     // Lock the submit button
     document.querySelector('#assessment-form button[onclick="submitAssessment()"]').style.display = 'none';
@@ -2301,6 +2301,27 @@ function resetAssessment() {
   document.getElementById('sec-assessment').scrollIntoView({behavior:'smooth'});
 }
 
+// ─── COMPLETION FORMS SUBMISSION (same pattern as games) ───
+function submitCompletionAndGenerate() {
+  const name  = document.getElementById('cert-name').value.trim();
+  const house = document.getElementById('cert-house').value || '';
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-AU', {day:'numeric', month:'long', year:'numeric'});
+
+  const FORM_ID    = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUNUg3SDdINVEzMEJURTZFNzJCSjZXQzZSMi4u';
+  const FIELD_NAME = 'r9ee1232361704626b1eae66240bcb1f6';
+  const FIELD_HSE  = 'ra1bf0215453547e2a32732afb66c0f0f';
+  const FIELD_DATE = 'rf41dffc9b0d54db6852a3750e8285c43';
+
+  const prefillUrl = 'https://forms.office.com/Pages/ResponsePage.aspx?id=' + FORM_ID
+    + '&' + FIELD_NAME + '=' + encodeURIComponent(name)
+    + '&' + FIELD_HSE  + '=' + encodeURIComponent(house)
+    + '&' + FIELD_DATE + '=' + encodeURIComponent(dateStr);
+
+  window.open(prefillUrl, '_blank');
+  generateCertificate();
+}
+
 // ─── CERTIFICATE GENERATION ───
 function generateCertificate() {
   const name = document.getElementById('cert-name').value.trim();
@@ -2309,25 +2330,7 @@ function generateCertificate() {
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-AU', {day:'numeric', month:'long', year:'numeric'});
 
-  // ── PATCH 3: Silent PD completion notification to Microsoft Forms ──
-  // Fires once per session when a staff member generates their certificate.
-  // Submits name, house, and date to the PD completion tracking form.
-  if (!window._pdCompletionSubmitted) {
-    window._pdCompletionSubmitted = true;
-    const _FORM  = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUNUg3SDdINVEzMEJURTZFNzJCSjZXQzZSMi4u';
-    const _FNAME = 'r9ee1232361704626b1eae66240bcb1f6';
-    const _FHSE  = 'ra1bf0215453547e2a32732afb66c0f0f';
-    const _FDATE = 'rf41dffc9b0d54db6852a3750e8285c43';
-    const _url = 'https://forms.office.com/Pages/ResponsePage.aspx?id=' + _FORM
-      + '&' + _FNAME + '=' + encodeURIComponent(name)
-      + '&' + _FHSE  + '=' + encodeURIComponent(house)
-      + '&' + _FDATE + '=' + encodeURIComponent(dateStr);
-    const _ifr = document.createElement('iframe');
-    _ifr.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;';
-    _ifr.src = _url;
-    document.body.appendChild(_ifr);
-    setTimeout(function(){ try { document.body.removeChild(_ifr); } catch(e){} }, 12000);
-  }
+
 
   const canvas = document.getElementById('cert-canvas');
   const ctx = canvas.getContext('2d');
