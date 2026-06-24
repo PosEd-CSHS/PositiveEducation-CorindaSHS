@@ -1892,6 +1892,17 @@
     <div style="margin:28px 0 32px;">
       <label style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;">Your Full Name (for certificate)</label>
       <input type="text" id="cert-name" placeholder="e.g. Sarah Johnson" style="width:100%;max-width:420px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
+      <label style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:16px;">Your House</label>
+      <select id="cert-house" style="width:100%;max-width:420px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f2b400' d='M1 1l5 5 5-5'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 14px center;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
+        <option value="" disabled selected>Select your house…</option>
+        <option value="Bunar">Bunar</option>
+        <option value="Dibbil">Dibbil</option>
+        <option value="Kabul">Kabul</option>
+        <option value="Moori">Moori</option>
+        <option value="Pirri">Pirri</option>
+        <option value="Yarraman">Yarraman</option>
+      </select>
+
       <label style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:16px;">Your Role / School (optional)</label>
       <input type="text" id="cert-role" placeholder="e.g. Science Teacher, Corinda SHS" style="width:100%;max-width:420px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
     </div>
@@ -2196,6 +2207,14 @@ function submitAssessment() {
     return;
   }
 
+  const houseVal = document.getElementById('cert-house').value;
+  if (!houseVal) {
+    errEl.textContent = '⚠ Please select your house before submitting.';
+    errEl.style.display = 'block';
+    document.getElementById('cert-house').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
   let score = 0;
   let allAnswered = true;
 
@@ -2285,9 +2304,30 @@ function resetAssessment() {
 // ─── CERTIFICATE GENERATION ───
 function generateCertificate() {
   const name = document.getElementById('cert-name').value.trim();
+  const house = document.getElementById('cert-house').value || '';
   const role = document.getElementById('cert-role').value.trim();
   const today = new Date();
   const dateStr = today.toLocaleDateString('en-AU', {day:'numeric', month:'long', year:'numeric'});
+
+  // ── PATCH 3: Silent PD completion notification to Microsoft Forms ──
+  // Fires once per session when a staff member generates their certificate.
+  // Submits name, house, and date to the PD completion tracking form.
+  if (!window._pdCompletionSubmitted) {
+    window._pdCompletionSubmitted = true;
+    const _FORM  = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUNUg3SDdINVEzMEJURTZFNzJCSjZXQzZSMi4u';
+    const _FNAME = 'r9ee1232361704626b1eae66240bcb1f6';
+    const _FHSE  = 'ra1bf0215453547e2a32732afb66c0f0f';
+    const _FDATE = 'rf41dffc9b0d54db6852a3750e8285c43';
+    const _url = 'https://forms.office.com/Pages/ResponsePage.aspx?id=' + _FORM
+      + '&' + _FNAME + '=' + encodeURIComponent(name)
+      + '&' + _FHSE  + '=' + encodeURIComponent(house)
+      + '&' + _FDATE + '=' + encodeURIComponent(dateStr);
+    const _ifr = document.createElement('iframe');
+    _ifr.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;';
+    _ifr.src = _url;
+    document.body.appendChild(_ifr);
+    setTimeout(function(){ try { document.body.removeChild(_ifr); } catch(e){} }, 12000);
+  }
 
   const canvas = document.getElementById('cert-canvas');
   const ctx = canvas.getContext('2d');
