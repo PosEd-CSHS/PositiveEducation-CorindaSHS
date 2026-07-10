@@ -118,6 +118,7 @@
   </div>
 </div>
 
+<script src="../assets/site-config.js"></script>
 <script>
   const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
   const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
@@ -220,12 +221,7 @@
   function checkForm(){ submitBtn.disabled=!(selectedHouse&&selectedGroup); }
 
   function getCurrentWeek(){
-    const terms = [
-      { t:1, start:"2026-01-27", end:"2026-04-02" },
-      { t:2, start:"2026-04-20", end:"2026-06-26" },
-      { t:3, start:"2026-07-13", end:"2026-09-18" },
-      { t:4, start:"2026-10-06", end:"2026-12-11" }
-    ];
+    const terms = window.CSHS_SITE_CONFIG.terms;
     const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
     const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
     const today=new Date(); today.setHours(0,0,0,0);

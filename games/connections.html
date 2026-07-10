@@ -165,6 +165,7 @@
 
 </div>
 
+<script src="../assets/site-config.js"></script>
 <script>
 const FORM_URL = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
 const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
@@ -201,13 +202,13 @@ const PUZZLE_BANK = [
   // T1 W4 — Virtues & character strengths
   { categories: [
     { name: 'Wisdom strengths', words: ['Curiosity', 'Creativity', 'Judgement', 'Perspective'] },
-    { name: 'Things with rings', words: ['Saturn', 'Olympics', 'Tree', 'Boxing'] },
+    { name: 'Things with rings', words: ['Saturn', 'Olympics', 'Gymnastics', 'Boxing'] },
     { name: 'Dances', words: ['Tango', 'Foxtrot', 'Waltz', 'Quickstep'] },
     { name: '___ house', words: ['Green', 'Power', 'Tree', 'Full'] }
   ]},
   // T1 W5 — Virtue of Humanity
   { categories: [
-    { name: 'Humanity strengths', words: ['Love', 'Kindness', 'Social intelligence', 'Empathy'] },
+    { name: 'Ways humanity can be shown', words: ['Love', 'Kindness', 'Social intelligence', 'Empathy'] },
     { name: 'Bones in the human body', words: ['Femur', 'Clavicle', 'Patella', 'Tibia'] },
     { name: 'Types of triangle', words: ['Scalene', 'Isosceles', 'Equilateral', 'Obtuse'] },
     { name: '___ bridge', words: ['Cam', 'Draw', 'Foot', 'Stone'] }
@@ -223,7 +224,7 @@ const PUZZLE_BANK = [
   { categories: [
     { name: 'Ways to read the room', words: ['Body language', 'Tone of voice', 'Eye contact', 'Silence'] },
     { name: 'Planets in order from the Sun', words: ['Mercury', 'Venus', 'Earth', 'Mars'] },
-    { name: 'Famous Australians named Chris', words: ['Hemsworth', 'Judd', 'Martin', 'Lilley'] },
+    { name: 'Australians named Chris', words: ['Hemsworth', 'Judd', 'Lilley', 'Lynn'] },
     { name: 'Things with a shell', words: ['Tortoise', 'Walnut', 'Egg', 'Snail'] }
   ]},
   // T1 W8 — Kindness
@@ -243,7 +244,7 @@ const PUZZLE_BANK = [
   // T1 W10 — Humour
   { categories: [
     { name: 'Types of humour', words: ['Satire', 'Slapstick', 'Irony', 'Wit'] },
-    { name: 'Things in a rainforest', words: ['Canopy', 'Epiphyte', 'Termite', 'Bromiliad'] },
+    { name: 'Things in a rainforest', words: ['Canopy', 'Epiphyte', 'Termite', 'Bromeliad'] },
     { name: 'Sports played on a court', words: ['Squash', 'Netball', 'Volleyball', 'Badminton'] },
     { name: '___ fall', words: ['Water', 'Down', 'Free', 'Foot'] }
   ]},
@@ -251,7 +252,7 @@ const PUZZLE_BANK = [
   { categories: [
     { name: 'Words meaning inner peace', words: ['Serenity', 'Calm', 'Stillness', 'Tranquility'] },
     { name: 'Things that can be cold', words: ['Shoulder', 'Turkey', 'Blooded', 'Case'] },
-    { name: 'Animals that lay eggs', words: ['Platypus', 'Echidna', 'Seahorse', 'Octopus'] },
+    { name: 'Animals that lay eggs', words: ['Platypus', 'Echidna', 'Chicken', 'Octopus'] },
     { name: '___ run', words: ['Bull', 'Home', 'Dry', 'Fun'] }
   ]},
   // T2 W2 — Appreciation of beauty
@@ -286,7 +287,7 @@ const PUZZLE_BANK = [
   { categories: [
     { name: 'Famous learners who changed the world', words: ['Einstein', 'Curie', 'Da Vinci', 'Turing'] },
     { name: 'Things that can be sharp', words: ['Mind', 'Knife', 'Turn', 'Tongue'] },
-    { name: 'Famous Queenslanders in sport', words: ['Sam Kerr', 'Pat Rafter', 'Jai Arrow', 'Kalyn Ponga'] },
+    { name: 'Famous Queensland sportspeople', words: ['Ash Barty', 'Pat Rafter', 'Jai Arrow', 'Kalyn Ponga'] },
     { name: '___ star', words: ['Gold', 'Rock', 'Pop', 'All'] }
   ]},
   // T2 W7 — Perspective
@@ -314,7 +315,7 @@ const PUZZLE_BANK = [
   { categories: [
     { name: 'Things that can cloud your judgement', words: ['Bias', 'Emotion', 'Pressure', 'Misinformation'] },
     { name: 'Things that flow', words: ['Lava', 'Traffic', 'Conversation', 'Current'] },
-    { name: 'Parts of a school', words: ['Canteen', 'Oval', 'Tuckshop', 'Staffroom'] },
+    { name: 'Parts of a school', words: ['Canteen', 'Oval', 'Library', 'Staffroom'] },
     { name: '___ time', words: ['Over', 'Bed', 'Half', 'Prime'] }
   ]},
   // T3 W1 — Virtues recap
@@ -333,9 +334,9 @@ const PUZZLE_BANK = [
   ]},
   // T3 W3 — Virtue of Justice
   { categories: [
-    { name: 'Justice strengths', words: ['Teamwork', 'Fairness', 'Leadership', 'Citizenship'] },
+    { name: 'Justice strengths and civic action', words: ['Teamwork', 'Fairness', 'Leadership', 'Citizenship'] },
     { name: 'Things in a theatre', words: ['Wings', 'Backdrop', 'Footlights', 'Prompt'] },
-    { name: 'Things that orbit Earth', words: ['Moon', 'ISS', 'Hubble', 'GPS'] },
+    { name: 'Things that orbit Earth', words: ['Moon', 'ISS', 'Hubble', 'GPS satellite'] },
     { name: '___ dog', words: ['Hot', 'Corn', 'Bull', 'Grey'] }
   ]},
   // T3 W4 — Leadership
@@ -370,7 +371,7 @@ const PUZZLE_BANK = [
   { categories: [
     { name: 'Words meaning enthusiasm', words: ['Gusto', 'Vigour', 'Verve', 'Passion'] },
     { name: 'Things with teeth', words: ['Comb', 'Saw', 'Zip', 'Gear'] },
-    { name: 'Types of election', words: ['Federal', 'State', 'Local', 'By'] },
+    { name: 'Types of election', words: ['Federal', 'State', 'Local', 'By-election'] },
     { name: '___ house', words: ['Green', 'Ice', 'Warehouse', 'Fire'] }
   ]},
   // T3 W9 — Bravery
@@ -384,7 +385,7 @@ const PUZZLE_BANK = [
   { categories: [
     { name: 'Words meaning to keep going', words: ['Persist', 'Endure', 'Grind', 'Push through'] },
     { name: 'Things that are hollow', words: ['Flute', 'Cave', 'Bone', 'Log'] },
-    { name: 'Types of government', words: ['Democracy', 'Republic', 'Monarchy', 'Federation'] },
+    { name: 'Forms or systems of government', words: ['Democracy', 'Republic', 'Monarchy', 'Federation'] },
     { name: '___ net', words: ['Hair', 'Safety', 'Fishing', 'Inter'] }
   ]},
   // T4 W1 — Honesty
@@ -417,9 +418,9 @@ const PUZZLE_BANK = [
   ]},
   // T4 W5 — Humility
   { categories: [
-    { name: 'Words meaning humble', words: ['Modest', 'Grounded', 'Unpretentious', 'Reserved'] },
-    { name: 'Things with a crown', words: ['King', 'Tooth', 'Tree', 'Trophy'] },
-    { name: '___ break', words: ['Jail', 'Day', 'Ground', 'Tax'] },
+    { name: 'Words meaning humble', words: ['Modest', 'Grounded', 'Unpretentious', 'Unassuming'] },
+    { name: 'Things with a crown', words: ['King', 'Tooth', 'Tree', 'Head'] },
+    { name: '___ break', words: ['Lunch', 'Spring', 'Coffee', 'Study'] },
     { name: 'Things that can be viral', words: ['Video', 'Post', 'Trend', 'Meme'] }
   ]},
   // T4 W6 — Self-Regulation
@@ -441,22 +442,31 @@ const PUZZLE_BANK = [
     { name: 'Things to reflect on at year end', words: ['Growth', 'Challenges', 'Highlights', 'Gratitude'] },
     { name: 'Things that can be charged', words: ['Battery', 'Fee', 'Crime', 'Particle'] },
     { name: 'Types of soil', words: ['Loam', 'Clay', 'Sandy', 'Silt'] },
-    { name: 'Things associated with endings', words: ['Sunset', 'Graduation', 'Finale', 'Harvest'] }
+    { name: 'Things associated with endings', words: ['Sunset', 'Graduation', 'Finale', 'Credits'] }
+  ]},
+  // T4 W9 — Looking ahead
+  { categories: [
+    { name: 'Ways to begin a new goal', words: ['Plan', 'Practise', 'Ask for help', 'Start small'] },
+    { name: 'Things people forecast', words: ['Weather', 'Demand', 'Sales', 'Trends'] },
+    { name: '___ board', words: ['White', 'Surf', 'Skate', 'Notice'] },
+    { name: 'Australian summer activities', words: ['Swimming', 'Cricket', 'Barbecue', 'Beach'] }
+  ]},
+  // T4 W10 — Celebrate and reset
+  { categories: [
+    { name: 'Ways to finish the year well', words: ['Celebrate', 'Thank others', 'Reflect', 'Rest'] },
+    { name: 'Things that sparkle', words: ['Tinsel', 'Stars', 'Glitter', 'Sequins'] },
+    { name: 'Places to spend a holiday', words: ['Beach', 'Mountains', 'City', 'Home'] },
+    { name: '___ party', words: ['Birthday', 'Block', 'Pool', 'Dinner'] }
   ]}
 ];
 
 
 /* ── AUTO WEEK (shared across all CSHS games) ──────────────────────────────
-   Returns the current QLD 2026 school week as {term, week, absWeek 1..40}.
+   Returns the current configured CSHS school week as {term, week, absWeek 1..40}.
    absWeek lets games index a content bank continuously across the year.
    Rule: latest term-week whose Monday is on/before today; holidays hold the
    most recent week; before the year starts, week 1. Matches Wheel of Fortune. */
-const CSHS_TERMS = [
-  { t:1, start:"2026-01-27", end:"2026-04-02" },
-  { t:2, start:"2026-04-20", end:"2026-06-26" },
-  { t:3, start:"2026-07-13", end:"2026-09-18" },
-  { t:4, start:"2026-10-06", end:"2026-12-11" }
-];
+const CSHS_TERMS = window.CSHS_SITE_CONFIG.terms;
 function cshsWeekSchedule(){
   const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
   const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
@@ -823,12 +833,7 @@ init();
 // Note: because these are static HTML files, this lock is enforced in this browser/device.
 function weeklyLockLabel() {
   if (typeof cshsWeekLabel === 'function') return cshsWeekLabel();
-  const terms = [
-    { t:1, start:"2026-01-27", end:"2026-04-02" },
-    { t:2, start:"2026-04-20", end:"2026-06-26" },
-    { t:3, start:"2026-07-13", end:"2026-09-18" },
-    { t:4, start:"2026-10-06", end:"2026-12-11" }
-  ];
+  const terms = window.CSHS_SITE_CONFIG.terms;
   const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
   const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
   const today=new Date(); today.setHours(0,0,0,0);

@@ -172,6 +172,7 @@
   </div>
 </div>
 
+<script src="../assets/site-config.js"></script>
 <script>
 /* ── SUITE CONSTANTS (shared with all CSHS games) ── */
 const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
@@ -180,12 +181,7 @@ const CSHS_F_WEEK = 'rb28fecc633264af694f45d8cf2b3b8c1', CSHS_F_GAME = 'rdbbd457
 const CSHS_F_HOUSE = 'rd04d4cf9da8a4213820791f91cdcf6ba', CSHS_F_GROUP = 'r3022db1950b649218496e706728c203f';
 const CSHS_F_SCORE = 'r8b61653d0854482a9e7e329026083f7b';
 
-const CSHS_TERMS = [
-  { t:1, start:"2026-01-27", end:"2026-04-02" },
-  { t:2, start:"2026-04-20", end:"2026-06-26" },
-  { t:3, start:"2026-07-13", end:"2026-09-18" },
-  { t:4, start:"2026-10-06", end:"2026-12-11" }
-];
+const CSHS_TERMS = window.CSHS_SITE_CONFIG.terms;
 function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
 function mondayOf(d){const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;}
 function cshsWeekInfo(){
@@ -260,7 +256,7 @@ const QUESTIONS = [
 /* ── WEEKLY SECRET ──
    Playable only on weeks with a specific Character Strength focus, aligned
    to the 2026 Corinda SHS Positive Education focus-strength schedule. */
-const GAMES_HUB_URL = 'https://qed05.instructure.com/courses/103375/pages/homegroup-games';
+const GAMES_HUB_URL = window.CSHS_SITE_CONFIG.gamesHubUrl;
 
 const WEEK_PLAN_GTS = {
   /* Humanity */
