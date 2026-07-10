@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Positive Education — Corinda SHS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
+
+  :root {
+    --green: #00180f;
+    --green-mid: #003d1f;
+    --green-light: #005a2e;
+    --gold: #f2b400;
+    --gold-dim: rgba(242,180,0,0.15);
+    --gold-border: rgba(242,180,0,0.3);
+    --white: #fdfdfd;
+    --muted: rgba(255,255,255,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,90,46,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(242,180,0,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px 64px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header { text-align: center; margin-bottom: 40px; }
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 6vw, 52px);
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+  }
+  .lede {
+    max-width: 620px;
+    margin: 14px auto 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .qlearn-note {
+    max-width: 620px;
+    margin: 18px auto 0;
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--white);
+  }
+  .qlearn-note a { color: var(--gold); font-weight: 600; text-decoration: none; }
+  .qlearn-note a:hover { text-decoration: underline; }
+
+  section { margin-bottom: 40px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--gold-border);
+    padding-bottom: 8px;
+  }
+  .section-head h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    color: var(--gold);
+  }
+  .section-head span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    display: block;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px;
+    text-decoration: none;
+    color: var(--white);
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  }
+  .card:hover {
+    border-color: var(--gold-border);
+    background: rgba(242,180,0,0.06);
+    transform: translateY(-2px);
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .card-emoji { font-size: 20px; margin-bottom: 6px; display: block; }
+
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer a { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Corinda State High School</div>
+    <h1>Positive Education</h1>
+    <p class="lede">A shareable overview of the Home Group resources in this repository — games, character strengths activities, lesson guidance and staff learning.</p>
+    <div class="qlearn-note">
+      The QLearn course remains the main entry point for teachers running Home Group.
+      This page is a quick way to browse and share what's available.
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head"><h2>Home Group Games</h2><span>whole-class, 10 minutes, no prep</span></div>
+    <div class="grid">
+      <a class="card" href="games/wordle.html">
+        <span class="card-emoji">🟩</span>
+        <div class="card-title">Wordle</div>
+        <div class="card-desc">Guess the word of the week — six tries, same word for every device.</div>
+      </a>
+      <a class="card" href="games/connections.html">
+        <span class="card-emoji">🔗</span>
+        <div class="card-title">Connections</div>
+        <div class="card-desc">Find four groups of four — what connects them?</div>
+      </a>
+      <a class="card" href="games/countdown.html">
+        <span class="card-emoji">🔢</span>
+        <div class="card-title">Countdown</div>
+        <div class="card-desc">Use the numbers to reach the target — any combination.</div>
+      </a>
+      <a class="card" href="games/wheel-of-fortune.html">
+        <span class="card-emoji">🎡</span>
+        <div class="card-title">Wheel of Fortune</div>
+        <div class="card-desc">Spin, guess letters and solve this week's phrase as a class.</div>
+      </a>
+      <a class="card" href="games/alphabucks.html">
+        <span class="card-emoji">🔤</span>
+        <div class="card-title">Alphabucks</div>
+        <div class="card-desc">Name something for every category — starting with the letter of the week.</div>
+      </a>
+      <a class="card" href="games/crack-the-code.html">
+        <span class="card-emoji">🔐</span>
+        <div class="card-title">Crack the Code</div>
+        <div class="card-desc">Solve this week's picture, word or symbol clue in three guesses.</div>
+      </a>
+      <a class="card" href="games/guess-the-strength.html">
+        <span class="card-emoji">💪</span>
+        <div class="card-title">Guess the Strength</div>
+        <div class="card-desc">Work out the character strength from the clues given.</div>
+      </a>
+      <a class="card" href="games/smoulder.html">
+        <span class="card-emoji">🔍</span>
+        <div class="card-title">Where's Smoulder?</div>
+        <div class="card-desc">Find every hidden character in the scene — a spot-the-difference style search.</div>
+      </a>
+      <a class="card" href="games/fill-the-bar.html">
+        <span class="card-emoji">📊</span>
+        <div class="card-title">Fill the Bar</div>
+        <div class="card-desc">Five rounds, one player per round — fill the bar to the target with no peeking.</div>
+      </a>
+      <a class="card" href="games/stop-the-clock.html">
+        <span class="card-emoji">⏱️</span>
+        <div class="card-title">Stop the Clock</div>
+        <div class="card-desc">Three players, closest to 5 seconds wins.</div>
+      </a>
+      <a class="card" href="games/leaderboard.html">
+        <span class="card-emoji">🏆</span>
+        <div class="card-title">Leaderboard</div>
+        <div class="card-desc">Overall and by-game Home Group standings for the week.</div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Character Strengths</h2><span>directory &amp; survey</span></div>
+    <div class="grid">
+      <a class="card" href="character-strengths/index.html">
+        <span class="card-emoji">🦉</span>
+        <div class="card-title">Strengths Activity Directory</div>
+        <div class="card-desc">Every VIA virtue and strength, with ready-to-run activities for each.</div>
+      </a>
+      <a class="card" href="character-strengths/character-strengths-survey.html">
+        <span class="card-emoji">📋</span>
+        <div class="card-title">Character Strengths Survey</div>
+        <div class="card-desc">Students submit their name, house and top 5 strengths.</div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Lessons &amp; Learning</h2><span>guidance and staff resources</span></div>
+    <div class="grid">
+      <a class="card" href="homegroup-lessons/homegroup-lessons.html">
+        <span class="card-emoji">📘</span>
+        <div class="card-title">Home Group Lessons</div>
+        <div class="card-desc">Fortnightly lesson and activity guidance for Home Group teachers.</div>
+      </a>
+      <a class="card" href="brain-breaks/random-generator.html">
+        <span class="card-emoji">🧠</span>
+        <div class="card-title">Brain Break Generator</div>
+        <div class="card-desc">A quick, random movement or reset activity for the whole class.</div>
+      </a>
+      <a class="card" href="staff-learning/permah-course.html">
+        <span class="card-emoji">🎓</span>
+        <div class="card-title">Staff PERMAH Course</div>
+        <div class="card-desc">A self-paced staff learning resource on the PERMAH model.</div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <a href="https://github.com/PosEd-CSHS/PositiveEducation-CorindaSHS">View source on GitHub</a>
+    — internal Corinda SHS resources, see <a href="https://github.com/PosEd-CSHS/PositiveEducation-CorindaSHS#readme">README</a> for maintenance notes.
+  </footer>
+
+</div>
+</body>
+</html>
