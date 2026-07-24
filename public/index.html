@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Practice Games — Corinda SHS</title>
+<title>Open Resources — Corinda SHS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
 
@@ -81,6 +81,26 @@
     text-align: left;
   }
 
+  section { margin-bottom: 40px; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--gold-border);
+    padding-bottom: 8px;
+  }
+  .section-head h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    color: var(--gold);
+  }
+  .section-head span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -129,39 +149,58 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Corinda State High School · Practice Mode</div>
-    <h1>Practice Games</h1>
-    <p class="lede">Unlimited replay versions of the four most popular Home Group games. Every round uses a fresh word, puzzle or target — never the current week's official answer — and nothing here is submitted to the leaderboard.</p>
+    <div class="eyebrow">Corinda State High School · Open to Everyone</div>
+    <h1>Open Resources</h1>
+    <p class="lede">Practice games and character strengths resources — no sign-in, open to students, staff and families.</p>
     <div class="note">
-      Playing for the leaderboard? Use the official once-a-week games linked from QLearn instead — these practice copies are just for having fun any time.
+      Playing for the leaderboard, or after staff materials? Those live on the staff intranet via QLearn, not here.
     </div>
   </header>
 
-  <div class="grid">
-    <a class="card" href="wordle.html">
-      <span class="card-emoji">🟩</span>
-      <div class="card-title">Wordle</div>
-      <div class="card-desc">Guess a fresh word — six tries, play again as many times as you like.</div>
-    </a>
-    <a class="card" href="connections.html">
-      <span class="card-emoji">🔗</span>
-      <div class="card-title">Connections</div>
-      <div class="card-desc">Find four groups of four — a new puzzle every round.</div>
-    </a>
-    <a class="card" href="countdown.html">
-      <span class="card-emoji">🔢</span>
-      <div class="card-title">Countdown</div>
-      <div class="card-desc">Use the numbers to reach a fresh target — any combination.</div>
-    </a>
-    <a class="card" href="wheel-of-fortune.html">
-      <span class="card-emoji">🎡</span>
-      <div class="card-title">Wheel of Fortune</div>
-      <div class="card-desc">Spin, guess letters and solve a fresh phrase — play again anytime.</div>
-    </a>
-  </div>
+  <section>
+    <div class="section-head"><h2>Practice Games</h2><span>unlimited replay, not the leaderboard</span></div>
+    <div class="grid">
+      <a class="card" href="games/wordle.html">
+        <span class="card-emoji">🟩</span>
+        <div class="card-title">Wordle</div>
+        <div class="card-desc">Guess a fresh word — six tries, play again as many times as you like.</div>
+      </a>
+      <a class="card" href="games/connections.html">
+        <span class="card-emoji">🔗</span>
+        <div class="card-title">Connections</div>
+        <div class="card-desc">Find four groups of four — a new puzzle every round.</div>
+      </a>
+      <a class="card" href="games/countdown.html">
+        <span class="card-emoji">🔢</span>
+        <div class="card-title">Countdown</div>
+        <div class="card-desc">Use the numbers to reach a fresh target — any combination.</div>
+      </a>
+      <a class="card" href="games/wheel-of-fortune.html">
+        <span class="card-emoji">🎡</span>
+        <div class="card-title">Wheel of Fortune</div>
+        <div class="card-desc">Spin, guess letters and solve a fresh phrase — play again anytime.</div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Character Strengths</h2><span>directory &amp; survey</span></div>
+    <div class="grid">
+      <a class="card" href="character-strengths/index.html">
+        <span class="card-emoji">🦉</span>
+        <div class="card-title">Strengths Activity Directory</div>
+        <div class="card-desc">Every VIA virtue and strength, with ready-to-run activities for each.</div>
+      </a>
+      <a class="card" href="character-strengths/character-strengths-survey.html">
+        <span class="card-emoji">📋</span>
+        <div class="card-title">Character Strengths Survey</div>
+        <div class="card-desc">Submit your name, house and top 5 strengths.</div>
+      </a>
+    </div>
+  </section>
 
   <footer>
-    <a href="../../index.html">Back to the main site</a>
+    <a href="https://github.com/PosEd-CSHS/PositiveEducation-CorindaSHS">View source on GitHub</a>
   </footer>
 
 </div>
