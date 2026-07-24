@@ -285,7 +285,6 @@ window._lastResult = {};
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 
 function loadPlayed() {
-  loadPlayed();
   played = new Set();
   try {
     const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');

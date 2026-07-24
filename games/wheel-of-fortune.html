@@ -710,6 +710,10 @@ function submitScore() {
 }
 
 // ---------- ADMIN ----------
+// Not real security (this is public source) — just a deterrent against
+// accidental clicks. Change this string to set a different passphrase.
+const PASSWORD = 'cshs2026';
+
 function openAdmin() {
   document.getElementById('adminOverlay').classList.add('show');
   document.getElementById('adminLock').style.display = 'block';
@@ -722,6 +726,10 @@ function checkAdmin() {
     document.getElementById('adminBody').style.display = 'block';
     document.getElementById('cfg-url').value = localStorage.getItem('wofFormUrl') || '';
   } else { alert('Incorrect password.'); }
+}
+function saveAdmin() {
+  localStorage.setItem('wofFormUrl', document.getElementById('cfg-url').value.trim());
+  document.getElementById('adminOverlay').classList.remove('show');
 }
 
 
