@@ -2313,7 +2313,7 @@ function submitCompletionAndGenerate() {
   const FIELD_HSE  = 'ra1bf0215453547e2a32732afb66c0f0f';
   const FIELD_DATE = 'rf41dffc9b0d54db6852a3750e8285c43';
 
-  const prefillUrl = 'https://forms.office.com/Pages/ResponsePage.aspx?id=' + FORM_ID
+  const prefillUrl = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=' + FORM_ID
     + '&' + FIELD_NAME + '=' + encodeURIComponent(name)
     + '&' + FIELD_HSE  + '=' + encodeURIComponent(house)
     + '&' + FIELD_DATE + '=' + encodeURIComponent(dateStr);

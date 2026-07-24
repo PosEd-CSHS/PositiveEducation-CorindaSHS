@@ -365,7 +365,7 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
 const config = {
-  formUrl: 'https://forms.office.com/r/x94vT9B782',
+  formUrl: 'https://forms.cloud.microsoft/r/x94vT9B782',
   weekLabel: '',        // e.g. "Week 3 Term 2"
 };
 
@@ -405,7 +405,7 @@ function submitScore(){
     r3022db1950b649218496e706728c203f: group,
     r8b61653d0854482a9e7e329026083f7b: String(score)
   });
-  window.open('https://forms.office.com/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
+  window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
   markPlayedLS(group);
   const btn = document.querySelector('#score-form button');
   btn.textContent = '✓ Submitted — fill in the form that opened!';

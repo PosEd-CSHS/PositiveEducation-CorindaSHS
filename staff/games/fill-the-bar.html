@@ -302,7 +302,7 @@
     for(const term of terms){const end=parse(term.end);let mon=mondayOf(parse(term.start));let w=1;while(mon<=end){if(mon<=today)chosen={t:term.t,w};else return `Term ${chosen.t} · Week ${chosen.w}`;mon=new Date(mon);mon.setDate(mon.getDate()+7);w++;}}
     return `Term ${chosen.t} · Week ${chosen.w}`;
   }
-  const CSHS_FORM_BASE='https://forms.office.com/Pages/ResponsePage.aspx';
+  const CSHS_FORM_BASE='https://forms.cloud.microsoft/Pages/ResponsePage.aspx';
   const CSHS_FORM_ID='xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
   const CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1',CSHS_F_GAME='rdbbd457b83da425e93f978536b950482';
   const CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba',CSHS_F_GROUP='r3022db1950b649218496e706728c203f';
