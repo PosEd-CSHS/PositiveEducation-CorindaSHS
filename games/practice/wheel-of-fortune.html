@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheel of Fortune Practice – Corinda SHS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&family=Fredoka+One&family=Nunito:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap');
+
+  :root {
+    --green: #00180f;
+    --green2: #002b1a;
+    --gold: #f2b400;
+    --gold-dk: #c49000;
+    --red: #b8001f;
+    --red2: #e8002b;
+    --white: #fdfdfd;
+    --muted: rgba(255,255,255,0.55);
+    --green-line: rgba(255,255,255,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--green);
+    font-family: 'Nunito', sans-serif;
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    background: transparent;
+    text-align: center;
+    padding: 28px 20px 6px;
+    position: relative;
+  }
+  header .header-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 8vw, 3.8rem);
+    color: var(--white);
+    letter-spacing: 0.06em;
+    line-height: 1;
+  }
+  header h1 span { color: var(--gold); }
+  header p {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted); font-size: 13px; margin-top: 8px; opacity: 1;
+  }
+
+  .admin-btn {
+    position: absolute; top: 14px; right: 16px;
+    background: rgba(0,0,0,0.25); border: 2px solid var(--gold);
+    color: var(--gold); width: 38px; height: 38px; border-radius: 50%;
+    font-size: 1.1rem; cursor: pointer; line-height: 1;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px 14px 60px; }
+
+  .statusbar {
+    display: flex; justify-content: space-around; gap: 8px;
+    background: rgba(242,180,0,0.12);
+    border: 1px solid rgba(242,180,0,0.45);
+    border-radius: 12px; padding: 10px 8px; margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; min-width: 70px; }
+  .stat .label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); font-weight: 900; }
+  .stat .val { font-size: 1.25rem; font-weight: 900; }
+
+  .category {
+    text-align: center; font-weight: 900; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+
+  /* Puzzle board */
+  .board {
+    display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+    margin-bottom: 18px; padding: 14px; background: rgba(255,255,255,0.04);
+    border-radius: 16px; border: 1px solid var(--green-line);
+  }
+  .word { display: flex; gap: 5px; }
+  .tile {
+    width: 34px; height: 44px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 1.4rem;
+    background: #063; border: 2px solid rgba(255,255,255,0.18);
+    color: var(--white); text-transform: uppercase;
+  }
+  .tile.empty { background: rgba(255,255,255,0.10); }
+  .tile.revealed { background: var(--white); color: var(--green); border-color: var(--gold); }
+  .tile.space { background: transparent; border: none; width: 12px; }
+  .tile.punct { background: transparent; border: none; color: var(--gold); }
+
+  /* Wheel */
+  .wheel-area { text-align: center; margin-bottom: 14px; }
+  .wheel-wrap { position: relative; width: 230px; height: 230px; margin: 0 auto 8px; }
+  #wheel { display: block; transition: transform 4s cubic-bezier(0.2,0.8,0.15,1); }
+  .pointer {
+    position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 13px solid transparent;
+    border-right: 13px solid transparent; border-top: 24px solid var(--gold);
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); z-index: 5;
+  }
+  .wheel-result { font-weight: 900; font-size: 1rem; min-height: 24px; color: var(--gold); }
+
+  .btn {
+    font-family: 'Nunito', sans-serif; font-weight: 900; cursor: pointer;
+    border: none; border-radius: 30px; padding: 12px 26px; font-size: 1rem;
+    background: var(--gold); color: var(--green); transition: transform 0.1s, opacity 0.2s;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.solve { background: var(--red2); color: #fff; }
+
+  /* Keyboard */
+  .keys { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin: 14px 0; }
+  .key {
+    width: 38px; height: 44px; border-radius: 7px; border: 2px solid var(--gold-dk);
+    background: var(--green2); color: var(--white); font-weight: 900; font-size: 1rem;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+  }
+  .key.vowel { border-color: var(--red2); }
+  .key:disabled { opacity: 0.28; cursor: not-allowed; }
+  .key.hit { background: var(--gold); color: var(--green); }
+  .key.miss { background: #400; border-color: #600; }
+
+  .hint { text-align: center; font-size: 0.78rem; opacity: 0.75; margin-top: 6px; }
+  .vowel-note { color: var(--red2); font-weight: 900; }
+
+  /* Overlay */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,8,5,0.92); z-index: 200;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .overlay.show { display: flex; }
+  .panel {
+    background: var(--green2); border: 3px solid var(--gold); border-radius: 18px;
+    padding: 24px; max-width: 420px; width: 100%; text-align: center;
+  }
+  .panel h2 { font-family: 'Fredoka One', cursive; color: var(--gold); font-size: 1.6rem; margin-bottom: 10px; }
+  .panel .score-big { font-size: 3rem; font-family: 'Fredoka One', cursive; color: var(--white); line-height: 1; }
+  .panel .score-sub { font-size: 0.85rem; opacity: 0.8; margin-bottom: 4px; }
+  .panel .meta { font-size: 0.95rem; margin: 10px 0; }
+  .field { margin: 10px 0; text-align: left; }
+  .field label { font-size: 0.75rem; font-weight: 900; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+  .field input, .field select {
+    width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--gold-dk);
+    background: var(--green); color: var(--white); font-family: 'Nunito'; font-size: 1rem; margin-top: 4px;
+  }
+  .panel .btn { margin-top: 8px; width: 100%; }
+  .panel textarea {
+    width: 100%; min-height: 70px; padding: 8px; border-radius: 8px;
+    border: 2px solid var(--gold-dk); background: var(--green); color: var(--white);
+    font-family: monospace; font-size: 0.8rem; margin-top: 4px;
+  }
+  .small { font-size: 0.72rem; opacity: 0.7; }
+  a { color: var(--gold); }
+
+.weekly-lock-card{
+  background:rgba(255,255,255,0.04);
+  border:2px solid var(--gold);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  text-align:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+.weekly-lock-card h2{
+  font-family:'Fredoka One',cursive;
+  color:var(--gold);
+  font-size:1.25rem;
+  margin-bottom:8px;
+}
+.weekly-lock-card p{color:#ddd;font-size:0.9rem;margin-bottom:12px;}
+.weekly-lock-groups{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0;}
+.weekly-lock-btn{
+  background:rgba(242,180,0,0.16);
+  border:1px solid rgba(242,180,0,0.35);
+  color:#fff;
+  padding:9px 12px;
+  border-radius:10px;
+  font-family:'Nunito',sans-serif;
+  font-weight:900;
+  cursor:pointer;
+}
+.weekly-lock-btn:hover{background:rgba(242,180,0,0.28);}
+.weekly-lock-btn.selected{background:var(--gold);color:var(--green);}
+.weekly-lock-btn.played{opacity:0.45;cursor:not-allowed;border-style:dashed;}
+.weekly-lock-start{
+  background:var(--gold);color:var(--green);
+  border:none;border-radius:14px;
+  padding:10px 24px;
+  font-family:'Nunito',sans-serif;
+  font-weight:900;
+  cursor:pointer;
+  margin-top:10px;
+}
+.weekly-lock-start:disabled{opacity:0.45;cursor:not-allowed;}
+.game-locked{filter:blur(2px) grayscale(0.35);pointer-events:none;opacity:0.55;}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="header-eyebrow">Corinda State High School · Practice Mode</div>
+  <h1>Wheel of <span>Fortune</span></h1>
+  <p>Unlimited practice — a fresh puzzle every round, not the leaderboard puzzle</p>
+</header>
+
+<div class="wrap">
+  <div class="weekly-lock-card" id="weeklyLockCard">
+    <h2>Practice Mode</h2>
+    <p>Play as many rounds as you like. Every round uses a fresh puzzle — never this week's official Home Group puzzle — and nothing is submitted to the leaderboard.</p>
+    <button class="weekly-lock-start" id="startBtn" onclick="startPracticeRound()">Start Practice Round</button>
+  </div>
+  <div id="gameArea" class="game-locked">
+  <div class="statusbar">
+    <div class="stat"><div class="label">Round $</div><div class="val" id="bank">$0</div></div>
+    <div class="stat"><div class="label">Time</div><div class="val" id="timer">0:00</div></div>
+    <div class="stat"><div class="label">Letters</div><div class="val" id="letters">0</div></div>
+  </div>
+
+  <div class="category" id="category">Category</div>
+  <div class="board" id="board"></div>
+
+  <div class="wheel-area">
+    <div class="wheel-wrap">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="230" height="230"></canvas>
+    </div>
+    <div class="wheel-result" id="wheelResult">Spin to begin</div>
+    <button class="btn" id="spinBtn" onclick="spin()">Spin the wheel</button>
+  </div>
+
+  <div class="keys" id="keys"></div>
+  <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn solve" onclick="trySolve()">Solve the puzzle</button>
+    <button class="btn" style="background:var(--green);color:var(--gold);border:2px solid var(--gold);" onclick="if(confirm('Give up on this puzzle? You\'ll score 3 for having a go.'))giveUp()">Give up</button>
+  </div>
+  <div class="hint">Spin, then pick a <strong>consonant</strong> to earn the spin value. <span class="vowel-note">Vowels cost $250</span> and can be bought any time. When you're ready to solve, type your answer in <strong>CAPITAL LETTERS</strong>.</div>
+  </div>
+</div>
+
+<!-- WIN OVERLAY -->
+<div class="overlay" id="winOverlay">
+  <div class="panel">
+    <h2 id="winTitle">Solved! 🎉</h2>
+    <div class="score-sub">Your score</div>
+    <div class="score-big"><span id="finalScore">0</span><span style="font-size:1.2rem;opacity:0.6;">/10</span></div>
+    <div class="score-sub" id="scoreLabelText">points</div>
+    <div class="meta" id="winMeta"></div>
+    <button class="btn" onclick="playAgain()">🔁 Play Again</button>
+  </div>
+</div>
+
+<script src="../../assets/site-config.js"></script>
+<script>
+/* ============================================================
+   WHEEL OF FORTUNE — Corinda SHS
+   --------------------------------------------------------------
+   ONE PUZZLE PER WEEK, shared by everyone.
+   The game works out the current QLD school week from today's
+   date and shows that week's puzzle automatically — so every
+   device that opens the game sees the SAME puzzle.
+
+   TO SET / CHANGE A WEEK'S PUZZLE:
+   Find the matching T#/W# line in WEEKLY_PUZZLES below and edit
+   the cat (category) and text (the phrase). UPPERCASE; letters,
+   spaces, apostrophes and hyphens only. Leave text:"" to fall
+   back to the generic spare puzzle for that week.
+
+   Week numbers come from the shared school calendar in
+   assets/site-config.js and match the other course games. During
+   holidays the game holds the most recent active week's puzzle.
+   ============================================================ */
+
+// ---- EDIT EACH WEEK'S PUZZLE HERE ---------------------------
+const WEEKLY_PUZZLES = [
+  { t:1, w:1, cat:"Welcome Back", text:"GOOD TO SEE YOU AGAIN" },
+  { t:1, w:2, cat:"Pos Ed", text:"HAPPY PEOPLE HELP OTHERS" },
+  { t:1, w:3, cat:"PERMAH", text:"MAKE THE MOST OF WHAT YOU HAVE" },
+  { t:1, w:4, cat:"Character", text:"PLAY TO YOUR STRENGTHS" },
+  { t:1, w:5, cat:"Humanity", text:"ACTIONS SPEAK LOUDER THAN WORDS" },
+  { t:1, w:6, cat:"Love", text:"LOVE MAKES THE WORLD GO ROUND" },
+  { t:1, w:7, cat:"Social Skills", text:"PUT YOURSELF IN THEIR SHOES" },
+  { t:1, w:8, cat:"Kindness", text:"A LITTLE KINDNESS GOES A LONG WAY" },
+  { t:1, w:9, cat:"Transcendence", text:"AIM FOR THE STARS" },
+  { t:1, w:10, cat:"Humour", text:"LAUGHTER IS THE BEST MEDICINE" },
+
+  { t:2, w:1, cat:"Meaning", text:"FOLLOW YOUR HEART" },
+  { t:2, w:2, cat:"Beauty", text:"STOP AND SMELL THE ROSES" },
+  { t:2, w:3, cat:"Hope", text:"EVERY CLOUD HAS A SILVER LINING" },
+  { t:2, w:4, cat:"Gratitude", text:"COUNT YOUR BLESSINGS" },
+  { t:2, w:5, cat:"Wisdom", text:"KNOWLEDGE IS POWER" },
+  { t:2, w:6, cat:"Love of Learning", text:"LEARN SOMETHING NEW EVERY DAY" },
+  { t:2, w:7, cat:"Perspective", text:"SEE THE BIG PICTURE" },
+  { t:2, w:8, cat:"Curiosity", text:"CURIOSITY KILLED THE CAT" },
+  { t:2, w:9, cat:"Creativity", text:"THINK OUTSIDE THE BOX" },
+  { t:2, w:10, cat:"Judgement", text:"THINK TWICE BEFORE YOU ACT" },
+
+  { t:3, w:1, cat:"Virtues", text:"BACK IN ACTION" },
+  { t:3, w:2, cat:"PERMAH", text:"A GOOD START IS HALF THE BATTLE" },
+  { t:3, w:3, cat:"Justice", text:"FAIR AND SQUARE" },
+  { t:3, w:4, cat:"Leadership", text:"LEAD BY EXAMPLE" },
+  { t:3, w:5, cat:"Fairness", text:"TREAT OTHERS AS YOU WISH TO BE TREATED" },
+  { t:3, w:6, cat:"Teamwork", text:"MANY HANDS MAKE LIGHT WORK" },
+  { t:3, w:7, cat:"Courage", text:"FEEL THE FEAR AND DO IT ANYWAY" },
+  { t:3, w:8, cat:"Zest", text:"MAKE EVERY DAY COUNT" },
+  { t:3, w:9, cat:"Bravery", text:"FORTUNE FAVOURS THE BRAVE" },
+  { t:3, w:10, cat:"Perseverance", text:"SLOW AND STEADY WINS THE RACE" },
+
+  { t:4, w:1, cat:"Honesty", text:"HONESTY IS THE BEST POLICY" },
+  { t:4, w:2, cat:"Courage", text:"NEVER GIVE UP" },
+  { t:4, w:3, cat:"Temperance", text:"EVERYTHING IN MODERATION" },
+  { t:4, w:4, cat:"Prudence", text:"LOOK BEFORE YOU LEAP" },
+  { t:4, w:5, cat:"Humility", text:"KEEP YOUR FEET ON THE GROUND" },
+  { t:4, w:6, cat:"Self-Regulation", text:"KEEP YOUR COOL" },
+  { t:4, w:7, cat:"Forgiveness", text:"FORGIVE AND FORGET" },
+  { t:4, w:8, cat:"Reflection", text:"WHAT A YEAR" },
+  { t:4, w:9, cat:"Reflection", text:"PROUD OF OUR EFFORTS" },
+  { t:4, w:10, cat:"Celebration", text:"HAPPY HOLIDAYS CORINDA" }
+];
+
+// Used only if a week's text is left blank.
+const SPARE_PUZZLE = { cat:"Six Houses", text:"ONE FAMILY MANY STRENGTHS" };
+// -------------------------------------------------------------
+
+const WHEEL_SEGMENTS = [
+  500, 600, 700, "BANKRUPT", 800, 550, 650, "LOSE A TURN",
+  900, 600, 700, 750, "BANKRUPT", 850, 500, 650
+];
+const SEG_COLORS = ["#f2b400","#063","#b8001f","#002b1a"];
+const VOWELS = "AEIOU";
+const VOWEL_COST = 250;
+const MAX_TIME_SECS = 300;     // speed bonus decays over 5 minutes
+
+let current = null;
+let revealed = new Set();
+let usedLetters = new Set();
+let lettersGuessed = 0;
+let bank = 0;
+let pendingSpin = null;        // value waiting on a consonant pick
+let spinning = false;
+let gameStartTime = null;
+let timerInterval = null;
+let solved = false;
+let angle = 0;
+
+// ---------- INIT ----------
+// Resolve the current term and week from the shared school calendar.
+// Holidays hold the most recent teaching week; dates before Term 1 use Week 1.
+function cshsCurrentWeekSlot() {
+  const parse = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+  const mondayOf = d => {
+    const x = new Date(d);
+    const dow = (x.getDay() + 6) % 7;
+    x.setDate(x.getDate() - dow);
+    x.setHours(0,0,0,0);
+    return x;
+  };
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let chosen = { t: 1, w: 1 };
+  for (const term of window.CSHS_SITE_CONFIG.terms) {
+    const end = parse(term.end);
+    let mon = mondayOf(parse(term.start));
+    let w = 1;
+    while (mon <= end) {
+      if (mon <= today) chosen = { t: term.t, w };
+      else return chosen;
+      mon = new Date(mon);
+      mon.setDate(mon.getDate() + 7);
+      w++;
+    }
+  }
+  return chosen;
+}
+
+// Picks a random puzzle from the weekly bank, excluding the current live
+// Home Group week's official puzzle so practice never gives away the answer.
+function getPracticePuzzle() {
+  const slot = cshsCurrentWeekSlot();
+  const officialPuzzle = WEEKLY_PUZZLES.find(wk => wk.t === slot.t && wk.w === slot.w) || WEEKLY_PUZZLES[0];
+  const pool = WEEKLY_PUZZLES.filter(wk => wk !== officialPuzzle);
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  const text = (chosen.text || '').trim().toUpperCase();
+  return text
+    ? { cat: chosen.cat, text }
+    : { cat: SPARE_PUZZLE.cat, text: SPARE_PUZZLE.text.toUpperCase() };
+}
+
+function newPuzzle() {
+  document.getElementById('winOverlay').classList.remove('show');
+  current = getPracticePuzzle();
+  revealed = new Set();
+  usedLetters = new Set();
+  lettersGuessed = 0;
+  bank = 0;
+  pendingSpin = null;
+  solved = false;
+  gameStartTime = Date.now();
+  document.getElementById('category').textContent = "Practice  —  " + current.cat;
+  document.getElementById('wheelResult').textContent = "Spin to begin";
+  document.getElementById('spinBtn').disabled = false;
+  updateStatus();
+  buildBoard();
+  buildKeys();
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const s = Math.floor((Date.now() - gameStartTime)/1000);
+    document.getElementById('timer').textContent =
+      Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+  }, 500);
+}
+
+function updateStatus() {
+  document.getElementById('bank').textContent = '$' + bank;
+  document.getElementById('letters').textContent = lettersGuessed;
+}
+
+// ---------- BOARD ----------
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  current.text.split(' ').forEach(word => {
+    const w = document.createElement('div');
+    w.className = 'word';
+    [...word].forEach(ch => {
+      const t = document.createElement('div');
+      if (/[A-Z]/.test(ch)) {
+        t.className = 'tile empty';
+        t.dataset.ch = ch;
+        if (revealed.has(ch)) { t.textContent = ch; t.className = 'tile revealed'; }
+      } else {
+        t.className = 'tile punct';
+        t.textContent = ch;
+      }
+      w.appendChild(t);
+    });
+    board.appendChild(w);
+    const sp = document.createElement('div');
+    sp.className = 'tile space';
+    board.appendChild(sp);
+  });
+}
+
+function revealLetter(ch) {
+  document.querySelectorAll('.tile').forEach(t => {
+    if (t.dataset.ch === ch) { t.textContent = ch; t.className = 'tile revealed'; }
+  });
+}
+
+// ---------- KEYBOARD ----------
+function buildKeys() {
+  const keys = document.getElementById('keys');
+  keys.innerHTML = '';
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('').forEach(ch => {
+    const b = document.createElement('button');
+    b.className = 'key' + (VOWELS.includes(ch) ? ' vowel' : '');
+    b.textContent = ch;
+    b.onclick = () => pickLetter(ch, b);
+    keys.appendChild(b);
+  });
+  refreshKeys();
+}
+
+function refreshKeys() {
+  document.querySelectorAll('.key').forEach(b => {
+    const ch = b.textContent;
+    const isVowel = VOWELS.includes(ch);
+    if (usedLetters.has(ch)) { b.disabled = true; return; }
+    if (isVowel) {
+      b.disabled = (bank < VOWEL_COST);   // need cash for vowels
+    } else {
+      b.disabled = (pendingSpin === null); // must spin for consonants
+    }
+  });
+}
+
+function pickLetter(ch, btn) {
+  if (solved) return;
+  const isVowel = VOWELS.includes(ch);
+  if (usedLetters.has(ch)) return;
+
+  if (isVowel) {
+    if (bank < VOWEL_COST) return;
+    bank -= VOWEL_COST;
+  } else {
+    if (pendingSpin === null) return;
+  }
+
+  usedLetters.add(ch);
+  lettersGuessed++;
+  const count = (current.text.split('').filter(c => c === ch)).length;
+
+  if (count > 0) {
+    revealed.add(ch);
+    revealLetter(ch);
+    btn.classList.add('hit');
+    if (!isVowel) bank += pendingSpin * count;
+    document.getElementById('wheelResult').textContent =
+      count + ' × ' + ch + (isVowel ? ' (vowel)' : '  +$' + (pendingSpin*count));
+  } else {
+    btn.classList.add('miss');
+    document.getElementById('wheelResult').textContent = 'No ' + ch + '. Spin again!';
+  }
+
+  if (!isVowel) {
+    pendingSpin = null;
+    document.getElementById('spinBtn').disabled = false;
+  }
+
+  btn.disabled = true;
+  updateStatus();
+  refreshKeys();
+  checkAutoWin();
+}
+
+function checkAutoWin() {
+  // win automatically if every letter is revealed
+  const allLetters = new Set(current.text.replace(/[^A-Z]/g,'').split(''));
+  if ([...allLetters].every(l => revealed.has(l))) finish(true);
+}
+
+// ---------- WHEEL ----------
+function drawWheel() {
+  const c = document.getElementById('wheel');
+  const ctx = c.getContext('2d');
+  const cx = 115, cy = 115, r = 110;
+  const n = WHEEL_SEGMENTS.length;
+  const arc = (Math.PI*2)/n;
+  ctx.clearRect(0,0,230,230);
+  for (let i=0;i<n;i++){
+    const a0 = i*arc + angle;
+    const a1 = a0 + arc;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,a0,a1);
+    ctx.closePath();
+    const seg = WHEEL_SEGMENTS[i];
+    ctx.fillStyle = (seg==="BANKRUPT") ? "#111"
+                  : (seg==="LOSE A TURN") ? "#600"
+                  : SEG_COLORS[i % 2 === 0 ? 0 : 1];
+    ctx.fill();
+    ctx.strokeStyle = "#00180f"; ctx.lineWidth = 2; ctx.stroke();
+    // label
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(a0 + arc/2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = (seg==="BANKRUPT"||seg==="LOSE A TURN") ? "#fff" : "#00180f";
+    ctx.font = (typeof seg==="number") ? "bold 13px Nunito" : "bold 8px Nunito";
+    ctx.fillText(typeof seg==="number" ? "$"+seg : seg, r-8, 4);
+    ctx.restore();
+  }
+  // hub
+  ctx.beginPath(); ctx.arc(cx,cy,16,0,Math.PI*2);
+  ctx.fillStyle = "#f2b400"; ctx.fill();
+  ctx.strokeStyle="#00180f"; ctx.lineWidth=3; ctx.stroke();
+}
+
+function spin() {
+  if (spinning || solved) return;
+  if (pendingSpin !== null) return; // already spun, must pick consonant
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  const n = WHEEL_SEGMENTS.length;
+  const arc = 360/n;
+  const landIdx = Math.floor(Math.random()*n);
+  // pointer is at top (270° in canvas terms). spin several turns + land
+  const spins = 4 + Math.floor(Math.random()*3);
+  const targetDeg = spins*360 + (360 - (landIdx*arc) - arc/2) - 90;
+  const wheel = document.getElementById('wheel');
+  wheel.style.transform = `rotate(${targetDeg}deg)`;
+
+  setTimeout(() => {
+    spinning = false;
+    const seg = WHEEL_SEGMENTS[landIdx];
+    const res = document.getElementById('wheelResult');
+    if (seg === "BANKRUPT") {
+      bank = 0; pendingSpin = null;
+      res.textContent = "BANKRUPT! Round cash lost. Spin again.";
+      document.getElementById('spinBtn').disabled = false;
+    } else if (seg === "LOSE A TURN") {
+      pendingSpin = null;
+      res.textContent = "Lose a turn — spin again.";
+      document.getElementById('spinBtn').disabled = false;
+    } else {
+      pendingSpin = seg;
+      res.textContent = "$" + seg + " — pick a consonant!";
+    }
+    updateStatus();
+    refreshKeys();
+  }, 4100);
+}
+
+// ---------- SOLVE ----------
+function trySolve() {
+  if (solved) return;
+  const guess = prompt("Solve the puzzle — type the full answer in CAPITAL LETTERS:");
+  if (guess === null) return;
+  const norm = s => s.toUpperCase().replace(/[^A-Z]/g,'');
+  if (norm(guess) === norm(current.text)) {
+    current.text.replace(/[^A-Z]/g,'').split('').forEach(l => { revealed.add(l); revealLetter(l); });
+    finish(true);
+  } else {
+    document.getElementById('wheelResult').textContent = "Not quite — keep playing!";
+  }
+}
+
+// ---------- SCORING ----------
+function finish(won) {
+  if (solved) return;
+  solved = won;
+  clearInterval(timerInterval);
+  const elapsed = (Date.now() - gameStartTime)/1000;
+  // Smooth curve by letters used to solve: <=6 ->10, <=8 ->9, <=10 ->8, <=13 ->7, more ->6.
+  let score;
+  if (lettersGuessed <= 6) score = 10;
+  else if (lettersGuessed <= 8) score = 9;
+  else if (lettersGuessed <= 10) score = 8;
+  else if (lettersGuessed <= 13) score = 7;
+  else score = 6;
+
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('scoreLabelText').textContent = 'out of 10';
+  const mins = Math.floor(elapsed/60), secs = Math.round(elapsed%60);
+  document.getElementById('winMeta').innerHTML =
+    `⏱ Time: <strong>${mins}:${String(secs).padStart(2,'0')}</strong> &nbsp;•&nbsp; ` +
+    `🔤 Letters used: <strong>${lettersGuessed}</strong> → ${score} out of 10`;
+  window._lastScore = score;
+  window._lastDetail = `Solved, ${lettersGuessed} letters`;
+  document.getElementById('winOverlay').classList.add('show');
+}
+
+// Give up — 3 for having a go if at least one letter was guessed, else 0.
+function giveUp(){
+  if (solved) return;
+  solved = true;
+  clearInterval(timerInterval);
+  const score = lettersGuessed >= 1 ? 3 : 0;
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('scoreLabelText').textContent = 'out of 10';
+  document.getElementById('winMeta').innerHTML =
+    (score === 3
+      ? `Better luck next time. Thanks for having a go!`
+      : `No letters guessed`) +
+    `<br><span style="opacity:0.7;">The answer was: <strong>${current.text}</strong></span>`;
+  window._lastScore = score;
+  window._lastDetail = score === 3 ? `Gave up, ${lettersGuessed} letters tried` : 'No attempt';
+  document.getElementById('winOverlay').classList.add('show');
+}
+
+// ─── PRACTICE START / REPLAY ──────────────────────────────────────────────────
+function startPracticeRound(){
+  document.getElementById('weeklyLockCard').style.display = 'none';
+  const area = document.getElementById('gameArea');
+  if (area) area.classList.remove('game-locked');
+  newPuzzle();
+}
+
+function playAgain(){
+  document.getElementById('winOverlay').classList.remove('show');
+  newPuzzle();
+}
+
+// ---------- BOOT ----------
+drawWheel();
+
+</script>
+</body>
+</html>
