@@ -20,6 +20,7 @@ This branch (`school-server`) is organised for direct deployment to the school's
 - `public/games/` — unlimited-practice duplicates of the four most popular games, with `public/index.aspx` as their landing page
 - `public/character-strengths/` — character strengths directory and survey (open to anyone, no sign-in)
 - `assets/site-config.js` — shared school-year dates and QLearn games hub link, used by every game in both sections
+- `assets/fonts/` — self-hosted web fonts (`fonts.css` plus `.woff2` files), so pages render correctly on networks that block or filter Google Fonts
 - `default.aspx` — root redirect to the public landing page
 - `web.config` — IIS defaults with directory browsing disabled
 
@@ -33,7 +34,9 @@ Then check that weekly content banks contain one entry for each teaching week. W
 
 ## School server installation
 
-Copy the contents of this folder into one IIS application or virtual directory without changing the `assets`, `public` or `staff` paths. ASP.NET must be enabled for `.aspx` files. The included `default.aspx` opens `public/index.aspx`, and `web.config` disables directory browsing.
+Copy the contents of this folder into one IIS application or virtual directory without changing the `assets`, `public` or `staff` paths. ASP.NET must be enabled for `.aspx` files. The included `default.aspx` opens `public/index.aspx`, and `web.config` disables directory browsing and registers the `.woff2` MIME type needed by the self-hosted fonts.
+
+All fonts are served from `assets/fonts/`, so no page depends on Google Fonts or any other external font service. If the fonts ever appear to fall back to system defaults, check that IIS is serving `.woff2` files rather than returning 404 for them.
 
 QLearn remains the intended navigation layer for direct staff links. This hides staff links from normal student navigation but does not create server-side authorisation, so staff pages must not contain confidential student information or sensitive records.
 

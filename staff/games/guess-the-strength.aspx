@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guess the Strength — CSHS Homegroup Games</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap');
+  @import url('../../assets/fonts/fonts.css');
   :root {
     --green: #00180f; --green-mid: #003d1f; --green-light: #005a2e;
     --gold: #f2b400; --gold-dim: rgba(242,180,0,0.15); --gold-border: rgba(242,180,0,0.3);
