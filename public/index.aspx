@@ -201,7 +201,7 @@
   </section>
 
   <footer>
-    <a href="https://github.com/PosEd-CSHS/PositiveEducation-CorindaSHS">View source on GitHub</a>
+    <span>Corinda SHS Positive Education</span>
   </footer>
 
 </div>

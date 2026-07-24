@@ -306,7 +306,7 @@
 <div class="modal-overlay" id="share-modal">
   <div class="modal">
     <h3>Submit your results</h3>
-    <p>This submits your name, house, homegroup, and top 5 strengths — nothing else — to the Positive Education team. A pre-filled form will open; just press Submit.</p>
+    <p>This submits your full name, house, homegroup, top 5 strengths, top strength, and VIA comparison response to the Positive Education team through the school Microsoft Form. A pre-filled form will open; check the details and press Submit.</p>
     <label for="share-name-input">Your full name</label>
     <input type="text" id="share-name-input" placeholder="e.g. Alex Smith" maxlength="60" autocomplete="off">
     <p style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem;">Please use your real first and last name so results can be matched correctly.</p>
@@ -746,7 +746,7 @@ function showResults() {
 
   const sig = document.getElementById('sig-cards');
   sig.innerHTML = '';
-  const DIR_BASE = 'https://posed-cshs.github.io/PositiveEducation-CorindaSHS/character-strengths/index.html';
+  const DIR_BASE = 'index.aspx';
   const DIR_ANCHORS = { creativity:'creativity', curiosity:'curiosity', judgement:'judgment', learning:'love-of-learning',
     perspective:'perspective', bravery:'bravery', perseverance:'perseverance', honesty:'honesty', zest:'zest',
     love:'love', kindness:'kindness', social:'social-intelligence', teamwork:'teamwork', fairness:'fairness',
