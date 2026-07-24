@@ -1,3 +1,4 @@
+<%@ Page ContentType="text/html" ResponseEncoding="utf-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,22 +161,22 @@
   <section>
     <div class="section-head"><h2>Practice Games</h2><span>unlimited replay, not the leaderboard</span></div>
     <div class="grid">
-      <a class="card" href="games/wordle.html">
+      <a class="card" href="games/wordle.aspx">
         <span class="card-emoji">🟩</span>
         <div class="card-title">Wordle</div>
         <div class="card-desc">Guess a fresh word — six tries, play again as many times as you like.</div>
       </a>
-      <a class="card" href="games/connections.html">
+      <a class="card" href="games/connections.aspx">
         <span class="card-emoji">🔗</span>
         <div class="card-title">Connections</div>
         <div class="card-desc">Find four groups of four — a new puzzle every round.</div>
       </a>
-      <a class="card" href="games/countdown.html">
+      <a class="card" href="games/countdown.aspx">
         <span class="card-emoji">🔢</span>
         <div class="card-title">Countdown</div>
         <div class="card-desc">Use the numbers to reach a fresh target — any combination.</div>
       </a>
-      <a class="card" href="games/wheel-of-fortune.html">
+      <a class="card" href="games/wheel-of-fortune.aspx">
         <span class="card-emoji">🎡</span>
         <div class="card-title">Wheel of Fortune</div>
         <div class="card-desc">Spin, guess letters and solve a fresh phrase — play again anytime.</div>
@@ -186,12 +187,12 @@
   <section>
     <div class="section-head"><h2>Character Strengths</h2><span>directory &amp; survey</span></div>
     <div class="grid">
-      <a class="card" href="character-strengths/index.html">
+      <a class="card" href="character-strengths/index.aspx">
         <span class="card-emoji">🦉</span>
         <div class="card-title">Strengths Activity Directory</div>
         <div class="card-desc">Every VIA virtue and strength, with ready-to-run activities for each.</div>
       </a>
-      <a class="card" href="character-strengths/character-strengths-survey.html">
+      <a class="card" href="character-strengths/character-strengths-survey.aspx">
         <span class="card-emoji">📋</span>
         <div class="card-title">Character Strengths Survey</div>
         <div class="card-desc">Submit your name, house and top 5 strengths.</div>

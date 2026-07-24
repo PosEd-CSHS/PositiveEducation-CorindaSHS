@@ -1,3 +1,4 @@
+<%@ Page ContentType="text/html" ResponseEncoding="utf-8" %>
 <!doctype html>
 <html lang="en">
 <head>

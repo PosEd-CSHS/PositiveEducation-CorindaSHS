@@ -1,10 +1,11 @@
+<%@ Page ContentType="text/html" ResponseEncoding="utf-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="ALLOWALL">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connections Practice — CSHS</title>
+<title>Connections — CSHS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
   :root {
@@ -87,9 +88,9 @@
 <div class="toast" id="toast"></div>
 <div class="container">
   <div class="header">
-    <div class="header-eyebrow">Corinda State High School · Practice Mode</div>
+    <div class="header-eyebrow">Corinda State High School</div>
     <h1>CONNEC<span>TIONS</span></h1>
-    <div class="header-sub">Unlimited practice — a fresh puzzle every round, not the leaderboard puzzle</div>
+    <div class="header-sub">Find four groups of four — what connects them?</div>
   </div>
 
   <div class="tabs">
@@ -99,15 +100,21 @@
   <!-- GAME TAB -->
   <div id="tab-game" class="section active">
 
-    <!-- Play -->
+    <!-- Sign in -->
     <div id="screen-signin" class="section active">
       <div class="card">
-        <div class="card-title">Practice Mode</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;">Play as many rounds as you like. Every round uses a fresh puzzle — never this week's official Home Group puzzle — and nothing is submitted to the leaderboard.</p>
-        <button class="btn btn-primary full-width" id="startBtn" onclick="startGame()">Start Practice Round</button>
+        <div class="card-title">Step 1 — Select your house</div>
+        <div class="group-select" id="houseSelect"></div>
+        <div id="step2" style="display:none;margin-top:20px;">
+          <div class="card-title">Step 2 — Select your group</div>
+          <div class="group-select" id="groupLetterSelect"></div>
+        </div>
+        <div class="mt16">
+          <button class="btn btn-primary full-width" id="startBtn" onclick="startGame()" disabled>Start Game</button>
+        </div>
       </div>
       <div class="card">
-        <div class="card-title">Practice details</div>
+        <div class="card-title">This week</div>
         <div class="week-info" id="weekInfo"></div>
       </div>
     </div>
@@ -116,7 +123,10 @@
     <div id="screen-playing" class="section">
       <div class="card">
         <div class="flex-between" style="margin-bottom:16px;">
-          <div class="card-title" style="margin-bottom:2px;">Practice Round</div>
+          <div>
+            <div class="card-title" style="margin-bottom:2px;">Now playing</div>
+            <div style="font-size:14px;font-weight:700;" id="playingGroup">—</div>
+          </div>
           <div id="livesDisplay" class="lives"></div>
         </div>
         <div id="solvedRows"></div>
@@ -142,8 +152,9 @@
         </div>
         <div id="resultSummary" style="margin:12px 0;display:flex;flex-direction:column;gap:6px;"></div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
-          <button class="btn btn-primary full-width" onclick="startGame()" style="font-size:16px;padding:14px;">🔁 Play Again</button>
-          <button class="btn btn-outline full-width" onclick="resetToSignin()">← Back to practice menu</button>
+          <button class="btn btn-primary full-width" onclick="submitScoreCN()" id="submitScoreBtn" style="font-size:16px;padding:14px;">📤 Submit Score</button>
+          <button class="btn btn-outline full-width" onclick="resetToSignin()">← Back</button>
+          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:var(--correct);">✓ Form opened — fill in your details and submit</div>
         </div>
       </div>
     </div>
@@ -157,10 +168,14 @@
 
 <script src="../../assets/site-config.js"></script>
 <script>
+const FORM_URL = 'https://forms.cloud.microsoft/r/x94vT9B782?origin=lprLink';
+const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
+const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
 const CAT_COLOURS = ['cat0','cat1','cat2','cat3'];
 const CAT_LABELS = ['Easy','Medium','Hard','Tricky'];
 
-let config = { categories: [] };
+const DEFAULT_CONFIG = { week: 'Week 1' };
+let config = { ...DEFAULT_CONFIG };
 
 
 const PUZZLE_BANK = [
@@ -475,42 +490,87 @@ function cshsCurrentWeek(){
 function cshsWeekLabel(){ const w=cshsCurrentWeek(); return `Term ${w.t} · Week ${w.w}`; }
 
 // Week-seeded puzzle selection (now date-driven)
-// Picks a random puzzle from the weekly bank, excluding the current live
-// Home Group week's official puzzle so practice never gives away the answer.
-function getPracticePuzzle() {
+function getWeekPuzzle() {
+  config.week = cshsWeekLabel();
   const weekNum = cshsCurrentWeek().abs;
-  const officialPuzzle = PUZZLE_BANK[(weekNum - 1) % PUZZLE_BANK.length];
-  const pool = PUZZLE_BANK.filter(p => p !== officialPuzzle);
-  return pool[Math.floor(Math.random() * pool.length)];
+  return PUZZLE_BANK[(weekNum - 1) % PUZZLE_BANK.length];
 }
 
+let selectedHouse = null, selectedLetter = null, selectedGroup = null;
 let selectedTiles = new Set(), solvedCategories = [], mistakes = 0, gameOver = false;
 let gameStartTime = 0;
 let shuffledWords = [];
+window._lastResult = {};
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
+  loadPlayed();
+  renderSignIn();
   renderWeekPreview();
 }
 
+// ─── SIGN IN ──────────────────────────────────────────────────────────────────
+
+function loadPlayed() {
+  played = new Set();
+  try {
+    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
+    played = new Set(data);
+  } catch(e) {}
+}
+function renderSignIn() {
+  const houseEl = document.getElementById('houseSelect');
+  houseEl.innerHTML = HOUSES.map(h =>
+    `<button class="group-btn ${selectedHouse===h?'selected':''}" onclick="selectHouse('${h}')">${h}</button>`
+  ).join('');
+  const step2 = document.getElementById('step2');
+  if (selectedHouse) {
+    step2.style.display = 'block';
+    document.getElementById('groupLetterSelect').innerHTML = GROUP_LETTERS.map(l => {
+      const grp = selectedHouse + ' ' + l;
+      const done = isPlayed(grp);
+      return `<button class="group-btn ${selectedLetter===l?'selected':''} ${done?'played':''}"
+        onclick="selectLetter('${l}')" ${done?'title="Already played this week"':''}>
+        ${l}${done?' ✓':''}
+      </button>`;
+    }).join('') + `<button class="group-btn ${selectedLetter==='Staff'?'selected':''}" onclick="selectLetter('Staff')">Staff</button>`;
+  } else { step2.style.display = 'none'; }
+}
+
+function selectHouse(h) {
+  selectedHouse = h; selectedLetter = null; selectedGroup = null;
+  document.getElementById('startBtn').disabled = true;
+  renderSignIn();
+}
+
+function selectLetter(l) {
+  selectedLetter = l; selectedGroup = (l === 'Staff') ? 'Staff' : selectedHouse + ' ' + l;
+  renderSignIn();
+  document.getElementById('startBtn').disabled = isPlayed(selectedGroup);
+}
+
 function renderWeekPreview() {
+  const idx = cshsCurrentWeek().abs - 1;
+  const puzzleNum = (idx % PUZZLE_BANK.length) + 1;
   document.getElementById('weekInfo').innerHTML = `
-    <div class="week-chip">Unlimited practice</div>
-    <div class="week-chip">New puzzle each round</div>
+    <div class="week-chip">${cshsWeekLabel()}</div>
+    <div class="week-chip">Puzzle ${puzzleNum} of ${PUZZLE_BANK.length}</div>
     <div class="week-chip">Max 10 pts</div>
   `;
 }
 
 // ─── GAME ─────────────────────────────────────────────────────────────────────
 function startGame() {
+  if (!selectedGroup || !lockWeeklyAttempt(selectedGroup)) return;
+  document.getElementById('playingGroup').textContent = selectedGroup;
   selectedTiles = new Set(); solvedCategories = []; mistakes = 0; gameOver = false;
   gameStartTime = Date.now();
   document.getElementById('solvedRows').innerHTML = '';
   document.getElementById('oneAwayMsg').style.display = 'none';
 
-  // Get a fresh practice puzzle
-  const puzzle = getPracticePuzzle();
-  config.categories = puzzle.categories;
+  // Get this week's puzzle
+  const weekPuzzle = getWeekPuzzle();
+  config.categories = weekPuzzle.categories;
 
   // Shuffle all 16 words
   shuffledWords = config.categories.flatMap((cat, ci) =>
@@ -657,6 +717,12 @@ function endGame() {
   }
   const scaled = connScore();
 
+  window._lastResult = {
+    group: selectedGroup, score: scaled, house: selectedHouse,
+    detail: won ? `Solved with ${mistakes} mistake${mistakes!==1?'s':''}`
+                : `Found ${solved}/4 groups, ${mistakes} mistake${mistakes!==1?'s':''}`
+  };
+
   document.getElementById('resultEmoji').textContent = won ? (mistakes === 0 ? '🏆' : '🎉') : '🙂';
   document.getElementById('finalScore').textContent = scaled;
   document.getElementById('scoreLabelText').textContent = 'out of 10';
@@ -682,6 +748,23 @@ function endGame() {
   showScreen('screen-result');
 }
 
+// ─── SCORE SUBMIT ─────────────────────────────────────────────────────────────
+function submitScoreCN() {
+  const r = window._lastResult || {};
+  const params = new URLSearchParams({
+    id: 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u',
+    rb28fecc633264af694f45d8cf2b3b8c1: cshsWeekLabel(),
+    rdbbd457b83da425e93f978536b950482: 'Connections',
+    rd04d4cf9da8a4213820791f91cdcf6ba: r.house || '',
+    r3022db1950b649218496e706728c203f: r.group || '',
+    r8b61653d0854482a9e7e329026083f7b: String(r.score || 0)
+  });
+  window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
+  document.getElementById('submitConfirm').style.display = 'block';
+  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
+  document.getElementById('submitScoreBtn').disabled = true;
+}
+
 // ─── SCREENS ──────────────────────────────────────────────────────────────────
 function showScreen(id) {
   ['screen-signin','screen-playing','screen-result'].forEach(s =>
@@ -690,7 +773,10 @@ function showScreen(id) {
 }
 
 function resetToSignin() {
+  selectedHouse = null; selectedLetter = null; selectedGroup = null;
   gameOver = false; selectedTiles = new Set();
+  renderSignIn();
+  document.getElementById('startBtn').disabled = true;
   showScreen('screen-signin');
 }
 
@@ -702,6 +788,35 @@ function switchTab(name) {
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
 
+function renderPuzzlePreview() {
+  const el = document.getElementById('catBlocks');
+  const puzzle = getWeekPuzzle();
+  const weekNum = cshsCurrentWeek().abs;
+  el.innerHTML = `
+    <div style="background:rgba(242,180,0,0.08);border:1px solid rgba(242,180,0,0.25);border-radius:8px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:11px;color:#f2b400;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.1em;">
+        This week: Puzzle ${((weekNum-1)%PUZZLE_BANK.length)+1} of ${PUZZLE_BANK.length}
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.6;">
+        Puzzles rotate automatically by week number. Update the week label to change the puzzle.
+      </div>
+    </div>
+    ${puzzle.categories.map((cat, ci) => {
+      const c = CAT_COLOURS[ci];
+      return '<div style="padding:10px 12px;border-radius:8px;margin-bottom:6px;background:' + c.bg + ';border:1px solid ' + c.border + ';">' +
+        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:' + c.text + ';margin-bottom:3px;">' + CAT_LABELS[ci] + ' — ' + cat.name + '</div>' +
+        '<div style="font-size:12px;font-weight:600;">' + cat.words.join(' · ') + '</div>' +
+        '</div>';
+    }).join('')}
+  `;
+}
+
+
+
+function resetSession() {
+  if (!confirm('Reset session?')) return;
+  resetToSignin(); switchTab('game');
+}
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
 let toastTimer = null;
@@ -714,6 +829,86 @@ function showToast(msg) {
 
 init();
 
+// ─── WEEKLY ATTEMPT LOCK (localStorage, per-device per-week) ─────────────────
+// Home groups get one attempt per game per school week. Staff is always unlimited.
+// Note: because these are static HTML files, this lock is enforced in this browser/device.
+function weeklyLockLabel() {
+  if (typeof cshsWeekLabel === 'function') return cshsWeekLabel();
+  const terms = window.CSHS_SITE_CONFIG.terms;
+  const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+  const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
+  const today=new Date(); today.setHours(0,0,0,0);
+  let chosen={t:1,w:1};
+  for(const term of terms){
+    const end=parse(term.end); let mon=mondayOf(parse(term.start)); let w=1;
+    while(mon<=end){
+      if(mon<=today) chosen={t:term.t,w}; else return `Term ${chosen.t} Week ${chosen.w}`;
+      mon=new Date(mon); mon.setDate(mon.getDate()+7); w++;
+    }
+  }
+  return `Term ${chosen.t} Week ${chosen.w}`;
+}
+function normaliseGroupName(group) {
+  return String(group || '').trim().replace(/\s+/g, ' ');
+}
+function isStaffGroup(group) {
+  const g = normaliseGroupName(group);
+  return g === 'Staff' || g.endsWith(' Staff');
+}
+function getPlayedKey() {
+  return 'conn:played:' + weeklyLockLabel();
+}
+
+(function() {
+  // ?reset clears played records for this game and redirects cleanly
+  if (location.search.includes('reset')) {
+    try {
+      Object.keys(localStorage).filter(k => k.startsWith('conn:played:')).forEach(k => localStorage.removeItem(k));
+    } catch(e) {}
+    history.replaceState(null, '', location.pathname);
+  }
+})();
+
+function readPlayedList() {
+  try {
+    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
+    return Array.isArray(data) ? data : [];
+  } catch(e) { return []; }
+}
+
+function writePlayedList(data) {
+  try { localStorage.setItem(getPlayedKey(), JSON.stringify([...new Set(data.map(normaliseGroupName))])); } catch(e) {}
+}
+
+function isPlayed(group) {
+  const g = normaliseGroupName(group);
+  if (!g || isStaffGroup(g)) return false;
+  return readPlayedList().includes(g);
+}
+
+function markPlayedLS(group) {
+  const g = normaliseGroupName(group);
+  if (!g || isStaffGroup(g)) return;
+  const data = readPlayedList();
+  if (!data.includes(g)) {
+    data.push(g);
+    writePlayedList(data);
+  }
+}
+
+function lockWeeklyAttempt(group) {
+  const g = normaliseGroupName(group);
+  if (!g) return false;
+  if (isStaffGroup(g)) return true;
+  if (isPlayed(g)) {
+    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    return false;
+  }
+  markPlayedLS(g);
+  try { if (typeof played !== 'undefined' && played && played.add) played.add(g); } catch(e) {}
+  return true;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>
