@@ -576,6 +576,7 @@ let currentRow   = 0;
 let gameStartTime = 0;
 let guesses      = []; // array of submitted guess strings
 let gameOver     = false;
+let isRevealing  = false; // true while a submitted guess is mid-animation, blocks re-entrant submits
 let wordLength   = 6;
 let maxGuesses   = 6;
 let targetWord   = 'HAPPY';
@@ -774,6 +775,7 @@ function startGame() {
   currentRow   = 0;
   guesses      = [];
   gameOver     = false;
+  isRevealing  = false;
   keyStates    = {};
 
   document.getElementById('playingGroup').textContent = selectedGroup;
@@ -884,6 +886,8 @@ function updateCurrentRowDisplay() {
 
 // ─── GUESS SUBMISSION ─────────────────────────────────────────────────────────
 function submitGuess() {
+  if (isRevealing) return; // a previous guess is still animating — ignore double-taps
+
   if (currentGuess.length < wordLength) {
     shakeRow(currentRow);
     showToast(`Word must be ${wordLength} letters`);
@@ -899,8 +903,10 @@ function submitGuess() {
   }
   const result = evaluateGuess(guess, targetWord);
 
+  isRevealing = true;
   guesses.push(guess);
   revealRow(currentRow, guess, result, () => {
+    isRevealing = false;
     updateKeyboard();
 
     const won = result.every(r => r === 'correct');
