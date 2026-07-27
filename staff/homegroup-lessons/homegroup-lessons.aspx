@@ -1,4 +1,3 @@
-<%@ Page ContentType="text/html" ResponseEncoding="utf-8" %>
 <!DOCTYPE html>
 
 <html lang="en">

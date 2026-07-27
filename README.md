@@ -34,9 +34,30 @@ Then check that weekly content banks contain one entry for each teaching week. W
 
 ## School server installation
 
-Copy the contents of this folder into one IIS application or virtual directory without changing the `assets`, `public` or `staff` paths. ASP.NET must be enabled for `.aspx` files. The included `default.aspx` opens `public/index.aspx`, and `web.config` disables directory browsing and registers the `.woff2` MIME type needed by the self-hosted fonts.
+The site is hosted from a SharePoint document library under
+`/ourcurriculum/TeachingAndLearning/Documents/PosEd/`. Copy the contents of this
+folder there without changing the `assets`, `public` or `staff` paths — every
+page uses relative links, so the structure must stay intact.
 
-All fonts are served from `assets/fonts/`, so no page depends on Google Fonts or any other external font service. If the fonts ever appear to fall back to system defaults, check that IIS is serving `.woff2` files rather than returning 404 for them.
+**Pages must contain no server-side code.** SharePoint document libraries refuse
+to render `.aspx` files containing `<% ... %>` blocks, including a leading
+`<%@ Page %>` directive. Every page here is therefore plain static HTML with an
+`.aspx` extension; the extension is kept because SharePoint renders `.aspx`
+inline while it may force `.html` files to download instead. Do not reintroduce
+a page directive — character encoding is handled by each page's own
+`<meta charset="UTF-8">`.
+
+`default.aspx` and `web.config` are **not used** in the SharePoint deployment
+and are excluded from the upload package. They are retained here only for a
+possible future move to a plain IIS site, where `default.aspx` would redirect
+the root to `public/index.aspx` and `web.config` would disable directory
+browsing and register the `.woff2` MIME type. Under SharePoint the public entry
+point is `public/index.aspx` directly.
+
+All fonts are served from `assets/fonts/`, so no page depends on Google Fonts or
+any other external font service. If headings ever appear in a plain system font
+rather than the condensed Bebas Neue face, check that the server is serving
+`.woff2` files rather than returning 404 for them.
 
 QLearn remains the intended navigation layer for direct staff links. This hides staff links from normal student navigation but does not create server-side authorisation, so staff pages must not contain confidential student information or sensitive records.
 
