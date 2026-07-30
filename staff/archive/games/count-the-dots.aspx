@@ -91,7 +91,7 @@
 <div class="card">
   <div class="player-banner" id="playerBanner">
     <span class="player-label">Player up</span>
-    <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
+    <input class="player-name-input" id="playerNameInput" type="text" aria-label="Student name" placeholder="Enter student name…" maxlength="30">
   </div>
 
   <div class="meta-row">
@@ -111,7 +111,7 @@
   <div class="phase-label" id="phaseLabel">Enter player name, then press Start</div>
 
   <div class="guess-row">
-    <input class="guess-input" id="guessInput" type="number" min="1" max="200" placeholder="?" disabled>
+    <input class="guess-input" id="guessInput" type="number" min="1" max="200" aria-label="Number of dots" placeholder="?" disabled>
     <button class="btn-guess" id="guessBtn" onclick="submitGuess()" disabled>Lock In</button>
   </div>
 
@@ -237,7 +237,7 @@
     const total=roundScores.reduce((s,r)=>s+r.score,0),finalScore=Math.round(total/30);
     const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Count the Dots',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:(selectedGroup==='Staff'?'Staff':selectedHouse+' '+selectedGroup),[CSHS_F_SCORE]:String(finalScore)});
     window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');
-    submitBtn.textContent='✓ Submitted';submitBtn.disabled=true;
+    submitBtn.textContent='↗ Reopen form';submitBtn.disabled=false;
   }
 
   function resetAll(){

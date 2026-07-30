@@ -1644,27 +1644,27 @@
       <div class="slider-group" style="margin-top:16px;">
         <div class="slider-item">
           <div class="slider-label"><span>P — I experience positive emotions regularly</span><span class="slider-value" id="ts1">5</span></div>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('ts1').textContent=this.value">
+          <input type="range" min="1" max="10" value="5" aria-label="Positive emotion wellbeing rating" oninput="document.getElementById('ts1').textContent=this.value">
         </div>
         <div class="slider-item">
           <div class="slider-label"><span>E — I feel engaged and absorbed in my work</span><span class="slider-value" id="ts2">5</span></div>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('ts2').textContent=this.value">
+          <input type="range" min="1" max="10" value="5" aria-label="Engagement wellbeing rating" oninput="document.getElementById('ts2').textContent=this.value">
         </div>
         <div class="slider-item">
           <div class="slider-label"><span>R — I feel supported by colleagues</span><span class="slider-value" id="ts3">5</span></div>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('ts3').textContent=this.value">
+          <input type="range" min="1" max="10" value="5" aria-label="Relationships wellbeing rating" oninput="document.getElementById('ts3').textContent=this.value">
         </div>
         <div class="slider-item">
           <div class="slider-label"><span>M — My work feels meaningful and purposeful</span><span class="slider-value" id="ts4">5</span></div>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('ts4').textContent=this.value">
+          <input type="range" min="1" max="10" value="5" aria-label="Meaning wellbeing rating" oninput="document.getElementById('ts4').textContent=this.value">
         </div>
         <div class="slider-item">
           <div class="slider-label"><span>A — I feel a sense of accomplishment at work</span><span class="slider-value" id="ts5">5</span></div>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('ts5').textContent=this.value">
+          <input type="range" min="1" max="10" value="5" aria-label="Accomplishment wellbeing rating" oninput="document.getElementById('ts5').textContent=this.value">
         </div>
         <div class="slider-item">
           <div class="slider-label"><span>H — I'm taking care of my physical health</span><span class="slider-value" id="ts6">5</span></div>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('ts6').textContent=this.value">
+          <input type="range" min="1" max="10" value="5" aria-label="Health wellbeing rating" oninput="document.getElementById('ts6').textContent=this.value">
         </div>
       </div>
       <p style="font-size:13px;color:var(--white-dim);margin-top:16px;font-style:italic;">Notice which pillar scored lowest — that's your starting point. Your wellbeing is the foundation of everything else you do at school.</p>
@@ -1712,10 +1712,10 @@
           <div class="res-type">🔗 Free Tool</div>
         </div>
       </a>
-      <a class="resource-card" href="https://mindmatters.edu.au" target="_blank">
+      <a class="resource-card" href="https://beyou.edu.au/" target="_blank">
         <span class="res-icon">🧠</span>
         <div class="res-content">
-          <h4>MindMatters</h4>
+          <h4>Be You</h4>
           <p>Free Australian government-funded mental health and wellbeing programs for secondary schools.</p>
           <div class="res-type">🔗 Free Programs</div>
         </div>
@@ -1889,9 +1889,9 @@
 
     <!-- NAME ENTRY -->
     <div style="margin:28px 0 32px;">
-      <label style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;">Your Full Name (for certificate)</label>
+      <label for="cert-name" style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;">Your Full Name (for certificate)</label>
       <input type="text" id="cert-name" placeholder="e.g. Sarah Johnson" style="width:100%;max-width:420px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
-      <label style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:16px;">Your House</label>
+      <label for="cert-house" style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:16px;">Your House</label>
       <select id="cert-house" style="width:100%;max-width:420px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f2b400' d='M1 1l5 5 5-5'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
         <option value="" disabled selected>Select your house…</option>
         <option value="Bunar">Bunar</option>
@@ -1902,7 +1902,7 @@
         <option value="Yarraman">Yarraman</option>
       </select>
 
-      <label style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:16px;">Your Role / School (optional)</label>
+      <label for="cert-role" style="display:block;font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:16px;">Your Role / School (optional)</label>
       <input type="text" id="cert-role" placeholder="e.g. Science Teacher, Corinda SHS" style="width:100%;max-width:420px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 16px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(255,255,255,0.2)'">
     </div>
 

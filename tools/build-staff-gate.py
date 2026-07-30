@@ -101,7 +101,12 @@ button:disabled{opacity:.6;cursor:default}
 <script>
 (function(){
 "use strict";
-var SALT="__SALT__", IV="__IV__", ITER=__ITER__, SK="posed.staff.key";
+var SALT="__SALT__", IV="__IV__", ITER=__ITER__;
+// An unlocked key is reused for a while so a reload, a ?reset link or the next
+// staff page does not re-prompt mid-lesson. The window is an idle timeout: each
+// page opened renews it, so it lapses 30 minutes after the last staff page was
+// opened, and sessionStorage discards it when the browser closes regardless.
+var SK="posed.staff.key", TTL=1800000;
 var msg=document.getElementById("msg"), form=document.getElementById("form");
 var err=document.getElementById("err"), pw=document.getElementById("pw");
 var go=document.getElementById("go");
@@ -116,9 +121,26 @@ function tob64(u8){
   for(var i=0;i<u8.length;i+=C){s+=String.fromCharCode.apply(null,u8.subarray(i,i+C));}
   return btoa(s);
 }
+function readCache(){
+  try{
+    var raw=sessionStorage.getItem(SK);
+    if(!raw){return null;}
+    var o=JSON.parse(raw);
+    if(!o||!o.k||!o.t||(Date.now()-o.t)>TTL){sessionStorage.removeItem(SK);return null;}
+    return o.k;
+  }catch(e){return null;}
+}
+function writeCache(k){
+  try{sessionStorage.setItem(SK,JSON.stringify({k:k,t:Date.now()}));}catch(e){}
+}
+// Clicking the QLearn link for the page you are already locked on only changes
+// the fragment, which does not reload the page — so the gate would never see the
+// key. Reload on hashchange while the gate is showing so the link still works.
+function onHashChange(){location.reload();}
 function showForm(text){
   msg.textContent=text;
   form.style.display="block";
+  window.addEventListener("hashchange",onHashChange);
   pw.focus();
 }
 function fail(text){
@@ -137,6 +159,8 @@ function parsed(){
 }
 function render(html){
   return parsed().then(function(){
+    // The unlocked page owns the URL from here; drop the gate's hash handling.
+    window.removeEventListener("hashchange",onHashChange);
     try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}
     document.open();
     document.write(html);
@@ -159,7 +183,7 @@ function attempt(raw){
     })
     .then(function(buf){
       var html=new TextDecoder().decode(buf);
-      try{sessionStorage.setItem(SK,tob64(raw));}catch(e){}
+      writeCache(tob64(raw));
       return render(html).then(function(){return true;});
     })
     .catch(function(){return false;});
@@ -171,30 +195,23 @@ if(!window.crypto||!crypto.subtle||!window.TextDecoder){
   return;
 }
 
-var cached=null;
-try{cached=sessionStorage.getItem(SK);}catch(e){}
+var cached=readCache();
 var hash=/[#&]k=([^&]+)/.exec(location.hash||"");
 
-(function start(){
-  if(cached){
-    attempt(bytes(cached)).then(function(ok){
-      if(ok){return;}
-      try{sessionStorage.removeItem(SK);}catch(e){}
-      cached=null; start();
-    });
-    return;
-  }
+// Try the remembered key first, then the key in the link, then ask.
+(cached ? attempt(bytes(cached)) : Promise.resolve(false)).then(function(ok){
+  if(ok){return;}
+  if(cached){try{sessionStorage.removeItem(SK);}catch(e){}}
   if(hash){
-    derive(decodeURIComponent(hash[1])).then(attempt).then(function(ok){
-      if(ok){return;}
+    return derive(decodeURIComponent(hash[1])).then(attempt).then(function(ok2){
+      if(ok2){return;}
       showForm("That link is out of date.");
       fail("The key in this link is not valid. Open the page again from QLearn, "+
            "or type the current access key below.");
     });
-    return;
   }
   showForm("Enter the staff access key to open this page.");
-})();
+});
 
 form.addEventListener("submit",function(e){
   e.preventDefault();

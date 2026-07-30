@@ -25,7 +25,7 @@
   /* Three-column layout */
   .main-layout {
     display: grid;
-    grid-template-columns: 320px 1fr 1fr;
+    grid-template-columns: minmax(280px,320px) repeat(2,minmax(280px,1fr));
     gap: 20px;
     align-items: start;
     max-width: 1100px;
@@ -42,9 +42,20 @@
 
   .cell-label { font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.08em; color: var(--gold); background: var(--subtle); border-bottom: 1px solid var(--subtle-border); padding: 8px 12px; }
   .cell-game { background: var(--subtle); border: 1px solid var(--subtle-border); border-radius: 12px; overflow: hidden; }
-  .cell-game iframe { display: block; }
+  .cell-game iframe, .cell-overall iframe { display: block; width: 100%; border: 0; }
 
-  .footer { text-align: center; margin-top: 28px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.15); text-transform: uppercase; }
+  .embed-note { max-width: 1100px; margin: -12px auto 20px; text-align: center; font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.62); }
+  .footer { text-align: center; margin-top: 28px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.32); text-transform: uppercase; }
+  @media (max-width: 960px) {
+    .main-layout { grid-template-columns: repeat(2,minmax(280px,1fr)); }
+    .col-overall { grid-column: 1 / -1; }
+    .cell-overall iframe { max-width: 640px; margin: 0 auto; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 24px 10px 40px; }
+    .main-layout { grid-template-columns: 1fr; gap: 16px; }
+    .col-overall { grid-column: auto; }
+  }
 </style>
 </head>
 <body>
@@ -55,15 +66,15 @@
   <div class="week-chip" id="weekChip">Term 2 · Week 8</div>
 </div>
 
+<p class="embed-note">The workbook may ask staff to sign in to Microsoft 365. If a panel does not load, refresh after signing in.</p>
+
 <div class="main-layout">
 
   <!-- Column 1: Overall leaderboard -->
   <div class="col-overall">
     <div class="section-label">🏆 Overall</div>
     <div class="cell-overall">
-      <iframe width="320" height="1500" frameborder="0" scrolling="no"
-        src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Overall%20totals&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0">
-      </iframe>
+      <iframe data-sheet="Overall totals" title="Overall Home Group leaderboard" height="1500" scrolling="no"></iframe>
     </div>
   </div>
 
@@ -71,11 +82,11 @@
   <div class="col-games">
     <div class="section-label">🎮 By Game (1–5)</div>
     <div class="games-stack">
-      <div class="cell-game"><div class="cell-label">W Wordle</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Wordle&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">C Connections</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Connections&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">🔢 Countdown</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Countdown&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">🎡 Wheel of Fortune</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Wheel%20of%20Fortune&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">A Alphabucks</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Alphabucks&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
+      <div class="cell-game"><div class="cell-label">W Wordle</div><iframe data-sheet="Wordle" title="Wordle leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">C Connections</div><iframe data-sheet="Connections" title="Connections leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">🔢 Countdown</div><iframe data-sheet="Countdown" title="Countdown leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">🎡 Wheel of Fortune</div><iframe data-sheet="Wheel of Fortune" title="Wheel of Fortune leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">A Alphabucks</div><iframe data-sheet="Alphabucks" title="Alphabucks leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
     </div>
   </div>
 
@@ -83,11 +94,11 @@
   <div class="col-games">
     <div class="section-label">🎮 By Game (6–10)</div>
     <div class="games-stack">
-      <div class="cell-game"><div class="cell-label">🔍 Where's Smoulder</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Where's%20Smoulder&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">⏱ Stop the Clock</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Stop%20the%20clock&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">▓ Fill the Bar</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Fill%20the%20bar&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">🔐 Crack the Code</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Crack%20the%20code&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
-      <div class="cell-game"><div class="cell-label">💪 Guess the Strength</div><iframe width="320" height="250" frameborder="0" scrolling="no" src="https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False&Item=Guess%20the%20strength&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0"></iframe></div>
+      <div class="cell-game"><div class="cell-label">🔍 Where's Smoulder</div><iframe data-sheet="Where's Smoulder" title="Where's Smoulder leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">⏱ Stop the Clock</div><iframe data-sheet="Stop the clock" title="Stop the Clock leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">▓ Fill the Bar</div><iframe data-sheet="Fill the bar" title="Fill the Bar leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">🔐 Crack the Code</div><iframe data-sheet="Crack the code" title="Crack the Code leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">💪 Guess the Strength</div><iframe data-sheet="Guess the strength" title="Guess the Strength leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
     </div>
   </div>
 
@@ -98,6 +109,13 @@
 <script src="../../assets/site-config.js"></script>
 <script>
   (function(){
+    // If the workbook moves to a school-owned SharePoint library, update this one URL only.
+    const WORKBOOK_EMBED_BASE = 'https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False';
+    document.querySelectorAll('iframe[data-sheet]').forEach(function(frame){
+      const grid = frame.dataset.sheet === 'Overall totals' ? '' : '&wdHideGridlines=True';
+      frame.src = WORKBOOK_EMBED_BASE + '&Item=' + encodeURIComponent(frame.dataset.sheet) + grid + '&wdInConfigurator=True&edaebf=rslc0';
+    });
+
     const terms = window.CSHS_SITE_CONFIG.terms;
     const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
     const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};

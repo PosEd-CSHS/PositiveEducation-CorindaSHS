@@ -153,7 +153,7 @@
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
           <button class="btn btn-primary full-width" onclick="submitScoreCN()" id="submitScoreBtn" style="font-size:16px;padding:14px;">📤 Submit Score</button>
           <button class="btn btn-outline full-width" onclick="resetToSignin()">← Back</button>
-          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:var(--correct);">✓ Form opened — fill in your details and submit</div>
+          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:var(--correct);" role="status" aria-live="polite">✓ Form opened — fill in your details and submit</div>
         </div>
       </div>
     </div>
@@ -760,8 +760,8 @@ function submitScoreCN() {
   });
   window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
   document.getElementById('submitConfirm').style.display = 'block';
-  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
-  document.getElementById('submitScoreBtn').disabled = true;
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
+  document.getElementById('submitScoreBtn').disabled = false;
 }
 
 // ─── SCREENS ──────────────────────────────────────────────────────────────────
@@ -900,7 +900,7 @@ function lockWeeklyAttempt(group) {
   if (!g) return false;
   if (isStaffGroup(g)) return true;
   if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    alert(g + ' has already played this game on this browser for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
     return false;
   }
   markPlayedLS(g);

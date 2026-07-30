@@ -262,7 +262,7 @@
     <div class="score-big"><span id="finalScore">0</span><span style="font-size:1.2rem;opacity:0.6;">/10</span></div>
     <div class="score-sub" id="scoreLabelText">points</div>
     <div class="meta" id="winMeta"></div>
-    <button class="btn" onclick="submitScore()">Submit score</button>
+    <button class="btn" id="submitScoreBtn" onclick="submitScore()">Submit score</button>
     <button class="btn" style="background:var(--green);color:var(--gold);border:2px solid var(--gold);margin-top:6px;" onclick="resetWeeklyGame()">Play this week's puzzle again</button>
   </div>
 </div>
@@ -272,11 +272,11 @@
   <div class="panel" style="text-align:left;">
     <h2 style="text-align:center;">⚙ Admin</h2>
     <div id="adminLock">
-      <div class="field"><label>Password</label><input id="admin-pass" type="password"></div>
+      <div class="field"><label for="admin-pass">Password</label><input id="admin-pass" type="password"></div>
       <button class="btn" onclick="checkAdmin()">Unlock</button>
     </div>
     <div id="adminBody" style="display:none;">
-      <div class="field"><label>Microsoft Forms pre-fill URL</label>
+      <div class="field"><label for="cfg-url">Microsoft Forms pre-fill URL</label>
         <textarea id="cfg-url" placeholder="Paste your pre-fill URL with {group} {house} {score} {game} {week} {detail} placeholders"></textarea>
       </div>
       <p class="small">The weekly puzzle is set automatically from the school calendar in the file's code — it is not edited here. This panel only stores the score-submission URL (per device). The week number is filled in automatically.</p>
@@ -707,6 +707,7 @@ function submitScore() {
     + `&r3022db1950b649218496e706728c203f=${group}`
     + `&r8b61653d0854482a9e7e329026083f7b=${score}`;
   window.open(url, '_blank');
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
 }
 
 // ---------- ADMIN ----------
@@ -870,7 +871,7 @@ function lockWeeklyAttempt(group) {
   if (!g) return false;
   if (isStaffGroup(g)) return true;
   if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    alert(g + ' has already played this game on this browser for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
     return false;
   }
   markPlayedLS(g);

@@ -158,3 +158,66 @@ or audit trail, and access cannot be revoked for one person without rotating the
 key for everyone. The brain-breaks PDF is a separate file and is uploaded
 unencrypted. Staff pages must therefore still not contain confidential student
 information.
+
+---
+
+# Verification — merged staff edits, 30-minute unlock window (2026-07-30)
+
+A revised upload package was reviewed and merged. The 14 edited pages were
+decrypted, adopted as the new `staff/` sources, and rebuilt.
+
+## Edits reviewed and accepted
+
+- Leaderboard: 11 hardcoded embed URLs replaced with `data-sheet` attributes and
+  a single `WORKBOOK_EMBED_BASE` constant, so moving the workbook to a
+  school-owned library becomes a one-line change. All 11 URLs were rebuilt the
+  way the page's JavaScript does and compared against the originals — every one
+  reproduces exactly, including `Where's Smoulder` and the lowercase sheet names.
+  The `Overall totals` gridlines special-case is correct.
+- Leaderboard: responsive grid with 960px and 640px breakpoints, `loading="lazy"`,
+  iframe `title` attributes, and a note that the workbook may prompt for sign-in.
+- Score submission: `✓ Submitted` / `disabled = true` became `↗ Reopen form` /
+  `disabled = false`, so a blocked or closed Form popup no longer loses the score.
+- The weekly-lock message now says "already played on this browser", which
+  describes what the lock actually is.
+- Accessibility: `aria-label`s on inputs and the six PERMAH sliders,
+  `role="status" aria-live="polite"` on status regions, `title` on iframes, and
+  `alt` on all 15 brain-break thumbnails. All 15 `alt` page numbers were checked
+  against their PDF link targets and match.
+
+## Unlock window changed
+
+The revised package had removed the `sessionStorage` cache while keeping the
+fragment stripping. Those two features depend on each other: with the key gone
+from the address bar and nothing remembering it, a reload, a `?reset` link, or a
+second staff page in the same tab all re-prompted for the key — awkward mid-lesson.
+
+The cache is restored with a 30-minute idle timeout. Each staff page opened
+renews the window, so it lapses 30 minutes after the last one, and
+`sessionStorage` still discards it when the browser closes. This keeps reloads
+working during a lesson without leaving the site unlocked all day on a shared
+classroom machine.
+
+## Second bug found and fixed
+
+Because the fragment is stripped after unlocking, clicking the QLearn link for
+the page you are already locked on changed only the fragment — which does not
+reload the page, so the gate never saw the key and the link appeared to do
+nothing. The gate now reloads on `hashchange` while it is showing, and removes
+that handler before rendering the unlocked page.
+
+## Checks completed
+
+- All 16 pages decrypt; no plaintext leaks; no `<% %>` blocks; wrapper JavaScript
+  passes `node --check`.
+- Reload, `?reset` and second-page navigation all stay unlocked.
+- An expired cache re-locks and the stale entry is cleared.
+- A 28-minute-old key still unlocks, and opening a page renews the window.
+- A fresh browser session does not inherit the unlock.
+- A wrong key is refused with nothing leaked to the DOM.
+- Clicking a same-page QLearn link from the gate unlocks correctly.
+- All 11 leaderboard iframes receive a src.
+- 20 lesson tabs, the Term 4 Weeks 9–10 panel and its thumbnail `alt` all render;
+  a full winning round of Wordle plays through to the result screen and the
+  Reopen-form button behaves.
+- No page errors on any page tested.

@@ -152,7 +152,7 @@
         <div class="reveal-desc" id="revealDesc"></div>
       </div>
       <button class="btn" id="submitScoreBtn" onclick="submitScoreGTS()">Submit score to leaderboard</button>
-      <div class="submit-confirm" id="submitConfirm">✓ Form opened in a new tab — press Submit there to finish.</div>
+      <div class="submit-confirm" id="submitConfirm" role="status" aria-live="polite">✓ Form opened in a new tab — press Submit there to finish.</div>
       <button class="btn btn-ghost" onclick="resetToSignin()">Back to sign-in</button>
     </div>
   </div>
@@ -373,7 +373,7 @@ function beginGame(){
   if (selectedGroup !== 'Staff') {
     const played = readPlayed();
     if (played.includes(g)) {
-      alert(g + ' has already played Guess the Strength for ' + cshsWeekLabel() + '. Choose Staff for practice, or come back next week.');
+      alert(g + ' has already played Guess the Strength on this browser for ' + cshsWeekLabel() + '. Choose Staff for practice, or come back next week.');
       return;
     }
   }
@@ -519,8 +519,8 @@ function submitScoreGTS(){
   });
   window.open(CSHS_FORM_BASE + '?' + params.toString(), '_blank');
   document.getElementById('submitConfirm').style.display = 'block';
-  document.getElementById('submitScoreBtn').textContent = '\u2713 Submitted';
-  document.getElementById('submitScoreBtn').disabled = true;
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
+  document.getElementById('submitScoreBtn').disabled = false;
 }
 
 function resetToSignin(){

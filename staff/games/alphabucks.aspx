@@ -500,7 +500,7 @@
           <div style="display:flex;gap:8px;">
             <button class="btn btn-outline" style="flex:1;" onclick="resetToSignin()">Play Again</button>
           </div>
-          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;">✓ Form opened in new tab — fill in your details and submit</div>
+          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;" role="status" aria-live="polite">✓ Form opened in new tab — fill in your details and submit</div>
         </div>
       </div>
     </div>
@@ -731,7 +731,7 @@ function buildCategoryGrid() {
   grid.innerHTML = categories.map((cat, i) => `
     <div class="category-row" id="row-${i}">
       <div class="category-label">${cat}</div>
-      <input class="answer-input" id="ans-${i}" placeholder="${config.letter.toUpperCase()}..." maxlength="30"
+      <input class="answer-input" id="ans-${i}" aria-label="Answer for ${cat}" placeholder="${config.letter.toUpperCase()}..." maxlength="30"
         oninput="validateInput(${i})" autocomplete="off" autocorrect="off" spellcheck="false">
       <div class="pts-badge" id="pts-${i}">—</div>
     </div>
@@ -1010,8 +1010,8 @@ function submitScore_AB() {
   openFormSubmit(r.group||'', r.house||'', r.score||0, config.week, 'Alphabucks', r.detail||'');
   markPlayedLS((window._lastResult||{}).group||'');
   document.getElementById('submitConfirm').style.display = 'block';
-  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
-  document.getElementById('submitScoreBtn').disabled = true;
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
+  document.getElementById('submitScoreBtn').disabled = false;
 }
 
 // ─── START ────────────────────────────────────────────────────────────────────
@@ -1090,7 +1090,7 @@ function lockWeeklyAttempt(group) {
   if (!g) return false;
   if (isStaffGroup(g)) return true;
   if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    alert(g + ' has already played this game on this browser for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
     return false;
   }
   markPlayedLS(g);

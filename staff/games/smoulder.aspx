@@ -408,7 +408,7 @@ function submitScore(){
   window.open('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?' + params.toString(), '_blank');
   markPlayedLS(group);
   const btn = document.querySelector('#score-form button');
-  btn.textContent = '✓ Submitted — fill in the form that opened!';
+  btn.textContent = '↗ Reopen form — press Submit there to finish';
   btn.style.background = '#27ae60';
 }
 
@@ -3333,7 +3333,7 @@ function lockWeeklyAttempt(group) {
   if (!g) return false;
   if (isStaffGroup(g)) return true;
   if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    alert(g + ' has already played this game on this browser for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
     return false;
   }
   markPlayedLS(g);
