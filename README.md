@@ -59,7 +59,47 @@ any other external font service. If headings ever appear in a plain system font
 rather than the condensed Bebas Neue face, check that the server is serving
 `.woff2` files rather than returning 404 for them.
 
-QLearn remains the intended navigation layer for direct staff links. This hides staff links from normal student navigation but does not create server-side authorisation, so staff pages must not contain confidential student information or sensitive records.
+## Staff access gate
+
+The school website cannot apply per-folder permissions, so the staff pages are
+protected by encrypting them instead. Each page under `staff/` is encrypted with
+an access key, and the file uploaded to the website contains only ciphertext plus
+a small unlock page. Nothing readable is in the file without the key — not the
+lesson content, and not the weekly game answers.
+
+Build it with:
+
+    python3 tools/build-staff-gate.py --key "your-access-key"
+    python3 tools/package-upload.py
+
+The pages in `staff/` stay readable and editable in this repository; the gated
+copies are written to `dist/staff/` and are what get uploaded. `assets/` and
+`public/` are never gated.
+
+`tools/build-staff-gate.py` also writes `dist/qlearn-links.md` — the staff links
+to paste into the QLearn course. Each link carries the access key in its URL
+fragment, so staff clicking from QLearn go straight into the page with nothing to
+type; the fragment is then removed from the address bar. Anyone arriving without a
+key gets a box to type it, and the key is listed on the QLearn page for that case.
+An unlocked key is remembered for the browser session only, so it does not persist
+on a shared classroom machine once the browser is closed.
+
+Omit `--key` to generate a new one. Rotating the key means rebuilding,
+re-uploading and updating the QLearn links — worth doing at the annual rollover,
+or any time the key is known to have spread beyond staff.
+
+Two limits to be clear about:
+
+- Anyone holding the key can open the pages, and there is no per-person access or
+  audit trail. This resists casual student access; it is not proof against a
+  determined effort, and it cannot be revoked for one person without rotating for
+  everyone.
+- `staff/homegroup-lessons/Brain_breaks_ordered.pdf` is a separate file rather
+  than a page, so it is uploaded unencrypted. It is a published booklet, not
+  staff-only material.
+
+Because of those limits, staff pages must still not contain confidential student
+information or sensitive records.
 
 The character strengths survey submits the student's full name, house, homegroup, top five strengths, top strength and VIA comparison response to the configured school Microsoft Form. Keep the form ownership, permissions, retention and access settings under school control.
 
