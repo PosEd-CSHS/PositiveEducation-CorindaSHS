@@ -34,6 +34,13 @@ sequoia shale slate sorrel spinnaker sterling sumac tamarind teal thistle
 timber topaz trellis tundra verbena vesper walnut warbler willow yarrow""".split()
 
 
+# The retired-notice stub is still gated and still uploaded, but it is left out
+# of the QLearn game list so staff are not pointed at a retired game. The copy
+# under archive/ stays listed, since that section is where retired resources are
+# deliberately kept.
+NO_QLEARN_LINK = {'games/count-the-dots.aspx'}
+
+
 def make_key():
     return '-'.join(secrets.choice(WORDS) for _ in range(4))
 
@@ -288,14 +295,16 @@ def main():
             shutil.copy2(os.path.join(dirpath, name), dst)
             passthrough.append(rel)
 
+    linkable = [rel for rel in canaries
+                if rel.replace(os.sep, '/') not in NO_QLEARN_LINK]
     links = {rel: '%s/staff/%s#k=%s' % (args.base_url, rel.replace(os.sep, '/'), access_key)
-             for rel in canaries}
+             for rel in linkable}
     with open(os.path.join(ROOT, 'dist', 'qlearn-links.json'), 'w', encoding='utf-8') as fh:
         json.dump({'accessKey': access_key, 'links': links}, fh, indent=2)
 
     # Human-readable list to paste into the QLearn course.
     titles = {}
-    for rel in canaries:
+    for rel in linkable:
         m = re.search(r'<title>(.*?)</title>',
                       open(os.path.join(SRC_DIR, rel), encoding='utf-8').read(), re.S)
         titles[rel] = re.sub(r'\s+', ' ', m.group(1)).strip() if m else rel
@@ -314,7 +323,7 @@ def main():
                  'nothing to type. List the access key on the QLearn page too, for anyone\n'
                  'who arrives at a page without using these links.\n\n')
         for label, prefix in groups:
-            rels = [r for r in canaries if r.replace(os.sep, '/').startswith(prefix)]
+            rels = [r for r in linkable if r.replace(os.sep, '/').startswith(prefix)]
             if not rels:
                 continue
             fh.write('## %s\n\n' % label)
