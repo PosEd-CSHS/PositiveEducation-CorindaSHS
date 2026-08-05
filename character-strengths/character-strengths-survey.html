@@ -59,6 +59,19 @@
   .rating-btn.selected { background: var(--green); border-color: var(--green); color: var(--white); }
   .rating-btn[data-val="5"].selected { background: var(--gold); border-color: var(--gold); color: var(--ink); }
 
+  /* ── ROLE SELECT ── */
+  .role-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
+  .role-btn { border: 2px solid var(--border); border-radius: 10px; background: var(--white); padding: 1.5rem 1.25rem; cursor: pointer; text-align: center; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .role-btn:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,162,39,0.15); }
+  .role-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .role-btn:active { transform: translateY(0); }
+  .role-btn-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--green); margin-bottom: 0.4rem; }
+  .role-btn-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+  @media (max-width: 520px) { .role-options { grid-template-columns: 1fr; } }
+
+  /* ── STAGE 1 (hidden until a role is chosen) ── */
+  #survey { display: none; }
+
   /* ── STAGE 2: FORCED CHOICE ── */
   #stage2 { display: none; }
   .fc-intro { background: var(--white); border: 1px solid var(--border); border-top: 4px solid var(--gold); border-radius: 8px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
@@ -196,6 +209,25 @@
 </header>
 
 <main>
+  <!-- ══ STAGE 0: ROLE SELECT ═══════════════════════════════════════════════ -->
+  <div id="role-select">
+    <div class="intro">
+      <span class="stage-badge">Before you begin</span>
+      <h2>Who's completing this survey?</h2>
+      <p>The wording of a few questions is simplified for students, but the strengths, scoring and results are exactly the same either way.</p>
+    </div>
+    <div class="role-options">
+      <button class="role-btn" id="role-staff" type="button">
+        <div class="role-btn-title">Staff</div>
+        <div class="role-btn-desc">Standard wording.</div>
+      </button>
+      <button class="role-btn" id="role-student" type="button">
+        <div class="role-btn-title">Student</div>
+        <div class="role-btn-desc">Simpler, student-friendly wording.</div>
+      </button>
+    </div>
+  </div>
+
   <!-- ══ STAGE 1: RATINGS ═══════════════════════════════════════════════════ -->
   <div id="survey">
     <div class="intro">
@@ -203,7 +235,7 @@
       <h2>Character Strengths Survey</h2>
       <p>Rate how accurately each statement describes you, from 1 (not like me at all) to 5 (very much like me). There are no right or wrong answers — candid responses give the most useful results.</p>
       <p>This survey uses a two-stage adaptive format: 24 ratings, followed by a short head-to-head round between your highest-rated strengths to determine your top 5.</p>
-      <p>Nothing is recorded while you complete the survey. At the end, you can submit your top 5 to help us evaluate the tool's accuracy before any student rollout.</p>
+      <p id="privacy-note">Nothing is recorded while you complete the survey. At the end, you can submit your top 5 to the Positive Education team if you'd like to.</p>
     </div>
     <div class="progress-wrap">
       <div class="progress-label"><span>Round 1 — Ratings</span><span id="prog-text">0 of 24 answered</span></div>
@@ -273,9 +305,10 @@
 <div class="modal-overlay" id="share-modal">
   <div class="modal">
     <h3>Submit your results</h3>
-    <p>This submits your name, house, and top 5 strengths — nothing else — to the Positive Education team. A pre-filled form will open; just press Submit.</p>
-    <label for="share-name-input">Your name</label>
+    <p>This submits your full name, house, homegroup, top 5 strengths, top strength, and VIA comparison response to the Positive Education team through the school Microsoft Form. A pre-filled form will open; check the details and press Submit.</p>
+    <label for="share-name-input">Your full name</label>
     <input type="text" id="share-name-input" placeholder="e.g. Alex Smith" maxlength="60" autocomplete="off">
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem;">Please use your real first and last name so results can be matched correctly.</p>
     <label for="share-house-select" style="margin-top:0.9rem;">Your house</label>
     <select id="share-house-select" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;font-size:0.9rem;font-family:'Inter',sans-serif;background:var(--white);">
       <option value="">Choose your house…</option>
@@ -286,6 +319,16 @@
       <option>Pirri</option>
       <option>Yarraman</option>
     </select>
+    <div id="share-homegroup-wrap" style="margin-top:0.9rem;">
+      <label for="share-homegroup-select">Your homegroup letter</label>
+      <select id="share-homegroup-select" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;font-size:0.9rem;font-family:'Inter',sans-serif;background:var(--white);">
+        <option value="">Choose your homegroup letter…</option>
+        <option>A</option><option>B</option><option>C</option><option>D</option>
+        <option>E</option><option>F</option><option>G</option><option>H</option>
+        <option>I</option><option>J</option><option>K</option><option>L</option>
+        <option>M</option><option>N</option>
+      </select>
+    </div>
     <label for="share-via-select" style="margin-top:0.9rem;">How many of your top 5 here matched your official VIA survey results?</label>
     <select id="share-via-select" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 0.8rem;font-size:0.9rem;font-family:'Inter',sans-serif;background:var(--white);">
       <option value="">Select…</option>
@@ -344,104 +387,192 @@
   original pair, so each strength is still measured by two distinct items overall.
   Final score = round 1 rating + 0.6 × head-to-head wins (contenders only).
 */
-const STRENGTHS = [
-  { id: 'creativity', name: 'Creativity', virtue: 'Wisdom', virtueColor: '#2e6b9e',
-    desc: 'Coming up with ideas is your natural mode. When something isn\'t working, your instinct is to invent a different route rather than push harder down the existing one.',
-    rate: 'I often find new or unexpected ways to approach everyday problems.',
-    fc: 'I enjoy coming up with original ideas, even when a simpler solution already exists.' },
-  { id: 'curiosity', name: 'Curiosity', virtue: 'Wisdom', virtueColor: '#2e6b9e',
-    desc: 'Unanswered questions bother you in the best way. New topics, places, and ideas pull you in, and you\'d rather investigate something than leave it unexplained.',
-    rate: 'I regularly ask questions or look things up simply because I want to know more.',
-    fc: 'I find almost every topic interesting and like to explore things just to see where they lead.' },
-  { id: 'judgement', name: 'Judgement', virtue: 'Wisdom', virtueColor: '#2e6b9e',
-    desc: 'You weigh things up before you commit to a view. Evidence matters more to you than first impressions, and being shown you were wrong feels useful rather than threatening.',
-    rate: 'I am willing to change my opinion when the evidence points in a different direction.',
-    fc: 'I try to look at a situation from multiple angles before making up my mind.' },
-  { id: 'learning', name: 'Love of Learning', virtue: 'Wisdom', virtueColor: '#2e6b9e',
-    desc: 'Adding to what you know is genuinely satisfying for you, whether or not anyone is grading it. You build skills and knowledge for their own sake.',
-    rate: 'I seek out opportunities to expand my knowledge, even outside of school or work.',
-    fc: 'I get genuinely excited when I have the chance to learn something new.' },
-  { id: 'perspective', name: 'Perspective', virtue: 'Wisdom', virtueColor: '#2e6b9e',
-    desc: 'You tend to see how the pieces of a situation fit together, which is why people seek your take when things get complicated. Your advice tends to be measured and worth having.',
-    rate: 'People often come to me when they need a thoughtful or balanced point of view.',
-    fc: 'I find it easy to step back from a problem and see the bigger picture.' },
-  { id: 'bravery', name: 'Bravery', virtue: 'Courage', virtueColor: '#b94030',
-    desc: 'Discomfort doesn\'t decide your actions. Whether it\'s a hard conversation, an unpopular stance, or a risky attempt, you\'d rather act on your convictions than stay safely quiet.',
-    rate: 'I speak up for what I believe is right, even when others disagree.',
-    fc: 'I do not back down from difficult situations just because they make me uncomfortable.' },
-  { id: 'perseverance', name: 'Perseverance', virtue: 'Courage', virtueColor: '#b94030',
-    desc: 'Once you\'ve started something, abandoning it doesn\'t sit right with you. Obstacles tend to sharpen your focus rather than drain it, and you take real satisfaction in seeing things through.',
-    rate: 'I finish what I start, even when the task becomes difficult or tedious.',
-    fc: 'Setbacks motivate me to keep going rather than give up.' },
-  { id: 'honesty', name: 'Honesty', virtue: 'Courage', virtueColor: '#b94030',
-    desc: 'What people see from you is what\'s actually there. You\'d rather deliver an uncomfortable truth than maintain a comfortable pretence, and you hold yourself to the same standard.',
-    rate: 'I say what I mean and mean what I say, even when the truth is hard to hear.',
-    fc: 'I present myself as I really am rather than trying to impress people.' },
-  { id: 'zest', name: 'Zest', virtue: 'Courage', virtueColor: '#b94030',
-    desc: 'You bring energy with you. Days feel like something to be used rather than gotten through, and your enthusiasm tends to be contagious in the rooms you\'re in.',
-    rate: 'I throw myself into things with energy and enthusiasm.',
-    fc: 'I rarely do anything half-heartedly — I prefer to give my full effort.' },
-  { id: 'love', name: 'Love', virtue: 'Humanity', virtueColor: '#c75e8b',
-    desc: 'The people closest to you are central to how you live, not an accessory to it. You invest in those relationships openly, and you let people matter to you.',
-    rate: 'I find it easy to show warmth and care to the people I am close to.',
-    fc: 'Close relationships are one of the most important things in my life.' },
-  { id: 'kindness', name: 'Kindness', virtue: 'Humanity', virtueColor: '#c75e8b',
-    desc: 'Helping is your default setting. You notice what others need, often before they ask, and doing something about it costs you less effort than ignoring it would.',
-    rate: 'I often go out of my way to help someone, even if I do not know them well.',
-    fc: 'I enjoy doing things for others, even when there is nothing in it for me.' },
-  { id: 'social', name: 'Social Intelligence', virtue: 'Humanity', virtueColor: '#c75e8b',
-    desc: 'You read rooms well. Shifts in mood, unspoken tension, what someone actually means — you pick these up quickly and adjust how you engage accordingly.',
-    rate: 'I can usually tell how someone is feeling, even when they do not say it outright.',
-    fc: 'I adjust how I act depending on the people I am with and the situation I am in.' },
-  { id: 'teamwork', name: 'Teamwork', virtue: 'Justice', virtueColor: '#3a7d44',
-    desc: 'When you\'re part of a group, the group\'s result becomes your result. You carry your share reliably and people learn quickly that you can be counted on.',
-    rate: 'I am a reliable team member who pulls their weight and supports others.',
-    fc: 'I feel a strong sense of loyalty to the groups and teams I am part of.' },
-  { id: 'fairness', name: 'Fairness', virtue: 'Justice', virtueColor: '#3a7d44',
-    desc: 'Even-handedness matters to you on principle. You apply the same standards to people you like and people you don\'t, and double standards genuinely grate on you.',
-    rate: 'I try to treat everyone equally, regardless of how I personally feel about them.',
-    fc: 'It bothers me when people are treated differently based on favouritism rather than merit.' },
-  { id: 'leadership', name: 'Leadership', virtue: 'Justice', virtueColor: '#3a7d44',
-    desc: 'When a group needs direction, you\'re willing to provide it. You\'re good at turning a loose collection of people into something organised — and at making sure nobody gets left on the outside while it happens.',
-    rate: 'I am comfortable taking charge and organising people to get things done.',
-    fc: 'I try to make sure everyone in a group feels included and motivated.' },
-  { id: 'forgiveness', name: 'Forgiveness', virtue: 'Temperance', virtueColor: '#7b5ea7',
-    desc: 'You give people a way back. Holding onto resentment strikes you as a poor trade, and you\'d rather understand why something happened than keep score over it.',
-    rate: 'I can let go of grudges and move on after someone has done something wrong.',
-    fc: 'I try to understand why people make mistakes rather than just holding it against them.' },
-  { id: 'humility', name: 'Humility', virtue: 'Temperance', virtueColor: '#7b5ea7',
-    desc: 'You don\'t need to be the headline. Your work can speak for itself, you take feedback without bristling, and you\'re comfortable acknowledging the limits of what you know.',
-    rate: 'I am genuinely open to feedback and recognise that I do not have all the answers.',
-    fc: 'I prefer to let my actions speak for themselves rather than seeking attention.' },
-  { id: 'prudence', name: 'Prudence', virtue: 'Temperance', virtueColor: '#7b5ea7',
-    desc: 'You look before you leap, habitually. Choices get weighed against where they lead, not just how they feel right now, which means you rarely get caught out by foreseeable problems.',
-    rate: 'I think carefully before acting and try to avoid unnecessary risks.',
-    fc: 'I consider the long-term consequences of my decisions, not just the immediate ones.' },
-  { id: 'regulation', name: 'Self-Regulation', virtue: 'Temperance', virtueColor: '#7b5ea7',
-    desc: 'You run yourself with discipline. Impulses, moods, and temptations get a vote but not a veto — under pressure you stay deliberate when others get reactive.',
-    rate: 'I am good at managing my emotions, especially in stressful situations.',
-    fc: 'I can resist temptations or impulses when I know I should stay on track.' },
-  { id: 'appreciation', name: 'Appreciation of Beauty', virtue: 'Transcendence', virtueColor: '#c07820',
-    desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly. You notice excellence that others walk straight past, and it moves you.',
-    rate: 'I regularly notice and am moved by beauty in the world around me — in nature, art, or everyday life.',
-    fc: 'I feel a deep sense of wonder or awe fairly often.' },
-  { id: 'gratitude', name: 'Gratitude', virtue: 'Transcendence', virtueColor: '#c07820',
-    desc: 'You keep track of the good in your life rather than taking it as given. You notice what others do for you, and you make sure they know it.',
-    rate: 'I make a point of expressing appreciation to people who have helped me.',
-    fc: 'I regularly feel thankful for the good things in my life.' },
-  { id: 'hope', name: 'Hope', virtue: 'Transcendence', virtueColor: '#c07820',
-    desc: 'You treat the future as something to build, not something that happens to you. Setbacks read as temporary, and your optimism comes with effort attached.',
-    rate: 'I generally expect things to work out well, and I work toward making that happen.',
-    fc: 'Even in difficult times, I hold on to a sense that things will improve.' },
-  { id: 'humour', name: 'Humour', virtue: 'Transcendence', virtueColor: '#c07820',
-    desc: 'You find the light side and you share it. Making people laugh is one of your main ways of connecting, and you can take the heaviness out of a room without taking the substance out of it.',
-    rate: 'I enjoy making people laugh and can find the funny side of most situations.',
-    fc: 'Laughter and playfulness are an important part of how I connect with others.' },
-  { id: 'spirituality', name: 'Spirituality', virtue: 'Transcendence', virtueColor: '#c07820',
-    desc: 'Your life is organised around a sense of meaning that goes beyond the day-to-day. That sense of purpose — and of belonging to something bigger — shapes the choices you make.',
-    rate: 'I have a strong sense of meaning or purpose that guides how I live my life.',
-    fc: 'I feel connected to something larger than myself, whether that is nature, community, or something else.' }
+// Shared across both roles — identity, virtue grouping and colour never change.
+const STRENGTH_META = [
+  { id: 'creativity',   name: 'Creativity',              virtue: 'Wisdom',        virtueColor: '#2e6b9e' },
+  { id: 'curiosity',    name: 'Curiosity',                virtue: 'Wisdom',        virtueColor: '#2e6b9e' },
+  { id: 'judgement',    name: 'Judgement',                virtue: 'Wisdom',        virtueColor: '#2e6b9e' },
+  { id: 'learning',     name: 'Love of Learning',          virtue: 'Wisdom',        virtueColor: '#2e6b9e' },
+  { id: 'perspective',  name: 'Perspective',              virtue: 'Wisdom',        virtueColor: '#2e6b9e' },
+  { id: 'bravery',      name: 'Bravery',                  virtue: 'Courage',       virtueColor: '#b94030' },
+  { id: 'perseverance', name: 'Perseverance',             virtue: 'Courage',       virtueColor: '#b94030' },
+  { id: 'honesty',      name: 'Honesty',                  virtue: 'Courage',       virtueColor: '#b94030' },
+  { id: 'zest',         name: 'Zest',                     virtue: 'Courage',       virtueColor: '#b94030' },
+  { id: 'love',         name: 'Love',                     virtue: 'Humanity',      virtueColor: '#c75e8b' },
+  { id: 'kindness',     name: 'Kindness',                 virtue: 'Humanity',      virtueColor: '#c75e8b' },
+  { id: 'social',       name: 'Social Intelligence',       virtue: 'Humanity',      virtueColor: '#c75e8b' },
+  { id: 'teamwork',     name: 'Teamwork',                 virtue: 'Justice',       virtueColor: '#3a7d44' },
+  { id: 'fairness',     name: 'Fairness',                 virtue: 'Justice',       virtueColor: '#3a7d44' },
+  { id: 'leadership',   name: 'Leadership',               virtue: 'Justice',       virtueColor: '#3a7d44' },
+  { id: 'forgiveness',  name: 'Forgiveness',              virtue: 'Temperance',    virtueColor: '#7b5ea7' },
+  { id: 'humility',     name: 'Humility',                 virtue: 'Temperance',    virtueColor: '#7b5ea7' },
+  { id: 'prudence',     name: 'Prudence',                 virtue: 'Temperance',    virtueColor: '#7b5ea7' },
+  { id: 'regulation',   name: 'Self-Regulation',           virtue: 'Temperance',    virtueColor: '#7b5ea7' },
+  { id: 'appreciation', name: 'Appreciation of Beauty',    virtue: 'Transcendence', virtueColor: '#c07820' },
+  { id: 'gratitude',    name: 'Gratitude',                virtue: 'Transcendence', virtueColor: '#c07820' },
+  { id: 'hope',         name: 'Hope',                     virtue: 'Transcendence', virtueColor: '#c07820' },
+  { id: 'humour',       name: 'Humour',                   virtue: 'Transcendence', virtueColor: '#c07820' },
+  { id: 'spirituality', name: 'Spirituality',             virtue: 'Transcendence', virtueColor: '#c07820' }
 ];
+
+// Per-role wording. Same strengths, same order, same scoring — only the
+// phrasing of desc/rate/fc changes between the two.
+const CONTENT = {
+  staff: {
+    creativity:   { desc: 'Coming up with ideas is your natural mode. When something isn\'t working, your instinct is to invent a different route rather than push harder down the existing one.',
+                    rate: 'I often find new or unexpected ways to approach everyday problems.',
+                    fc: 'I enjoy coming up with original ideas, even when a simpler solution already exists.' },
+    curiosity:    { desc: 'Unanswered questions bother you in the best way. New topics, places, and ideas pull you in, and you\'d rather investigate something than leave it unexplained.',
+                    rate: 'I regularly ask questions or look things up simply because I want to know more.',
+                    fc: 'I find almost every topic interesting and like to explore things just to see where they lead.' },
+    judgement:    { desc: 'You weigh things up before you commit to a view. Evidence matters more to you than first impressions, and being shown you were wrong feels useful rather than threatening.',
+                    rate: 'I am willing to change my opinion when the evidence points in a different direction.',
+                    fc: 'I try to look at a situation from multiple angles before making up my mind.' },
+    learning:     { desc: 'Adding to what you know is genuinely satisfying for you, whether or not anyone is grading it. You build skills and knowledge for their own sake.',
+                    rate: 'I seek out opportunities to expand my knowledge, even outside of school or work.',
+                    fc: 'I get genuinely excited when I have the chance to learn something new.' },
+    perspective:  { desc: 'You tend to see how the pieces of a situation fit together, which is why people seek your take when things get complicated. Your advice tends to be measured and worth having.',
+                    rate: 'People often come to me when they need a thoughtful or balanced point of view.',
+                    fc: 'I find it easy to step back from a problem and see the bigger picture.' },
+    bravery:      { desc: 'Discomfort doesn\'t decide your actions. Whether it\'s a hard conversation, an unpopular stance, or a risky attempt, you\'d rather act on your convictions than stay safely quiet.',
+                    rate: 'I speak up for what I believe is right, even when others disagree.',
+                    fc: 'I do not back down from difficult situations just because they make me uncomfortable.' },
+    perseverance: { desc: 'Once you\'ve started something, abandoning it doesn\'t sit right with you. Obstacles tend to sharpen your focus rather than drain it, and you take real satisfaction in seeing things through.',
+                    rate: 'I finish what I start, even when the task becomes difficult or tedious.',
+                    fc: 'Setbacks motivate me to keep going rather than give up.' },
+    honesty:      { desc: 'What people see from you is what\'s actually there. You\'d rather deliver an uncomfortable truth than maintain a comfortable pretence, and you hold yourself to the same standard.',
+                    rate: 'I say what I mean and mean what I say, even when the truth is hard to hear.',
+                    fc: 'I present myself as I really am rather than trying to impress people.' },
+    zest:         { desc: 'You bring energy with you. Days feel like something to be used rather than gotten through, and your enthusiasm tends to be contagious in the rooms you\'re in.',
+                    rate: 'I throw myself into things with energy and enthusiasm.',
+                    fc: 'I rarely do anything half-heartedly — I prefer to give my full effort.' },
+    love:         { desc: 'The people closest to you are central to how you live, not an accessory to it. You invest in those relationships openly, and you let people matter to you.',
+                    rate: 'I find it easy to show warmth and care to the people I am close to.',
+                    fc: 'Close relationships are one of the most important things in my life.' },
+    kindness:     { desc: 'Helping is your default setting. You notice what others need, often before they ask, and doing something about it costs you less effort than ignoring it would.',
+                    rate: 'I often go out of my way to help someone, even if I do not know them well.',
+                    fc: 'I enjoy doing things for others, even when there is nothing in it for me.' },
+    social:       { desc: 'You read rooms well. Shifts in mood, unspoken tension, what someone actually means — you pick these up quickly and adjust how you engage accordingly.',
+                    rate: 'I can usually tell how someone is feeling, even when they do not say it outright.',
+                    fc: 'I adjust how I act depending on the people I am with and the situation I am in.' },
+    teamwork:     { desc: 'When you\'re part of a group, the group\'s result becomes your result. You carry your share reliably and people learn quickly that you can be counted on.',
+                    rate: 'I am a reliable team member who pulls their weight and supports others.',
+                    fc: 'I feel a strong sense of loyalty to the groups and teams I am part of.' },
+    fairness:     { desc: 'Even-handedness matters to you on principle. You apply the same standards to people you like and people you don\'t, and double standards genuinely grate on you.',
+                    rate: 'I try to treat everyone equally, regardless of how I personally feel about them.',
+                    fc: 'It bothers me when people are treated differently based on favouritism rather than merit.' },
+    leadership:   { desc: 'When a group needs direction, you\'re willing to provide it. You\'re good at turning a loose collection of people into something organised — and at making sure nobody gets left on the outside while it happens.',
+                    rate: 'I am comfortable taking charge and organising people to get things done.',
+                    fc: 'I try to make sure everyone in a group feels included and motivated.' },
+    forgiveness:  { desc: 'You give people a way back. Holding onto resentment strikes you as a poor trade, and you\'d rather understand why something happened than keep score over it.',
+                    rate: 'I can let go of grudges and move on after someone has done something wrong.',
+                    fc: 'I try to understand why people make mistakes rather than just holding it against them.' },
+    humility:     { desc: 'You don\'t need to be the headline. Your work can speak for itself, you take feedback without bristling, and you\'re comfortable acknowledging the limits of what you know.',
+                    rate: 'I am genuinely open to feedback and recognise that I do not have all the answers.',
+                    fc: 'I prefer to let my actions speak for themselves rather than seeking attention.' },
+    prudence:     { desc: 'You look before you leap, habitually. Choices get weighed against where they lead, not just how they feel right now, which means you rarely get caught out by foreseeable problems.',
+                    rate: 'I think carefully before acting and try to avoid unnecessary risks.',
+                    fc: 'I consider the long-term consequences of my decisions, not just the immediate ones.' },
+    regulation:   { desc: 'You run yourself with discipline. Impulses, moods, and temptations get a vote but not a veto — under pressure you stay deliberate when others get reactive.',
+                    rate: 'I am good at managing my emotions, especially in stressful situations.',
+                    fc: 'I can resist temptations or impulses when I know I should stay on track.' },
+    appreciation: { desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly. You notice excellence that others walk straight past, and it moves you.',
+                    rate: 'I regularly notice and am moved by beauty in the world around me — in nature, art, or everyday life.',
+                    fc: 'I feel a deep sense of wonder or awe fairly often.' },
+    gratitude:    { desc: 'You keep track of the good in your life rather than taking it as given. You notice what others do for you, and you make sure they know it.',
+                    rate: 'I make a point of expressing appreciation to people who have helped me.',
+                    fc: 'I regularly feel thankful for the good things in my life.' },
+    hope:         { desc: 'You treat the future as something to build, not something that happens to you. Setbacks read as temporary, and your optimism comes with effort attached.',
+                    rate: 'I generally expect things to work out well, and I work toward making that happen.',
+                    fc: 'Even in difficult times, I hold on to a sense that things will improve.' },
+    humour:       { desc: 'You find the light side and you share it. Making people laugh is one of your main ways of connecting, and you can take the heaviness out of a room without taking the substance out of it.',
+                    rate: 'I enjoy making people laugh and can find the funny side of most situations.',
+                    fc: 'Laughter and playfulness are an important part of how I connect with others.' },
+    spirituality: { desc: 'Your life is organised around a sense of meaning that goes beyond the day-to-day. That sense of purpose — and of belonging to something bigger — shapes the choices you make.',
+                    rate: 'I have a strong sense of meaning or purpose that guides how I live my life.',
+                    fc: 'I feel connected to something larger than myself, whether that is nature, community, or something else.' }
+  },
+  student: {
+    creativity:   { desc: 'You like coming up with new ideas. If something isn\'t working, you\'d rather try a different way than keep doing the same thing.',
+                    rate: 'I often think of new or different ways to do things.',
+                    fc: 'I like coming up with my own ideas, even if there\'s already an easy way to do something.' },
+    curiosity:    { desc: 'You love finding things out. New topics, places and ideas grab your attention, and you\'d rather look something up than leave it a mystery.',
+                    rate: 'I ask questions or look things up just because I want to know more.',
+                    fc: 'I find lots of different topics interesting and like exploring new things.' },
+    judgement:    { desc: 'You like to think things through before deciding what you believe. Facts matter more to you than first impressions, and you don\'t mind being shown you were wrong.',
+                    rate: 'I\'m willing to change my mind when I get new information.',
+                    fc: 'I try to look at a situation from more than one side before deciding what I think.' },
+    learning:     { desc: 'Learning new things feels good to you, whether or not it\'s for a mark. You like building your skills and knowledge just because you want to.',
+                    rate: 'I look for chances to learn new things, even outside of class.',
+                    fc: 'I get excited when I have the chance to learn something new.' },
+    perspective:  { desc: 'You\'re good at seeing how all the parts of a situation fit together, which is why people ask for your advice when things get complicated.',
+                    rate: 'People often come to me for advice because I can see the bigger picture.',
+                    fc: 'I find it easy to step back from a problem and see the whole situation.' },
+    bravery:      { desc: 'You don\'t let discomfort stop you. Whether it\'s a hard conversation, standing up for something, or trying something risky, you\'d rather act than stay quiet.',
+                    rate: 'I speak up for what I think is right, even if others disagree.',
+                    fc: 'I don\'t back away from hard situations just because they make me uncomfortable.' },
+    perseverance: { desc: 'Once you\'ve started something, you don\'t like giving up on it. Obstacles make you more focused, not less, and finishing something feels great.',
+                    rate: 'I finish what I start, even when it gets hard or boring.',
+                    fc: 'Setbacks make me want to keep going rather than give up.' },
+    honesty:      { desc: 'What people see from you is the real you. You\'d rather tell an uncomfortable truth than keep up a comfortable lie, and you expect the same from yourself.',
+                    rate: 'I say what I mean, even when the truth is hard to say.',
+                    fc: 'I show people who I really am instead of trying to impress them.' },
+    zest:         { desc: 'You bring energy wherever you go. Days feel like something to make the most of, and your enthusiasm tends to rub off on the people around you.',
+                    rate: 'I throw myself into things with energy and enthusiasm.',
+                    fc: 'I rarely do things half-heartedly — I like to give full effort.' },
+    love:         { desc: 'The people closest to you matter a lot to how you live your life. You put real effort into those relationships and let people matter to you.',
+                    rate: 'I find it easy to show care and warmth to people I\'m close to.',
+                    fc: 'Close relationships are one of the most important things in my life.' },
+    kindness:     { desc: 'Helping people is just what you do. You notice what others need, often before they even ask, and helping feels easier than ignoring it.',
+                    rate: 'I go out of my way to help someone, even if I don\'t know them well.',
+                    fc: 'I like doing things for other people, even when I get nothing back.' },
+    social:       { desc: 'You\'re good at reading people and situations. You notice moods, unspoken feelings, and what someone actually means — and you adjust how you act because of it.',
+                    rate: 'I can usually tell how someone is feeling, even if they don\'t say it.',
+                    fc: 'I change how I act depending on who I\'m with and the situation I\'m in.' },
+    teamwork:     { desc: 'When you\'re part of a group, the group\'s success becomes your success. You do your share and people know they can count on you.',
+                    rate: 'I\'m a reliable team member who does my part and supports others.',
+                    fc: 'I feel loyal to the groups and teams I\'m part of.' },
+    fairness:     { desc: 'Treating people equally matters to you. You hold everyone to the same standard, whether you like them or not, and unfairness really bothers you.',
+                    rate: 'I try to treat everyone the same, no matter how I feel about them personally.',
+                    fc: 'It bothers me when people are treated differently because of favouritism instead of what\'s fair.' },
+    leadership:   { desc: 'When a group needs direction, you\'re willing to step up. You\'re good at organising people to get things done — and making sure nobody gets left out.',
+                    rate: 'I\'m comfortable taking charge and organising people to get things done.',
+                    fc: 'I try to make sure everyone in a group feels included.' },
+    forgiveness:  { desc: 'You give people a second chance. Holding onto anger doesn\'t feel worth it to you, and you\'d rather understand why something happened than hold it against someone.',
+                    rate: 'I can let go of grudges and move on after someone has done something wrong.',
+                    fc: 'I try to understand why people make mistakes instead of holding it against them.' },
+    humility:     { desc: 'You don\'t need to be the centre of attention. You let your work speak for itself, take feedback without getting defensive, and you\'re okay admitting what you don\'t know.',
+                    rate: 'I\'m open to feedback and know that I don\'t have all the answers.',
+                    fc: 'I\'d rather let my actions speak for themselves than seek attention.' },
+    prudence:     { desc: 'You think before you act, pretty much always. You weigh up where a choice leads, not just how it feels right now, so you rarely get caught out.',
+                    rate: 'I think carefully before acting and try to avoid unnecessary risks.',
+                    fc: 'I think about the long-term effects of my choices, not just what happens right away.' },
+    regulation:   { desc: 'You keep yourself in check. Impulses and moods get a say but not the final word — under pressure, you stay steady when others might not.',
+                    rate: 'I\'m good at managing my emotions, especially when things get stressful.',
+                    fc: 'I can resist temptations when I know I should stay on track.' },
+    appreciation: { desc: 'Great things stop you in your tracks — a beautiful view, a piece of music, someone doing something amazing. You notice excellence that other people walk straight past.',
+                    rate: 'I notice and feel moved by beauty around me — in nature, art or everyday life.',
+                    fc: 'I feel a real sense of wonder or awe fairly often.' },
+    gratitude:    { desc: 'You notice the good things in your life instead of taking them for granted. You notice what people do for you, and you make sure they know you appreciate it.',
+                    rate: 'I make a point of thanking people who have helped me.',
+                    fc: 'I regularly feel thankful for the good things in my life.' },
+    hope:         { desc: 'You treat the future as something you help build, not something that just happens to you. Setbacks feel temporary, and your optimism comes with real effort.',
+                    rate: 'I generally expect things to work out, and I put in effort to make that happen.',
+                    fc: 'Even in tough times, I hold onto the feeling that things will get better.' },
+    humour:       { desc: 'You find the funny side and share it. Making people laugh is one of your favourite ways to connect, and you can lighten a heavy moment without making it feel less important.',
+                    rate: 'I enjoy making people laugh and can find the funny side of most situations.',
+                    fc: 'Laughing and being playful is an important part of how I connect with people.' },
+    spirituality: { desc: 'Your life is shaped by a sense of meaning that goes beyond your day-to-day routine. That sense of purpose — and of belonging to something bigger — guides the choices you make.',
+                    rate: 'I have a strong sense of meaning or purpose that guides how I live.',
+                    fc: 'I feel connected to something bigger than myself — whether that\'s nature, community or something else.' }
+  }
+};
+
+let role = null;
+let STRENGTHS = [];
+function buildStrengths(r) {
+  return STRENGTH_META.map(m => ({ ...m, ...CONTENT[r][m.id] }));
+}
 
 const VIRTUE_ORDER = ['Wisdom', 'Courage', 'Humanity', 'Justice', 'Temperance', 'Transcendence'];
 const TOTAL_S1 = 24;
@@ -614,7 +745,7 @@ function showResults() {
 
   const sig = document.getElementById('sig-cards');
   sig.innerHTML = '';
-  const DIR_BASE = 'https://posed-cshs.github.io/PositiveEducation-CorindaSHS/character-strengths/index.html';
+  const DIR_BASE = 'index.html';
   const DIR_ANCHORS = { creativity:'creativity', curiosity:'curiosity', judgement:'judgment', learning:'love-of-learning',
     perspective:'perspective', bravery:'bravery', perseverance:'perseverance', honesty:'honesty', zest:'zest',
     love:'love', kindness:'kindness', social:'social-intelligence', teamwork:'teamwork', fairness:'fairness',
@@ -698,10 +829,17 @@ const FIELD_IDS = {
   house:        'r216298a6785440a786688f6cd961d4be',
   strengths:    'rc4324e08296a4a99926405277085da23',
   topStrength:  'rf79a526bcdf74a3495984800ac6c8cd8',
-  viaMatch:     'r556b6539b6894486bd3223616cb9d2df'
+  viaMatch:     'r556b6539b6894486bd3223616cb9d2df',
+  homegroup:    'r60eefe0561c847e08c4e8b27dc1b39ef'
 };
 
-function buildShareUrl(name, house, viaMatch) {
+// A name is only accepted as real if it looks like a first and last name —
+// this can't verify truthfulness, just filters out single-word/joke entries.
+function looksLikeFullName(name) {
+  return /\S+\s+\S+/.test(name.trim());
+}
+
+function buildShareUrl(name, house, homegroup, viaMatch) {
   const top5 = finalRanked.slice(0, 5).map(c => c.strength.name);
   const params = new URLSearchParams();
   params.set('id', FORM_ID);
@@ -709,6 +847,9 @@ function buildShareUrl(name, house, viaMatch) {
   params.set(FIELD_IDS.house, house);
   params.set(FIELD_IDS.strengths, top5.join('|'));
   params.set(FIELD_IDS.topStrength, top5[0]);
+  if (homegroup && FIELD_IDS.homegroup !== 'PASTE_NEW_FIELD_ID_HERE') {
+    params.set(FIELD_IDS.homegroup, homegroup);
+  }
   if (viaMatch && FIELD_IDS.viaMatch !== 'PASTE_NEW_FIELD_ID_HERE') {
     params.set(FIELD_IDS.viaMatch, viaMatch);
   }
@@ -716,6 +857,7 @@ function buildShareUrl(name, house, viaMatch) {
 }
 
 document.getElementById('share-btn').addEventListener('click', () => {
+  document.getElementById('share-homegroup-wrap').style.display = role === 'student' ? 'block' : 'none';
   document.getElementById('share-modal').classList.add('open');
   document.getElementById('share-name-input').focus();
 });
@@ -725,11 +867,17 @@ document.getElementById('share-cancel').addEventListener('click', () => {
 document.getElementById('share-confirm').addEventListener('click', () => {
   const name = document.getElementById('share-name-input').value.trim();
   const house = document.getElementById('share-house-select').value;
+  const homegroup = document.getElementById('share-homegroup-select').value;
   const viaMatch = document.getElementById('share-via-select').value;
-  if (!name) { document.getElementById('share-name-input').focus(); return; }
+  if (!looksLikeFullName(name)) {
+    alert('Please enter your first and last name.');
+    document.getElementById('share-name-input').focus();
+    return;
+  }
   if (!house) { document.getElementById('share-house-select').focus(); return; }
+  if (role === 'student' && !homegroup) { document.getElementById('share-homegroup-select').focus(); return; }
   if (!viaMatch) { document.getElementById('share-via-select').focus(); return; }
-  window.open(buildShareUrl(name, house, viaMatch), '_blank');
+  window.open(buildShareUrl(name, house, homegroup, viaMatch), '_blank');
   document.getElementById('share-modal').classList.remove('open');
 });
 document.getElementById('share-name-input').addEventListener('keydown', e => {
@@ -764,8 +912,20 @@ document.getElementById('retake-btn').addEventListener('click', () => {
   window.scrollTo({ top: 0 });
 });
 
-buildForm();
-updateProgress();
+/* ── ROLE SELECT ──────────────────────────────────────── */
+function selectRole(r) {
+  role = r;
+  STRENGTHS = buildStrengths(r);
+  document.getElementById('privacy-note').textContent = role === 'staff'
+    ? 'Nothing is recorded while you complete the survey. At the end, you can submit your top 5 for your own reflection or to share with the Positive Education team.'
+    : 'Nothing is recorded while you complete the survey. At the end, you can submit your top 5 to share with the Positive Education team if you\'d like to.';
+  document.getElementById('role-select').style.display = 'none';
+  document.getElementById('survey').style.display = 'block';
+  buildForm();
+  updateProgress();
+}
+document.getElementById('role-staff').addEventListener('click', () => selectRole('staff'));
+document.getElementById('role-student').addEventListener('click', () => selectRole('student'));
 </script>
 </body>
 </html>
