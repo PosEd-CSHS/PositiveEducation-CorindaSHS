@@ -314,3 +314,50 @@ normalised to match the other nine.
 Two games needed their real flow to test at all: Guess the Strength returns
 early without a completed result, and Stop the Clock requires three player
 turns before its submit form appears. Both behave correctly once played.
+
+---
+
+# Diagnosis — score form returning HTTP 500 (2026-08-05)
+
+A screen recording of the reported failure identified the cause, which was not
+the one suspected earlier.
+
+## What the recording shows
+
+The teacher opened Guess the Strength from QLearn at
+`https://posed-cshs.github.io/PositiveEducation-CorindaSHS/games/guess-the-strength.html`
+— the GitHub Pages site, which serves the `main` branch, not the school server.
+
+The game played through correctly and the score form tab did open. The form
+itself failed: "This page isn't working at the moment — forms.office.com can't
+currently handle this request. HTTP ERROR 500". The address bar confirms the
+host as `forms.office.com`, with the form id and pre-filled week visible.
+
+## Cause
+
+The move from `forms.office.com` to `forms.cloud.microsoft` was applied to this
+`school-server` branch only. Every game published on GitHub Pages still pointed
+at the old host, where Microsoft now returns a 500 for these pre-filled links.
+All 17 references on `main` have been migrated. The form id and the five
+pre-fill field ids are unchanged, so recorded responses and the leaderboard are
+unaffected.
+
+## Correction to the earlier diagnosis
+
+The blocked-pop-up fallback added earlier did not cause and does not fix this.
+The tab opened; the form behind it errored. That fallback remains worth having,
+but it was not this failure.
+
+## Not verifiable from here
+
+This environment's network policy blocks Microsoft hosts, so neither domain
+could be requested to confirm the fix end to end. The recording is direct
+evidence that `forms.office.com` fails for this form; that
+`forms.cloud.microsoft` succeeds must be confirmed on a school device.
+
+## Still outstanding
+
+Teachers are reaching the games through GitHub Pages, so `main` — not the
+school-server package — is what they actually use. The two branches have
+diverged, and QLearn links should be pointed at whichever is intended to be
+live.
