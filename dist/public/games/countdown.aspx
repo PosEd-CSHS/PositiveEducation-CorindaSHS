@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="ALLOWALL">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Countdown — CSHS</title>
+<title>Countdown Practice — CSHS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
+  @import url('../../assets/fonts/fonts.css');
   :root {
     --green:#00180f; --green-mid:#003d1f; --green-light:#005a2e;
     --gold:#f2b400; --gold-dim:rgba(242,180,0,0.15); --gold-border:rgba(242,180,0,0.3);
@@ -89,9 +89,9 @@
 <div class="toast" id="toast"></div>
 <div class="container">
   <div class="header">
-    <div class="header-eyebrow">Corinda State High School</div>
+    <div class="header-eyebrow">Corinda State High School · Practice Mode</div>
     <h1>COUNT<span>DOWN</span></h1>
-    <div class="header-sub">Use the numbers to reach the target — any combination</div>
+    <div class="header-sub">Unlimited practice — a fresh target every round, not the leaderboard target</div>
   </div>
 
   <div class="tabs">
@@ -101,21 +101,15 @@
   <!-- GAME TAB -->
   <div id="tab-game" class="section active">
 
-    <!-- Sign in -->
+    <!-- Play -->
     <div id="screen-signin" class="section active">
       <div class="card">
-        <div class="card-title">Step 1 — Select your house</div>
-        <div class="group-select" id="houseSelect"></div>
-        <div id="step2" style="display:none;margin-top:20px;">
-          <div class="card-title">Step 2 — Select your group</div>
-          <div class="group-select" id="groupLetterSelect"></div>
-        </div>
-        <div class="mt16">
-          <button class="btn btn-primary full-width" id="startBtn" onclick="startGame()" disabled>Start Game</button>
-        </div>
+        <div class="card-title">Practice Mode</div>
+        <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;">Play as many rounds as you like. Every round uses a fresh target and numbers — never this week's official Home Group target — and nothing is submitted to the leaderboard.</p>
+        <button class="btn btn-primary full-width" id="startBtn" onclick="startGame()">Start Practice Round</button>
       </div>
       <div class="card">
-        <div class="card-title">This week</div>
+        <div class="card-title">Practice details</div>
         <div class="week-info" id="weekInfo"></div>
       </div>
     </div>
@@ -124,10 +118,7 @@
     <div id="screen-playing" class="section">
       <div class="card">
         <div class="flex-between" style="margin-bottom:12px;">
-          <div>
-            <div class="card-title" style="margin-bottom:2px;">Now playing</div>
-            <div style="font-size:14px;font-weight:700;" id="playingGroup">—</div>
-          </div>
+          <div class="card-title" style="margin-bottom:2px;">Practice Round</div>
           <div style="text-align:right;">
             <div class="timer-text" id="timerText">3:00</div>
           </div>
@@ -163,9 +154,8 @@
           <div class="result-detail" id="resultDetail"></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
-          <button class="btn btn-primary full-width" onclick="submitScoreCT()" id="submitScoreBtn" style="font-size:16px;padding:14px;">📤 Submit Score</button>
-          <button class="btn btn-outline full-width" onclick="resetToSignin()">← Back</button>
-          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:var(--correct);">✓ Form opened — fill in your details and submit</div>
+          <button class="btn btn-primary full-width" onclick="startGame()" style="font-size:16px;padding:14px;">🔁 Play Again</button>
+          <button class="btn btn-outline full-width" onclick="resetToSignin()">← Back to practice menu</button>
         </div>
       </div>
     </div>
@@ -177,57 +167,8 @@
 
 </div>
 
-<script src="../assets/site-config.js"></script>
+<script src="../../assets/site-config.js"></script>
 <script>
-// Opens the score form. Returns false if the browser blocked the new tab, in
-// which case a real link is shown instead — clicking a link is never blocked.
-function cshsOpenForm(url){
-  var w=null;
-  try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
-  var box=document.getElementById('cshsFormFallback');
-  if(w){ if(box){ box.style.display='none'; } return true; }
-  // Runs after the caller's own "submitted" messaging, so it can correct it.
-  setTimeout(function(){
-    var confirmEl=document.getElementById('submitConfirm');
-    if(confirmEl){ confirmEl.style.display='none'; }
-    var b=document.getElementById('cshsFormFallback');
-    if(!b){
-      b=document.createElement('div');
-      b.id='cshsFormFallback';
-      b.setAttribute('role','alert');
-      b.style.cssText='margin:12px 0;padding:12px 14px;border:1px solid rgba(242,180,0,.5);'+
-        'border-radius:10px;background:rgba(242,180,0,.12);text-align:center;';
-      var msg=document.createElement('div');
-      msg.style.cssText='font-size:13px;line-height:1.5;color:#fdfdfd;margin-bottom:9px;';
-      msg.textContent='Your browser blocked the new tab, so the score form did not open. '+
-        'Use this link instead — your score is already filled in.';
-      var a=document.createElement('a');
-      a.id='cshsFormFallbackLink';
-      a.target='_blank'; a.rel='noopener';
-      a.textContent='Open the score form';
-      a.style.cssText='display:inline-block;padding:9px 18px;border-radius:8px;background:#f2b400;'+
-        'color:#00180f;font-weight:700;font-size:14px;text-decoration:none;';
-      b.appendChild(msg); b.appendChild(a);
-      var anchor=document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
-                 document.querySelector('#score-form button');
-      if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(b,anchor.nextSibling); }
-      else{ document.body.appendChild(b); }
-    }
-    document.getElementById('cshsFormFallbackLink').href=url;
-    b.style.display='';
-    try{ b.scrollIntoView({block:'nearest'}); }catch(e){}
-  },0);
-  return false;
-}
-
-const CSHS_FORM_BASE = 'https://forms.office.com/Pages/ResponsePage.aspx';
-const CSHS_FORM_ID = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
-const CSHS_F_WEEK = 'rb28fecc633264af694f45d8cf2b3b8c1', CSHS_F_GAME = 'rdbbd457b83da425e93f978536b950482';
-const CSHS_F_HOUSE = 'rd04d4cf9da8a4213820791f91cdcf6ba', CSHS_F_GROUP = 'r3022db1950b649218496e706728c203f';
-const CSHS_F_SCORE = 'r8b61653d0854482a9e7e329026083f7b';
-const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
-const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
-
 /* ── AUTO WEEK (shared across all CSHS games) ──────────────────────────────
    Returns the current configured CSHS school week as {term, week, absWeek 1..40}.
    absWeek lets games index a content bank continuously across the year.
@@ -299,92 +240,40 @@ const COUNTDOWN_BANK = [
 ];
 
 // Load this week's puzzle into config (date-driven)
-function loadWeekPuzzle(){
-  config.week = cshsWeekLabel();
+// Picks a random round from the weekly bank, excluding the current live
+// Home Group week's official target/numbers so practice never gives away the answer.
+function getPracticeRound(){
   const abs = cshsCurrentWeek().abs;
-  const p = COUNTDOWN_BANK[(abs - 1) % COUNTDOWN_BANK.length];
-  config.numbers = p.numbers.slice();
-  config.target  = p.target;
+  const officialRound = COUNTDOWN_BANK[(abs - 1) % COUNTDOWN_BANK.length];
+  const pool = COUNTDOWN_BANK.filter(p => p !== officialRound);
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-const DEFAULT_CONFIG = {
-  week: 'Week 1',
-  target: 742,
-  numbers: [25, 50, 3, 6, 8, 4],
-  timeSecs: 180,
-  maxScore: 100
-};
+const DEFAULT_CONFIG = { timeSecs: 180 };
 
 let config = { ...DEFAULT_CONFIG };
-let played = new Set();
-let selectedHouse = null, selectedLetter = null, selectedGroup = null;
 let timerInterval = null, timeLeft = 180;
 let calcExpression = '', usedIndices = new Set();
 let currentResult = null, gameActive = false;
-window._lastResult = {};
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-
-function loadPlayed() {
-  played = new Set();
-  try {
-    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
-    played = new Set(data);
-  } catch(e) {}
-}
 function init() {
-  loadWeekPuzzle();
-  renderSignIn();
   renderWeekPreview();
-}
-
-// ─── SIGN IN ──────────────────────────────────────────────────────────────────
-function renderSignIn() {
-  const houseEl = document.getElementById('houseSelect');
-  houseEl.innerHTML = HOUSES.map(h =>
-    `<button class="group-btn ${selectedHouse===h?'selected':''}" onclick="selectHouse('${h}')">${h}</button>`
-  ).join('');
-  const step2 = document.getElementById('step2');
-  if (selectedHouse) {
-    step2.style.display = 'block';
-    document.getElementById('groupLetterSelect').innerHTML = GROUP_LETTERS.map(l => {
-      const grp = selectedHouse + ' ' + l;
-      const done = isPlayed(grp);
-      return `<button class="group-btn ${selectedLetter===l?'selected':''} ${done?'played':''}"
-        onclick="selectLetter('${l}')" ${done?'title="Already played this week"':''}>
-        ${l}${done?' ✓':''}
-      </button>`;
-    }).join('') + `<button class="group-btn ${selectedLetter==='Staff'?'selected':''}" onclick="selectLetter('Staff')">Staff</button>`;
-  } else {
-    step2.style.display = 'none';
-  }
-}
-
-function selectHouse(h) {
-  selectedHouse = h; selectedLetter = null; selectedGroup = null;
-  document.getElementById('startBtn').disabled = true;
-  renderSignIn();
-}
-
-function selectLetter(l) {
-  selectedLetter = l; selectedGroup = (l === 'Staff') ? 'Staff' : selectedHouse + ' ' + l;
-  renderSignIn();
-  document.getElementById('startBtn').disabled = isPlayed(selectedGroup);
 }
 
 function renderWeekPreview() {
   document.getElementById('weekInfo').innerHTML = `
-    <div class="week-chip">${cshsWeekLabel()}</div>
-    <div class="week-chip">Target: ${config.target}</div>
+    <div class="week-chip">Unlimited practice</div>
+    <div class="week-chip">New target each round</div>
     <div class="week-chip">3 min round</div>
-    <div class="week-chip">Max 10 pts</div>
   `;
 }
 
 // ─── GAME ─────────────────────────────────────────────────────────────────────
 function startGame() {
-  if (!selectedGroup || !lockWeeklyAttempt(selectedGroup)) return;
-  document.getElementById('playingGroup').textContent = selectedGroup;
+  const round = getPracticeRound();
+  config.numbers = round.numbers.slice();
+  config.target  = round.target;
   document.getElementById('targetDisplay').textContent = config.target;
   calcExpression = ''; currentResult = null; usedIndices = new Set(); gameActive = true;
   buildNumberTiles();
@@ -485,7 +374,6 @@ function submitAnswer() {
   else if (diff <= 50) { scaled = 6;  label = `${diff} away`; }
   else                 { scaled = 3;  label = `${diff} away — 3 for having a go`; }
 
-  window._lastResult = { group: selectedGroup, score: scaled, house: selectedHouse, detail: `Answer ${currentResult} (target ${config.target}, ${label})` };
   document.getElementById('resultEmoji').textContent = diff === 0 ? '🎯' : diff <= 25 ? '👍' : '🙂';
   document.getElementById('finalScore').textContent = scaled;
   document.getElementById('resultDetail').innerHTML = `Your answer: <strong>${currentResult}</strong><br>Target: <strong>${config.target}</strong><br>${label} → ${scaled} out of 10`;
@@ -516,30 +404,11 @@ function timeExpired() {
   if (currentResult !== null) {
     submitAnswer();
   } else {
-    window._lastResult = { group: selectedGroup, score: 0, house: selectedHouse, detail: `No answer submitted (target ${config.target})` };
     document.getElementById('resultEmoji').textContent = '⏰';
     document.getElementById('finalScore').textContent = 0;
     document.getElementById('resultDetail').textContent = 'Time\'s up — no answer submitted → 0 out of 10';
     showScreen('screen-result');
   }
-}
-
-// ─── SCORE SUBMIT ─────────────────────────────────────────────────────────────
-function submitScoreCT() {
-  const r = window._lastResult;
-  if (!r) return;
-  const params = new URLSearchParams({
-    id: CSHS_FORM_ID,
-    [CSHS_F_WEEK]: cshsWeekLabel(),
-    [CSHS_F_GAME]: 'Countdown',
-    [CSHS_F_HOUSE]: r.house,
-    [CSHS_F_GROUP]: r.group,
-    [CSHS_F_SCORE]: String(r.score)
-  });
-  cshsOpenForm(CSHS_FORM_BASE + '?' + params.toString());
-  document.getElementById('submitConfirm').style.display = 'block';
-  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
-  document.getElementById('submitScoreBtn').disabled = true;
 }
 
 // ─── SCREENS ──────────────────────────────────────────────────────────────────
@@ -550,10 +419,7 @@ function showScreen(id) {
 }
 
 function resetToSignin() {
-  selectedHouse = null; selectedLetter = null; selectedGroup = null;
   clearInterval(timerInterval); gameActive = false;
-  renderSignIn();
-  document.getElementById('startBtn').disabled = true;
   showScreen('screen-signin');
 }
 
@@ -561,16 +427,6 @@ function resetToSignin() {
 function switchTab(name) {
   ['game','admin'].forEach(t => document.getElementById(`tab-${t}`).classList.toggle('active', t === name));
   document.querySelectorAll('.tab').forEach((btn, i) => btn.classList.toggle('active', ['game','admin'][i] === name));
-}
-
-// ─── ADMIN ────────────────────────────────────────────────────────────────────
-
-
-
-function resetSession() {
-  if (!confirm('Reset session? This clears the current game state.')) return;
-  resetToSignin();
-  switchTab('game');
 }
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
@@ -584,86 +440,6 @@ function showToast(msg) {
 
 init();
 
-// ─── WEEKLY ATTEMPT LOCK (localStorage, per-device per-week) ─────────────────
-// Home groups get one attempt per game per school week. Staff is always unlimited.
-// Note: because these are static HTML files, this lock is enforced in this browser/device.
-function weeklyLockLabel() {
-  if (typeof cshsWeekLabel === 'function') return cshsWeekLabel();
-  const terms = window.CSHS_SITE_CONFIG.terms;
-  const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
-  const mondayOf=d=>{const x=new Date(d);const dow=(x.getDay()+6)%7;x.setDate(x.getDate()-dow);x.setHours(0,0,0,0);return x;};
-  const today=new Date(); today.setHours(0,0,0,0);
-  let chosen={t:1,w:1};
-  for(const term of terms){
-    const end=parse(term.end); let mon=mondayOf(parse(term.start)); let w=1;
-    while(mon<=end){
-      if(mon<=today) chosen={t:term.t,w}; else return `Term ${chosen.t} Week ${chosen.w}`;
-      mon=new Date(mon); mon.setDate(mon.getDate()+7); w++;
-    }
-  }
-  return `Term ${chosen.t} Week ${chosen.w}`;
-}
-function normaliseGroupName(group) {
-  return String(group || '').trim().replace(/\s+/g, ' ');
-}
-function isStaffGroup(group) {
-  const g = normaliseGroupName(group);
-  return g === 'Staff' || g.endsWith(' Staff');
-}
-function getPlayedKey() {
-  return 'countdown:played:' + weeklyLockLabel();
-}
-
-(function() {
-  // ?reset clears played records for this game and redirects cleanly
-  if (location.search.includes('reset')) {
-    try {
-      Object.keys(localStorage).filter(k => k.startsWith('countdown:played:')).forEach(k => localStorage.removeItem(k));
-    } catch(e) {}
-    history.replaceState(null, '', location.pathname);
-  }
-})();
-
-function readPlayedList() {
-  try {
-    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
-    return Array.isArray(data) ? data : [];
-  } catch(e) { return []; }
-}
-
-function writePlayedList(data) {
-  try { localStorage.setItem(getPlayedKey(), JSON.stringify([...new Set(data.map(normaliseGroupName))])); } catch(e) {}
-}
-
-function isPlayed(group) {
-  const g = normaliseGroupName(group);
-  if (!g || isStaffGroup(g)) return false;
-  return readPlayedList().includes(g);
-}
-
-function markPlayedLS(group) {
-  const g = normaliseGroupName(group);
-  if (!g || isStaffGroup(g)) return;
-  const data = readPlayedList();
-  if (!data.includes(g)) {
-    data.push(g);
-    writePlayedList(data);
-  }
-}
-
-function lockWeeklyAttempt(group) {
-  const g = normaliseGroupName(group);
-  if (!g) return false;
-  if (isStaffGroup(g)) return true;
-  if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
-    return false;
-  }
-  markPlayedLS(g);
-  try { if (typeof played !== 'undefined' && played && played.add) played.add(g); } catch(e) {}
-  return true;
-}
-// ─────────────────────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>

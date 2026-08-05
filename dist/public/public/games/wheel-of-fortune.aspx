@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wheel of Fortune – Corinda SHS</title>
+<title>Wheel of Fortune Practice – Corinda SHS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&family=Fredoka+One&family=Nunito:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap');
+  @import url('../../assets/fonts/fonts.css');
 
   :root {
     --green: #00180f;
@@ -209,22 +209,16 @@
 </head>
 <body>
 <header>
-  <div class="header-eyebrow">Corinda State High School</div>
+  <div class="header-eyebrow">Corinda State High School · Practice Mode</div>
   <h1>Wheel of <span>Fortune</span></h1>
-  <p>Six Houses, One Family</p>
-  <button class="admin-btn" onclick="openAdmin()" title="Admin">⚙</button>
+  <p>Unlimited practice — a fresh puzzle every round, not the leaderboard puzzle</p>
 </header>
 
 <div class="wrap">
   <div class="weekly-lock-card" id="weeklyLockCard">
-    <h2>Choose your Home Group</h2>
-    <p>Each Home Group can play once per week. Staff can practise as many times as needed.</p>
-    <div class="weekly-lock-groups" id="houseSelect"></div>
-    <div id="step2" style="display:none;">
-      <p style="margin-top:8px;">Choose your Home Group letter:</p>
-      <div class="weekly-lock-groups" id="groupLetterSelect"></div>
-    </div>
-    <button class="weekly-lock-start" id="startBtn" onclick="beginWeeklyLockedGame()" disabled>Start game</button>
+    <h2>Practice Mode</h2>
+    <p>Play as many rounds as you like. Every round uses a fresh puzzle — never this week's official Home Group puzzle — and nothing is submitted to the leaderboard.</p>
+    <button class="weekly-lock-start" id="startBtn" onclick="startPracticeRound()">Start Practice Round</button>
   </div>
   <div id="gameArea" class="game-locked">
   <div class="statusbar">
@@ -262,72 +256,12 @@
     <div class="score-big"><span id="finalScore">0</span><span style="font-size:1.2rem;opacity:0.6;">/10</span></div>
     <div class="score-sub" id="scoreLabelText">points</div>
     <div class="meta" id="winMeta"></div>
-    <button class="btn" onclick="submitScore()">Submit score</button>
-    <button class="btn" style="background:var(--green);color:var(--gold);border:2px solid var(--gold);margin-top:6px;" onclick="resetWeeklyGame()">Play this week's puzzle again</button>
+    <button class="btn" onclick="playAgain()">🔁 Play Again</button>
   </div>
 </div>
 
-<!-- ADMIN OVERLAY -->
-<div class="overlay" id="adminOverlay">
-  <div class="panel" style="text-align:left;">
-    <h2 style="text-align:center;">⚙ Admin</h2>
-    <div id="adminLock">
-      <div class="field"><label>Password</label><input id="admin-pass" type="password"></div>
-      <button class="btn" onclick="checkAdmin()">Unlock</button>
-    </div>
-    <div id="adminBody" style="display:none;">
-      <div class="field"><label>Microsoft Forms pre-fill URL</label>
-        <textarea id="cfg-url" placeholder="Paste your pre-fill URL with {group} {house} {score} {game} {week} {detail} placeholders"></textarea>
-      </div>
-      <p class="small">The weekly puzzle is set automatically from the school calendar in the file's code — it is not edited here. This panel only stores the score-submission URL (per device). The week number is filled in automatically.</p>
-      <button class="btn" onclick="saveAdmin()">Save &amp; close</button>
-    </div>
-  </div>
-</div>
-
-<script src="../assets/site-config.js"></script>
+<script src="../../assets/site-config.js"></script>
 <script>
-// Opens the score form. Returns false if the browser blocked the new tab, in
-// which case a real link is shown instead — clicking a link is never blocked.
-function cshsOpenForm(url){
-  var w=null;
-  try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
-  var box=document.getElementById('cshsFormFallback');
-  if(w){ if(box){ box.style.display='none'; } return true; }
-  // Runs after the caller's own "submitted" messaging, so it can correct it.
-  setTimeout(function(){
-    var confirmEl=document.getElementById('submitConfirm');
-    if(confirmEl){ confirmEl.style.display='none'; }
-    var b=document.getElementById('cshsFormFallback');
-    if(!b){
-      b=document.createElement('div');
-      b.id='cshsFormFallback';
-      b.setAttribute('role','alert');
-      b.style.cssText='margin:12px 0;padding:12px 14px;border:1px solid rgba(242,180,0,.5);'+
-        'border-radius:10px;background:rgba(242,180,0,.12);text-align:center;';
-      var msg=document.createElement('div');
-      msg.style.cssText='font-size:13px;line-height:1.5;color:#fdfdfd;margin-bottom:9px;';
-      msg.textContent='Your browser blocked the new tab, so the score form did not open. '+
-        'Use this link instead — your score is already filled in.';
-      var a=document.createElement('a');
-      a.id='cshsFormFallbackLink';
-      a.target='_blank'; a.rel='noopener';
-      a.textContent='Open the score form';
-      a.style.cssText='display:inline-block;padding:9px 18px;border-radius:8px;background:#f2b400;'+
-        'color:#00180f;font-weight:700;font-size:14px;text-decoration:none;';
-      b.appendChild(msg); b.appendChild(a);
-      var anchor=document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
-                 document.querySelector('#score-form button');
-      if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(b,anchor.nextSibling); }
-      else{ document.body.appendChild(b); }
-    }
-    document.getElementById('cshsFormFallbackLink').href=url;
-    b.style.display='';
-    try{ b.scrollIntoView({block:'nearest'}); }catch(e){}
-  },0);
-  return false;
-}
-
 /* ============================================================
    WHEEL OF FORTUNE — Corinda SHS
    --------------------------------------------------------------
@@ -407,8 +341,6 @@ const VOWELS = "AEIOU";
 const VOWEL_COST = 250;
 const MAX_TIME_SECS = 300;     // speed bonus decays over 5 minutes
 
-let puzzles = [];          // becomes a single-item array: [this week's puzzle]
-let weekLabel = "";        // e.g. "Term 2 · Week 7"
 let current = null;
 let revealed = new Set();
 let usedLetters = new Set();
@@ -451,23 +383,22 @@ function cshsCurrentWeekSlot() {
   return chosen;
 }
 
-function resolveWeekPuzzle() {
+// Picks a random puzzle from the weekly bank, excluding the current live
+// Home Group week's official puzzle so practice never gives away the answer.
+function getPracticePuzzle() {
   const slot = cshsCurrentWeekSlot();
-  const chosen = WEEKLY_PUZZLES.find(wk => wk.t === slot.t && wk.w === slot.w) || WEEKLY_PUZZLES[0];
-  weekLabel = `Term ${chosen.t} · Week ${chosen.w}`;
+  const officialPuzzle = WEEKLY_PUZZLES.find(wk => wk.t === slot.t && wk.w === slot.w) || WEEKLY_PUZZLES[0];
+  const pool = WEEKLY_PUZZLES.filter(wk => wk !== officialPuzzle);
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
   const text = (chosen.text || '').trim().toUpperCase();
   return text
     ? { cat: chosen.cat, text }
     : { cat: SPARE_PUZZLE.cat, text: SPARE_PUZZLE.text.toUpperCase() };
 }
 
-function loadPuzzles() {
-  puzzles = [ resolveWeekPuzzle() ];
-}
-
 function newPuzzle() {
   document.getElementById('winOverlay').classList.remove('show');
-  current = puzzles[0];   // one puzzle per week
+  current = getPracticePuzzle();
   revealed = new Set();
   usedLetters = new Set();
   lettersGuessed = 0;
@@ -475,7 +406,7 @@ function newPuzzle() {
   pendingSpin = null;
   solved = false;
   gameStartTime = Date.now();
-  document.getElementById('category').textContent = weekLabel + "  —  " + current.cat;
+  document.getElementById('category').textContent = "Practice  —  " + current.cat;
   document.getElementById('wheelResult').textContent = "Spin to begin";
   document.getElementById('spinBtn').disabled = false;
   updateStatus();
@@ -640,7 +571,6 @@ function drawWheel() {
 }
 
 function spin() {
-  if (!weeklyGameUnlocked) { alert('Please choose your Home Group first.'); return; }
   if (spinning || solved) return;
   if (pendingSpin !== null) return; // already spun, must pick consonant
   spinning = true;
@@ -677,7 +607,6 @@ function spin() {
 
 // ---------- SOLVE ----------
 function trySolve() {
-  if (!weeklyGameUnlocked) { alert('Please choose your Home Group first.'); return; }
   if (solved) return;
   const guess = prompt("Solve the puzzle — type the full answer in CAPITAL LETTERS:");
   if (guess === null) return;
@@ -717,7 +646,6 @@ function finish(won) {
 
 // Give up — 3 for having a go if at least one letter was guessed, else 0.
 function giveUp(){
-  if (!weeklyGameUnlocked) { alert('Please choose your Home Group first.'); return; }
   if (solved) return;
   solved = true;
   clearInterval(timerInterval);
@@ -734,191 +662,22 @@ function giveUp(){
   document.getElementById('winOverlay').classList.add('show');
 }
 
-function submitScore() {
-  markPlayedLS(selectedGroup);
-  const week  = encodeURIComponent(weeklyLockLabel());
-  const game  = encodeURIComponent('Wheel of Fortune');
-  const house = encodeURIComponent(selectedHouse || '');
-  const group = encodeURIComponent(selectedGroup || '');
-  const score = encodeURIComponent(window._lastScore != null ? window._lastScore : 0);
-  const url = `https://forms.office.com/pages/responsepage.aspx?id=xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u`
-    + `&rb28fecc633264af694f45d8cf2b3b8c1=${week}`
-    + `&rdbbd457b83da425e93f978536b950482=${game}`
-    + `&rd04d4cf9da8a4213820791f91cdcf6ba=${house}`
-    + `&r3022db1950b649218496e706728c203f=${group}`
-    + `&r8b61653d0854482a9e7e329026083f7b=${score}`;
-  cshsOpenForm(url);
-}
-
-// ---------- ADMIN ----------
-// Not real security (this is public source) — just a deterrent against
-// accidental clicks. Change this string to set a different passphrase.
-const PASSWORD = 'cshs2026';
-
-function openAdmin() {
-  document.getElementById('adminOverlay').classList.add('show');
-  document.getElementById('adminLock').style.display = 'block';
-  document.getElementById('adminBody').style.display = 'none';
-  document.getElementById('admin-pass').value = '';
-}
-function checkAdmin() {
-  if (document.getElementById('admin-pass').value === PASSWORD) {
-    document.getElementById('adminLock').style.display = 'none';
-    document.getElementById('adminBody').style.display = 'block';
-    document.getElementById('cfg-url').value = localStorage.getItem('wofFormUrl') || '';
-  } else { alert('Incorrect password.'); }
-}
-function saveAdmin() {
-  localStorage.setItem('wofFormUrl', document.getElementById('cfg-url').value.trim());
-  document.getElementById('adminOverlay').classList.remove('show');
-}
-
-
-// ─── WEEKLY HOME GROUP GATE ──────────────────────────────────────────────────
-const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
-const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
-let selectedHouse = null;
-let selectedLetter = null;
-let selectedGroup = null;
-let weeklyGameUnlocked = false;
-
-function renderWeeklyGate(){
-  const houseEl = document.getElementById('houseSelect');
-  if (!houseEl) return;
-  houseEl.innerHTML = HOUSES.map(h =>
-    `<button class="weekly-lock-btn ${selectedHouse===h?'selected':''}" onclick="selectHouse('${h}')">${h}</button>`
-  ).join('');
-  const step2 = document.getElementById('step2');
-  if (selectedHouse) {
-    step2.style.display = 'block';
-    const letEl = document.getElementById('groupLetterSelect');
-    letEl.innerHTML = GROUP_LETTERS.map(l => {
-      const grp = selectedHouse + ' ' + l;
-      const done = isPlayed(grp);
-      return `<button class="weekly-lock-btn ${selectedLetter===l?'selected':''} ${done?'played':''}"
-        onclick="selectLetter('${l}')" ${done?'title="Already played this week"':''}>${l}${done?' ✓':''}</button>`;
-    }).join('') + `<button class="weekly-lock-btn ${selectedLetter==='Staff'?'selected':''}" onclick="selectLetter('Staff')">Staff</button>`;
-  } else {
-    step2.style.display = 'none';
-  }
-}
-
-function selectHouse(h){
-  selectedHouse = h;
-  selectedLetter = null;
-  selectedGroup = null;
-  document.getElementById('startBtn').disabled = true;
-  renderWeeklyGate();
-}
-
-function selectLetter(l){
-  selectedLetter = l;
-  selectedGroup = (l === 'Staff') ? 'Staff' : selectedHouse + ' ' + l;
-  renderWeeklyGate();
-  document.getElementById('startBtn').disabled = isPlayed(selectedGroup);
-}
-
-function beginWeeklyLockedGame(){
-  if (!selectedGroup || !lockWeeklyAttempt(selectedGroup)) return;
-  weeklyGameUnlocked = true;
+// ─── PRACTICE START / REPLAY ──────────────────────────────────────────────────
+function startPracticeRound(){
   document.getElementById('weeklyLockCard').style.display = 'none';
   const area = document.getElementById('gameArea');
   if (area) area.classList.remove('game-locked');
-  document.getElementById('playingGroupLabel')?.remove();
-  const status = document.querySelector('.statusbar');
-  if (status) status.insertAdjacentHTML('afterbegin', `<div class="stat" id="playingGroupLabel"><div class="label">Group</div><div class="val">${selectedGroup}</div></div>`);
   newPuzzle();
 }
 
-function resetWeeklyGame(){
+function playAgain(){
   document.getElementById('winOverlay').classList.remove('show');
-  if (isStaffGroup(selectedGroup)) {
-    newPuzzle();
-    return;
-  }
-  weeklyGameUnlocked = false;
-  selectedHouse = null; selectedLetter = null; selectedGroup = null;
-  const area = document.getElementById('gameArea');
-  if (area) area.classList.add('game-locked');
-  const card = document.getElementById('weeklyLockCard');
-  if (card) card.style.display = 'block';
-  renderWeeklyGate();
+  newPuzzle();
 }
 
 // ---------- BOOT ----------
-loadPuzzles();
 drawWheel();
-newPuzzle();
-renderWeeklyGate();
 
-// ─── WEEKLY ATTEMPT LOCK (localStorage, per-device per-week) ─────────────────
-// Home groups get one attempt per game per school week. Staff is always unlimited.
-// Note: because these are static HTML files, this lock is enforced in this browser/device.
-function weeklyLockLabel() {
-  const slot = cshsCurrentWeekSlot();
-  return `Term ${slot.t} · Week ${slot.w}`;
-}
-function normaliseGroupName(group) {
-  return String(group || '').trim().replace(/\s+/g, ' ');
-}
-function isStaffGroup(group) {
-  const g = normaliseGroupName(group);
-  return g === 'Staff' || g.endsWith(' Staff');
-}
-function getPlayedKey() {
-  return 'wof:played:' + weeklyLockLabel();
-}
-
-(function() {
-  // ?reset clears played records for this game and redirects cleanly
-  if (location.search.includes('reset')) {
-    try {
-      Object.keys(localStorage).filter(k => k.startsWith('wof:played:')).forEach(k => localStorage.removeItem(k));
-    } catch(e) {}
-    history.replaceState(null, '', location.pathname);
-  }
-})();
-
-function readPlayedList() {
-  try {
-    const data = JSON.parse(localStorage.getItem(getPlayedKey()) || '[]');
-    return Array.isArray(data) ? data : [];
-  } catch(e) { return []; }
-}
-
-function writePlayedList(data) {
-  try { localStorage.setItem(getPlayedKey(), JSON.stringify([...new Set(data.map(normaliseGroupName))])); } catch(e) {}
-}
-
-function isPlayed(group) {
-  const g = normaliseGroupName(group);
-  if (!g || isStaffGroup(g)) return false;
-  return readPlayedList().includes(g);
-}
-
-function markPlayedLS(group) {
-  const g = normaliseGroupName(group);
-  if (!g || isStaffGroup(g)) return;
-  const data = readPlayedList();
-  if (!data.includes(g)) {
-    data.push(g);
-    writePlayedList(data);
-  }
-}
-
-function lockWeeklyAttempt(group) {
-  const g = normaliseGroupName(group);
-  if (!g) return false;
-  if (isStaffGroup(g)) return true;
-  if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
-    return false;
-  }
-  markPlayedLS(g);
-  try { if (typeof played !== 'undefined' && played && played.add) played.add(g); } catch(e) {}
-  return true;
-}
-// ─────────────────────────────────────────────────────────────────────────────
 </script>
 </body>
 </html>
