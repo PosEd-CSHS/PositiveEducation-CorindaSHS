@@ -598,7 +598,7 @@ const DEFAULT_CONFIG = {
   maxGuesses: 6,
   hint: '',
   paUrl: '',
-  formUrl: 'https://forms.office.com/r/x94vT9B782'
+  formUrl: 'https://forms.cloud.microsoft/r/x94vT9B782'
 };
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
@@ -1182,7 +1182,7 @@ function openFormSubmit(group, house, score, week, game, detail) {
     r3022db1950b649218496e706728c203f: group,
     r8b61653d0854482a9e7e329026083f7b: String(score)
   });
-  cshsOpenForm('https://forms.office.com/Pages/ResponsePage.aspx?' + params.toString());
+  cshsOpenForm('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?' + params.toString());
 }
 
 

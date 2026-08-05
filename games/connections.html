@@ -208,7 +208,7 @@ function cshsOpenForm(url){
   return false;
 }
 
-const FORM_URL = 'https://forms.office.com/r/x94vT9B782?origin=lprLink';
+const FORM_URL = 'https://forms.cloud.microsoft/r/x94vT9B782?origin=lprLink';
 const HOUSES = ['Moori','Bunar','Dibbil','Kabul','Pirri','Yarraman'];
 const GROUP_LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
 const CAT_COLOURS = ['cat0','cat1','cat2','cat3'];
@@ -799,7 +799,7 @@ function submitScoreCN() {
     r3022db1950b649218496e706728c203f: r.group || '',
     r8b61653d0854482a9e7e329026083f7b: String(r.score || 0)
   });
-  cshsOpenForm('https://forms.office.com/Pages/ResponsePage.aspx?' + params.toString());
+  cshsOpenForm('https://forms.cloud.microsoft/Pages/ResponsePage.aspx?' + params.toString());
   document.getElementById('submitConfirm').style.display = 'block';
   document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
   document.getElementById('submitScoreBtn').disabled = true;
