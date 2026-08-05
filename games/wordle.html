@@ -440,7 +440,7 @@
           <div style="display:flex;gap:8px;">
             <button class="btn btn-outline" style="flex:1;" onclick="resetToSignin()">← Back</button>
           </div>
-          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;">✓ Form opened in new tab — fill in your details and submit</div>
+          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;" role="status" aria-live="polite">✓ Form opened in new tab — fill in your details and submit</div>
         </div>
       </div>
     </div>
@@ -566,7 +566,7 @@ function lockWeeklyAttempt(group) {
   if (!g) return false;
   if (isStaffGroup(g)) return true;
   if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    alert(g + ' has already played this game on this browser for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
     return false;
   }
   markPlayedLS(g);
@@ -1190,8 +1190,8 @@ function submitScore_WL() {
   const r = window._lastResult || {};
   openFormSubmit(r.group||'', r.house||'', r.score||0, config.week, 'Wordle', r.detail||'');
   document.getElementById('submitConfirm').style.display = 'block';
-  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
-  document.getElementById('submitScoreBtn').disabled = true;
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
+  document.getElementById('submitScoreBtn').disabled = false;
 }
 
 // ─── WORD LIST ───────────────────────────────────────────────────────────────

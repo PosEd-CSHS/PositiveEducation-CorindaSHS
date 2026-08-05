@@ -416,46 +416,6 @@
     .admin-grid { grid-template-columns: 1fr; }
   }
 
-  /* AI checking overlay */
-  .checking-overlay {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(0,24,15,0.88);
-    border-radius: 16px;
-    z-index: 10;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    backdrop-filter: blur(2px);
-  }
-  .checking-overlay.active { display: flex; }
-  .checking-spinner {
-    width: 40px; height: 40px;
-    border: 3px solid rgba(242,180,0,0.2);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .checking-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-  .checking-sub {
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .ai-reason {
-    font-size: 11px;
-    color: var(--danger);
-    font-style: italic;
-    margin-top: 2px;
-  }
   #screen-playing .card { position: relative; }
 </style>
 </head>
@@ -520,12 +480,6 @@
         <div class="mt16">
           <button class="btn btn-primary full-width" id="submitBtn" onclick="submitAnswers()">Submit Answers</button>
         </div>
-        <!-- AI checking overlay -->
-        <div class="checking-overlay" id="checkingOverlay">
-          <div class="checking-spinner"></div>
-          <div class="checking-label">Checking answers…</div>
-          <div class="checking-sub">This takes a few seconds</div>
-        </div>
       </div>
     </div>
 
@@ -546,7 +500,7 @@
           <div style="display:flex;gap:8px;">
             <button class="btn btn-outline" style="flex:1;" onclick="resetToSignin()">Play Again</button>
           </div>
-          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;">✓ Form opened in new tab — fill in your details and submit</div>
+          <div id="submitConfirm" style="display:none;text-align:center;font-size:13px;color:#4caf7a;" role="status" aria-live="polite">✓ Form opened in new tab — fill in your details and submit</div>
         </div>
       </div>
     </div>
@@ -818,7 +772,7 @@ function buildCategoryGrid() {
   grid.innerHTML = categories.map((cat, i) => `
     <div class="category-row" id="row-${i}">
       <div class="category-label">${cat}</div>
-      <input class="answer-input" id="ans-${i}" placeholder="${config.letter.toUpperCase()}..." maxlength="30"
+      <input class="answer-input" id="ans-${i}" aria-label="Answer for ${cat}" placeholder="${config.letter.toUpperCase()}..." maxlength="30"
         oninput="validateInput(${i})" autocomplete="off" autocorrect="off" spellcheck="false">
       <div class="pts-badge" id="pts-${i}">—</div>
     </div>
@@ -901,7 +855,7 @@ function startTimer() {
   }, 1000);
 }
 
-async function submitAnswers() {
+function submitAnswers() {
   if (!gameActive) return;
   gameActive = false;
   clearInterval(timerInterval);
@@ -909,112 +863,32 @@ async function submitAnswers() {
   const letter = config.letter.toUpperCase();
   const categories = getWeekCategories();
 
-  // Lock inputs and snapshot values
+  // Local checks only: the answer must start with the weekly letter and must
+  // not duplicate another answer. The facilitating teacher decides whether
+  // a creative response genuinely fits the category.
   const answers = categories.map((cat, i) => {
     const input = document.getElementById(`ans-${i}`);
+    const value = input.value.trim().toUpperCase();
     input.disabled = true;
-    return { cat, val: input.value.trim().toUpperCase(), index: i };
+    return {
+      cat,
+      val: value,
+      index: i,
+      valid: isValidAnswer(value, letter, i) === true
+    };
   });
 
-  // Show overlay
-  document.getElementById('checkingOverlay').classList.add('active');
-  document.getElementById('submitBtn').disabled = true;
-
-  // Structural pre-check (fast, no network)
-  const structural = answers.map(a => ({
-    ...a,
-    structuralPass: isValidAnswer(a.val, letter, a.index) === true
-  }));
-
-  // Only send non-empty answers that pass structural check to AI
-  const toCheck = structural.filter(a => a.structuralPass && a.val.length > 0);
-
-  // AI verdicts map: index -> { valid, reason }
-  const aiVerdicts = {};
-
-  if (toCheck.length > 0) {
-    try {
-      const prompt = `You are validating answers for a word game called Alphabucks. 
-The letter of the week is "${letter}". Students must name something that fits each category, starting with that letter.
-
-Be PERMISSIVE but not a pushover. Accept any answer that makes genuine sense for the category — including slang, brand names, place names, and creative interpretations. Only reject answers that clearly do not fit the category at all, or that are obviously nonsensical/irrelevant words typed just to fill the space.
-
-For each answer below, respond with YES if it fits the category, or NO followed by a brief reason (max 6 words) if it clearly does not fit.
-
-${toCheck.map((a, i) => `${i + 1}. Category: "${a.cat}" — Answer: "${a.val}"`).join('\n')}
-
-Respond with ONLY a JSON array, no other text. Each element: {"index": <1-based number>, "valid": true/false, "reason": "<brief reason if false, else null>"}`;
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 500,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const text = (data.content || []).map(b => b.text || '').join('').trim();
-        const clean = text.replace(/```json|```/g, '').trim();
-        const parsed = JSON.parse(clean);
-        parsed.forEach(item => {
-          // item.index is 1-based into toCheck array
-          const orig = toCheck[item.index - 1];
-          if (orig) aiVerdicts[orig.index] = { valid: item.valid, reason: item.reason || null };
-        });
-      }
-    } catch (e) {
-      // Silent fallback — aiVerdicts stays empty, structural result used below
-    }
-  }
-
-  // Hide overlay
-  document.getElementById('checkingOverlay').classList.remove('active');
-
-  // Build final breakdown
   let totalPts = 0;
-  const breakdown = [];
-
-  answers.forEach(a => {
-    let valid = false;
-    let reason = null;
-
-    if (!a.structuralPass) {
-      valid = false;
-    } else if (aiVerdicts[a.index] !== undefined) {
-      valid = aiVerdicts[a.index].valid;
-      reason = aiVerdicts[a.index].reason;
-    } else {
-      // fallback: structural result
-      valid = a.structuralPass;
-    }
-
-    const pts = valid ? (10 + timeLeft * config.pointsPerSecond) : 0;
+  const breakdown = answers.map(a => {
+    const pts = a.valid ? (10 + timeLeft * config.pointsPerSecond) : 0;
     totalPts += pts;
-    breakdown.push({ cat: a.cat, val: a.val, valid, pts, reason });
 
     const input = document.getElementById(`ans-${a.index}`);
-    document.getElementById(`pts-${a.index}`).textContent = valid ? `+${pts}` : '0';
-    input.classList.toggle('correct', valid);
-    input.classList.toggle('wrong', !valid && a.val.length > 0);
+    document.getElementById(`pts-${a.index}`).textContent = a.valid ? `+${pts}` : '0';
+    input.classList.toggle('correct', a.valid);
+    input.classList.toggle('wrong', !a.valid && a.val.length > 0);
 
-    // Show AI rejection reason below the input if available
-    if (!valid && reason && a.val.length > 0) {
-      const row = document.getElementById(`row-${a.index}`);
-      if (row) {
-        const existing = row.querySelector('.ai-reason');
-        if (!existing) {
-          const div = document.createElement('div');
-          div.className = 'ai-reason';
-          div.style.gridColumn = '1 / -1';
-          div.textContent = '✗ ' + reason;
-          row.appendChild(div);
-        }
-      }
-    }
+    return { cat: a.cat, val: a.val, valid: a.valid, pts, reason: null };
   });
 
   const correctCount = breakdown.filter(b => b.valid).length;
@@ -1023,8 +897,8 @@ Respond with ONLY a JSON array, no other text. Each element: {"index": <1-based 
   const elapsedAtSubmit = gameStartTime ? (Date.now() - gameStartTime) / 1000 : 999;
   const suspiciouslyFast = (correctCount >= 1) && (elapsedAtSubmit < 5);
   const fast = !suspiciouslyFast && (correctCount >= 1) && (lastValidAnswerSecs !== null) && (lastValidAnswerSecs <= half);
-  const _scaled = alphabucksScore(correctCount, attempted, fast);
-  saveScore(selectedGroup, _scaled);
+  const scaled = alphabucksScore(correctCount, attempted, fast);
+  saveScore(selectedGroup, scaled);
   markPlayed(selectedGroup);
   showResult(totalPts, breakdown, selectedGroup, correctCount, attempted, fast);
 }
@@ -1177,8 +1051,8 @@ function submitScore_AB() {
   openFormSubmit(r.group||'', r.house||'', r.score||0, config.week, 'Alphabucks', r.detail||'');
   markPlayedLS((window._lastResult||{}).group||'');
   document.getElementById('submitConfirm').style.display = 'block';
-  document.getElementById('submitScoreBtn').textContent = '✓ Submitted';
-  document.getElementById('submitScoreBtn').disabled = true;
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
+  document.getElementById('submitScoreBtn').disabled = false;
 }
 
 // ─── START ────────────────────────────────────────────────────────────────────
@@ -1257,7 +1131,7 @@ function lockWeeklyAttempt(group) {
   if (!g) return false;
   if (isStaffGroup(g)) return true;
   if (isPlayed(g)) {
-    alert(g + ' has already played this game for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
+    alert(g + ' has already played this game on this browser for ' + weeklyLockLabel() + '. Please choose Staff for practice or wait until next week.');
     return false;
   }
   markPlayedLS(g);

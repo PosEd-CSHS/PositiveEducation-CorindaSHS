@@ -86,7 +86,7 @@
 <div class="card" style="max-width:480px;width:100%">
   <div class="player-banner" id="playerBanner">
     <span class="player-label">Player up</span>
-    <input class="player-name-input" id="playerNameInput" type="text" placeholder="Enter student name…" maxlength="30">
+    <input class="player-name-input" id="playerNameInput" type="text" aria-label="Student name" placeholder="Enter student name…" maxlength="30">
   </div>
 
   <div class="target-label">Target Time</div>
@@ -287,7 +287,7 @@ function cshsOpenForm(url){
     const finalScore=Math.round(best.rawScore/100);
     const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Stop the Clock',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:(selectedGroup==='Staff'?'Staff':selectedHouse+' '+selectedGroup),[CSHS_F_SCORE]:String(finalScore)});
     cshsOpenForm(CSHS_FORM_BASE+'?'+params.toString());
-    submitBtn.textContent='✓ Submitted'; submitBtn.disabled=true;
+    submitBtn.textContent='↗ Reopen form'; submitBtn.disabled=false;
   }
 
   function resetAll(){
