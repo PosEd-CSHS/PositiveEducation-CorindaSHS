@@ -1,0 +1,4 @@
+# Build output. Regenerate on the school-server branch with:
+#   python3 tools/build-staff-gate.py --key "<access key>"
+#   python3 tools/package-upload.py
+dist/
