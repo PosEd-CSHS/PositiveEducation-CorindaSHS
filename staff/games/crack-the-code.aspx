@@ -49,6 +49,11 @@
   .answer-input::placeholder{color:rgba(255,255,255,0.34);font-weight:400;}
   .answer-input:disabled{opacity:.6;}
   .feedback{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.04em;text-align:center;margin-bottom:14px;min-height:1.4em;}
+  .hint-box{background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:10px 14px;margin-bottom:14px;text-align:center;}
+  .hint-box .hint-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .hint-box .hint-pattern{margin-top:5px;line-height:1.7;}
+  .hint-box .hint-word{display:inline-block;margin:0 .5em;font-family:'DM Mono',monospace;font-size:1.15rem;letter-spacing:.22em;color:var(--gold);}
+  .hint-box .hint-note{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
   .feedback.try{color:var(--gold);}.feedback.right{color:var(--correct);}.feedback.wrong{color:var(--danger);}
   .reveal-panel{display:none;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:10px;padding:16px 18px;margin-bottom:16px;text-align:center;}
   .reveal-panel.show{display:block;}
@@ -83,6 +88,7 @@
     <div class="focus-hint" id="focusHint"><div class="fh-label" id="fhLabel">This week's focus</div><div class="fh-strength" id="fhStrength">—</div><div class="fh-virtue" id="fhVirtue">—</div></div>
     <div class="clue-wrap"><div class="code-clue" id="clueDisplay" aria-live="polite">?</div></div>
     <input class="answer-input" id="answerInput" aria-label="Type your answer to the code" type="text" placeholder="Type the phrase…" maxlength="80" autocomplete="off">
+    <div class="hint-box" id="hintBox" style="display:none" aria-live="polite"><div class="hint-label" id="hintLabel">Hint</div><div class="hint-pattern" id="hintPattern"></div><div class="hint-note" id="hintNote"></div></div>
     <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
     <button class="btn btn-primary" id="guessBtn" onclick="submitGuess()">Guess</button>
     <button class="btn btn-outline" id="revealAnsBtn" onclick="giveUp()">Reveal answer</button>
@@ -182,14 +188,35 @@
   function selectHouse(h){selectedHouse=h;document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===h));checkEntry()}
   function selectGroup(g){selectedGroup=g;document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b=>b.classList.toggle('selected',b.textContent===g));checkEntry()}
   function checkEntry(){const full=fullGroupName();if(full&&isPlayed(full)){lockNotice.textContent=full+' has already played Crack the Code on this browser for '+cshsWeekLabel()+'. Choose Staff to practise, or come back next week.';lockNotice.classList.add('show');revealPuzzleBtn.disabled=true;return}lockNotice.classList.remove('show');revealPuzzleBtn.disabled=!(selectedHouse&&selectedGroup)}
-  function revealPuzzle(){const full=fullGroupName();if(!full)return;if(isPlayed(full)){checkEntry();return}markPlayedLS(full);fhLabel.textContent=current.label;fhStrength.textContent=current.title;fhVirtue.textContent=current.sub;clueDisplay.innerHTML=puzzle.c;attempt=0;feedback.textContent='You get 3 guesses — 10, 7 or 4 points.';feedback.className='feedback';answerInput.value='';answerInput.disabled=false;guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';entryView.style.display='none';playView.style.display='';answerInput.focus()}
+  function revealPuzzle(){const full=fullGroupName();if(!full)return;if(isPlayed(full)){checkEntry();return}markPlayedLS(full);hideHint();fhLabel.textContent=current.label;fhStrength.textContent=current.title;fhVirtue.textContent=current.sub;clueDisplay.innerHTML=puzzle.c;attempt=0;feedback.textContent='You get 3 guesses — 10, 7 or 4 points.';feedback.className='feedback';answerInput.value='';answerInput.disabled=false;guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';entryView.style.display='none';playView.style.display='';answerInput.focus()}
   answerInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!guessBtn.disabled)submitGuess()});
-  function submitGuess(){const guess=norm(answerInput.value);if(!guess){answerInput.focus();return}const hit=puzzle.a.some(ans=>norm(ans)===guess)||norm(puzzle.s)===guess;if(hit){finalScore=GUESS_SCORES[attempt];feedback.textContent=(attempt===0?'✓ Correct! Full marks.':attempt===1?'✓ Nice — second try.':'✓ Got there on the third try.')+' (+'+finalScore+')';feedback.className='feedback right';finish(true)}else if(attempt<GUESS_SCORES.length-1){attempt++;const left=GUESS_SCORES.length-attempt;feedback.textContent=left===1?'Not quite — last guess!':'Not quite — '+left+' guesses left.';feedback.className='feedback try';answerInput.select();answerInput.focus()}else{finalScore=0;feedback.textContent='✗ Out of guesses.';feedback.className='feedback wrong';finish(false)}}
+  const hintBox=document.getElementById('hintBox'),hintLabel=document.getElementById('hintLabel'),hintPattern=document.getElementById('hintPattern'),hintNote=document.getElementById('hintNote');
+  function hideHint(){hintBox.style.display='none';hintPattern.textContent='';hintNote.textContent='';}
+  // Guess 2 shows the shape of the answer; guess 3 also reveals each first letter.
+  function showHint(level){
+    const words=String(puzzle.s).split(/\s+/).filter(Boolean);
+    if(!words.length){return}
+    // Each word is its own element so the gaps between words stay visible.
+    hintPattern.textContent='';
+    words.forEach(function(w){
+      const span=document.createElement('span');
+      span.className='hint-word';
+      span.textContent=w.split('').map(function(ch,i){
+        if(!/[A-Za-z]/.test(ch)){return ch}
+        return (level>=2&&i===0)?ch.toUpperCase():'_';
+      }).join(' ');
+      hintPattern.appendChild(span);
+    });
+    hintLabel.textContent=level>=2?'Hint 2 — first letters':'Hint 1 — how it looks';
+    hintNote.textContent=words.length+(words.length===1?' word — ':' words — ')+words.map(function(w){return w.length}).join(', ')+' letters';
+    hintBox.style.display='';
+  }
+  function submitGuess(){const guess=norm(answerInput.value);if(!guess){answerInput.focus();return}const hit=puzzle.a.some(ans=>norm(ans)===guess)||norm(puzzle.s)===guess;if(hit){finalScore=GUESS_SCORES[attempt];feedback.textContent=(attempt===0?'✓ Correct! Full marks.':attempt===1?'✓ Nice — second try.':'✓ Got there on the third try.')+' (+'+finalScore+')';feedback.className='feedback right';finish(true)}else if(attempt<GUESS_SCORES.length-1){attempt++;const left=GUESS_SCORES.length-attempt;showHint(attempt);feedback.textContent=left===1?'Not quite — last guess!':'Not quite — '+left+' guesses left.';feedback.className='feedback try';answerInput.select();answerInput.focus()}else{finalScore=0;feedback.textContent='✗ Out of guesses.';feedback.className='feedback wrong';finish(false)}}
   function giveUp(){finalScore=0;finish(false)}
   function finish(solved){answerInput.disabled=true;guessBtn.disabled=true;revealAnsBtn.style.display='none';revealAnswer.textContent=puzzle.s;revealScore.textContent='Score: '+finalScore+' / 10';revealLink.innerHTML=current.linkHtml;playView.style.display='none';resultView.style.display='';submitBtn.focus()}
   const CSHS_FORM_BASE='https://forms.cloud.microsoft/Pages/ResponsePage.aspx',CSHS_FORM_ID='xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u',CSHS_F_WEEK='rb28fecc633264af694f45d8cf2b3b8c1',CSHS_F_GAME='rdbbd457b83da425e93f978536b950482',CSHS_F_HOUSE='rd04d4cf9da8a4213820791f91cdcf6ba',CSHS_F_GROUP='r3022db1950b649218496e706728c203f',CSHS_F_SCORE='r8b61653d0854482a9e7e329026083f7b';
   function submitScore(){const full=fullGroupName();const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:cshsWeekLabel(),[CSHS_F_GAME]:'Crack the Code',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:full,[CSHS_F_SCORE]:String(finalScore)});window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');submitBtn.textContent='↗ Reopen form';submitBtn.disabled=false}
-  function resetAll(){selectedHouse=null;selectedGroup=null;attempt=0;finalScore=0;document.querySelectorAll('.group-btn').forEach(b=>b.classList.remove('selected'));lockNotice.classList.remove('show');revealPuzzleBtn.disabled=true;feedback.textContent='';feedback.className='feedback';answerInput.value='';answerInput.disabled=false;guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';submitBtn.textContent='📤 Submit Score';submitBtn.disabled=false;resultView.style.display='none';playView.style.display='none';entryView.style.display=''}
+  function resetAll(){selectedHouse=null;selectedGroup=null;attempt=0;hideHint();finalScore=0;document.querySelectorAll('.group-btn').forEach(b=>b.classList.remove('selected'));lockNotice.classList.remove('show');revealPuzzleBtn.disabled=true;feedback.textContent='';feedback.className='feedback';answerInput.value='';answerInput.disabled=false;guessBtn.disabled=false;guessBtn.textContent='Guess';revealAnsBtn.style.display='';submitBtn.textContent='📤 Submit Score';submitBtn.disabled=false;resultView.style.display='none';playView.style.display='none';entryView.style.display=''}
   function normaliseGroupName(group){return String(group||'').trim().replace(/\s+/g,' ')}function isStaffGroup(group){const g=normaliseGroupName(group);return g==='Staff'||g.endsWith(' Staff')}function getPlayedKey(){return 'crack:played:'+cshsWeekLabel()}(function(){if(location.search.includes('reset')){try{Object.keys(localStorage).filter(k=>k.startsWith('crack:played:')).forEach(k=>localStorage.removeItem(k))}catch(e){}history.replaceState(null,'',location.pathname)}})();function readPlayedList(){try{const d=JSON.parse(localStorage.getItem(getPlayedKey())||'[]');return Array.isArray(d)?d:[]}catch(e){return []}}function writePlayedList(d){try{localStorage.setItem(getPlayedKey(),JSON.stringify([...new Set(d.map(normaliseGroupName))]))}catch(e){}}function isPlayed(group){const g=normaliseGroupName(group);if(!g||isStaffGroup(g))return false;return readPlayedList().includes(g)}function markPlayedLS(group){const g=normaliseGroupName(group);if(!g||isStaffGroup(g))return;const d=readPlayedList();if(!d.includes(g)){d.push(g);writePlayedList(d)}}
   init();
 </script>

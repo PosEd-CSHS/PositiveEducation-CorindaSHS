@@ -221,3 +221,46 @@ that handler before rendering the unlocked page.
   a full winning round of Wordle plays through to the result screen and the
   Reopen-form button behaves.
 - No page errors on any page tested.
+
+---
+
+# Verification — Crack the Code hints (2026-07-30)
+
+Hints were reported as missing from Crack the Code. The repository's earliest
+version of the file (commit `72a328d`, the initial upload) was checked and
+contains no hint mechanic, so nothing had been removed here — any earlier
+version predates the repository. Hints were added on request.
+
+## Behaviour
+
+- No hint before the first guess.
+- After the first wrong guess: one blank per letter, grouped by word, plus a
+  note giving the word count and the letters in each word.
+- After the second wrong guess: the same pattern with each word's first letter
+  filled in.
+- Both derive from the answer string, so every week is covered without new
+  puzzle data and no week can be left without a hint.
+
+Scoring stays at 10 / 7 / 4. The scale already reduces the value of later
+guesses, and scores have been recorded against it since the start of the year,
+so changing it mid-year would make leaderboard totals inconsistent.
+
+## Checks completed
+
+- No hint shown before the first guess; reset hides it again.
+- Hint 1 reveals no letters; its word count and per-word letter counts match
+  the answer.
+- Hint 2 reveals exactly the first letter of each word and nothing more; the
+  full answer never appears in the hint.
+- Solving on the third guess still scores 4.
+- Each word renders as its own element, so word boundaries stay visible. The
+  longest phrase in the bank (seven words) renders correctly and causes no
+  horizontal overflow.
+- Inline JavaScript passes `node --check`; no page errors.
+
+## Noted, not changed
+
+`WEEK_PLAN` in Crack the Code has 38 of 40 entries — Term 4 Weeks 9 and 10 are
+absent, so those weeks fall back to the default puzzle rather than a themed one.
+Wordle, Connections and Wheel of Fortune all cover 40 weeks, and the lesson file
+now does too.
