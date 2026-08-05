@@ -27,6 +27,9 @@ with sync_playwright() as p:
     pg.goto(B+'/staff/games/leaderboard.aspx')
     pg.wait_for_selector('#weekChip', state='attached', timeout=25000)
     chk('2nd staff page, no key, stays unlocked', not locked(pg))
+    pg.wait_for_function(
+        "[...document.querySelectorAll('iframe[data-sheet]')].every(e=>e.getAttribute('src'))",
+        timeout=10000)
     chk('leaderboard iframes all have src',
         all(pg.eval_on_selector_all('iframe[data-sheet]','es=>es.map(e=>!!e.getAttribute("src"))')))
     chk('no page errors', not bad, bad)
