@@ -144,6 +144,47 @@
 
 <script src="../../assets/site-config.js"></script>
 <script>
+// Opens the score form. Returns false if the browser blocked the new tab, in
+// which case a real link is shown instead — clicking a link is never blocked.
+function cshsOpenForm(url){
+  var w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
+  var box=document.getElementById('cshsFormFallback');
+  if(w){ if(box){ box.style.display='none'; } return true; }
+  // Runs after the caller's own "submitted" messaging, so it can correct it.
+  setTimeout(function(){
+    var confirmEl=document.getElementById('submitConfirm');
+    if(confirmEl){ confirmEl.style.display='none'; }
+    var b=document.getElementById('cshsFormFallback');
+    if(!b){
+      b=document.createElement('div');
+      b.id='cshsFormFallback';
+      b.setAttribute('role','alert');
+      b.style.cssText='margin:12px 0;padding:12px 14px;border:1px solid rgba(242,180,0,.5);'+
+        'border-radius:10px;background:rgba(242,180,0,.12);text-align:center;';
+      var msg=document.createElement('div');
+      msg.style.cssText='font-size:13px;line-height:1.5;color:#fdfdfd;margin-bottom:9px;';
+      msg.textContent='Your browser blocked the new tab, so the score form did not open. '+
+        'Use this link instead — your score is already filled in.';
+      var a=document.createElement('a');
+      a.id='cshsFormFallbackLink';
+      a.target='_blank'; a.rel='noopener';
+      a.textContent='Open the score form';
+      a.style.cssText='display:inline-block;padding:9px 18px;border-radius:8px;background:#f2b400;'+
+        'color:#00180f;font-weight:700;font-size:14px;text-decoration:none;';
+      b.appendChild(msg); b.appendChild(a);
+      var anchor=document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
+                 document.querySelector('#score-form button');
+      if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(b,anchor.nextSibling); }
+      else{ document.body.appendChild(b); }
+    }
+    document.getElementById('cshsFormFallbackLink').href=url;
+    b.style.display='';
+    try{ b.scrollIntoView({block:'nearest'}); }catch(e){}
+  },0);
+  return false;
+}
+
   // 40-week bank — 5 rounds per week, times: 5,4,4,3,3
   const ROUND_BANK = [
     [{target:50,time:5},{target:33,time:4},{target:75,time:4},{target:20,time:3},{target:66,time:3}],
@@ -311,7 +352,7 @@
   function submitScore(){
     const total=roundScores.reduce((s,r)=>s+r.score,0),finalScore=Math.round(total/50);
     const params=new URLSearchParams({id:CSHS_FORM_ID,[CSHS_F_WEEK]:getCurrentWeek(),[CSHS_F_GAME]:'Fill the Bar',[CSHS_F_HOUSE]:selectedHouse,[CSHS_F_GROUP]:(selectedGroup==='Staff'?'Staff':selectedHouse+' '+selectedGroup),[CSHS_F_SCORE]:String(finalScore)});
-    window.open(CSHS_FORM_BASE+'?'+params.toString(),'_blank');
+    cshsOpenForm(CSHS_FORM_BASE+'?'+params.toString());
     submitBtn.textContent='↗ Reopen form';submitBtn.disabled=false;
   }
 

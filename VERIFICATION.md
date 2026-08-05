@@ -264,3 +264,53 @@ so changing it mid-year would make leaderboard totals inconsistent.
 absent, so those weeks fall back to the default puzzle rather than a themed one.
 Wordle, Connections and Wheel of Fortune all cover 40 weeks, and the lesson file
 now does too.
+
+---
+
+# Verification — score form fallback when the browser blocks the tab (2026-07-30)
+
+A teacher reported that the score form link was not working. Investigation
+found the link itself was correct in every game; the failure was that the
+games did not notice when the browser refused to open it.
+
+## What was wrong
+
+Every game called `window.open(...)` and assumed success. A blocked tab makes
+that call return null, so the form never opened — yet the game displayed
+"Form opened in a new tab", then relabelled the button "Reopen form", which
+repeated the same blocked call. The teacher was told the score had been
+submitted when it had not.
+
+## What was verified as correct
+
+Each game was driven in a browser and the URL it actually generates was
+captured and parsed. All ten produce a valid link: host `forms.cloud.microsoft`,
+the correct form id, and all five pre-fill fields present. No `forms.office.com`
+remains anywhere. The archived `staff/archive/games/count-the-dots.aspx` still
+carries the same form id; it is retired and unlinked, so it was left alone.
+
+## The change
+
+Each game now calls `cshsOpenForm()`. If the tab opens, behaviour is unchanged.
+If it is blocked, the helper hides the false confirmation and shows a link
+beside the submit button, pre-filled with the same values. A link click is never
+blocked, so this works under any browser policy. The link is hidden again if a
+later attempt succeeds. Wheel of Fortune's lower-case form path was also
+normalised to match the other nine.
+
+## Checks completed
+
+- All ten games pass `node --check`.
+- With the tab blocked, every game creates the fallback and places it directly
+  beside its submit button.
+- Full playthroughs of Wordle, Crack the Code and Stop the Clock with the tab
+  blocked: the fallback is visible and clickable, and its link carries the real
+  house, group and score. Guess the Strength was verified with a completed
+  result object.
+- No element claiming the form opened remains visible once a block is detected.
+- When the tab opens successfully the fallback is hidden again.
+- No page errors in any game.
+
+Two games needed their real flow to test at all: Guess the Strength returns
+early without a completed result, and Stop the Clock requires three player
+turns before its submit form appears. Both behave correctly once played.

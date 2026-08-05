@@ -287,6 +287,47 @@
 
 <script src="../../assets/site-config.js"></script>
 <script>
+// Opens the score form. Returns false if the browser blocked the new tab, in
+// which case a real link is shown instead — clicking a link is never blocked.
+function cshsOpenForm(url){
+  var w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
+  var box=document.getElementById('cshsFormFallback');
+  if(w){ if(box){ box.style.display='none'; } return true; }
+  // Runs after the caller's own "submitted" messaging, so it can correct it.
+  setTimeout(function(){
+    var confirmEl=document.getElementById('submitConfirm');
+    if(confirmEl){ confirmEl.style.display='none'; }
+    var b=document.getElementById('cshsFormFallback');
+    if(!b){
+      b=document.createElement('div');
+      b.id='cshsFormFallback';
+      b.setAttribute('role','alert');
+      b.style.cssText='margin:12px 0;padding:12px 14px;border:1px solid rgba(242,180,0,.5);'+
+        'border-radius:10px;background:rgba(242,180,0,.12);text-align:center;';
+      var msg=document.createElement('div');
+      msg.style.cssText='font-size:13px;line-height:1.5;color:#fdfdfd;margin-bottom:9px;';
+      msg.textContent='Your browser blocked the new tab, so the score form did not open. '+
+        'Use this link instead — your score is already filled in.';
+      var a=document.createElement('a');
+      a.id='cshsFormFallbackLink';
+      a.target='_blank'; a.rel='noopener';
+      a.textContent='Open the score form';
+      a.style.cssText='display:inline-block;padding:9px 18px;border-radius:8px;background:#f2b400;'+
+        'color:#00180f;font-weight:700;font-size:14px;text-decoration:none;';
+      b.appendChild(msg); b.appendChild(a);
+      var anchor=document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
+                 document.querySelector('#score-form button');
+      if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(b,anchor.nextSibling); }
+      else{ document.body.appendChild(b); }
+    }
+    document.getElementById('cshsFormFallbackLink').href=url;
+    b.style.display='';
+    try{ b.scrollIntoView({block:'nearest'}); }catch(e){}
+  },0);
+  return false;
+}
+
 /* ============================================================
    WHEEL OF FORTUNE — Corinda SHS
    --------------------------------------------------------------
@@ -700,13 +741,13 @@ function submitScore() {
   const house = encodeURIComponent(selectedHouse || '');
   const group = encodeURIComponent(selectedGroup || '');
   const score = encodeURIComponent(window._lastScore != null ? window._lastScore : 0);
-  const url = `https://forms.cloud.microsoft/pages/responsepage.aspx?id=xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u`
+  const url = `https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u`
     + `&rb28fecc633264af694f45d8cf2b3b8c1=${week}`
     + `&rdbbd457b83da425e93f978536b950482=${game}`
     + `&rd04d4cf9da8a4213820791f91cdcf6ba=${house}`
     + `&r3022db1950b649218496e706728c203f=${group}`
     + `&r8b61653d0854482a9e7e329026083f7b=${score}`;
-  window.open(url, '_blank');
+  cshsOpenForm(url);
   document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
 }
 
