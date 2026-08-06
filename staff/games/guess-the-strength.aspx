@@ -30,6 +30,8 @@
   .house-btn.selected { background: var(--gold); color: var(--green); border-color: var(--gold); }
   .group-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
   .group-btn { background: var(--green-mid); border: 1px solid var(--gold-border); border-radius: 8px; color: var(--white); padding: 10px 4px; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+  .group-btn[disabled]{opacity:.4;cursor:not-allowed;}
+
   .group-btn:hover { border-color: var(--gold); }
   .group-btn.selected { background: var(--gold); color: var(--green); }
   .btn { display: block; width: 100%; background: var(--gold); color: var(--green); border: none; border-radius: 10px; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 16px; }
@@ -383,8 +385,10 @@ function buildSignin(){
   HOUSES.forEach(hn => {
     const b = document.createElement('button');
     b.className = 'house-btn'; b.type = 'button'; b.textContent = hn;
-    b.addEventListener('click', () => { selectedHouse = hn;
+    b.addEventListener('click', () => { selectedHouse = hn; selectedGroup = null;
       hg.querySelectorAll('.house-btn').forEach(x => x.classList.toggle('selected', x.textContent === hn));
+      document.getElementById('groupGrid').querySelectorAll('.group-btn').forEach(x => {
+        x.disabled = false; x.removeAttribute('title'); x.classList.remove('selected'); });
       checkSignin(); });
     hg.appendChild(b);
   });
@@ -393,7 +397,9 @@ function buildSignin(){
   GROUP_LETTERS.forEach(l => {
     const b = document.createElement('button');
     b.className = 'group-btn'; b.type = 'button'; b.textContent = l;
-    b.addEventListener('click', () => { selectedGroup = l;
+    b.disabled = !selectedHouse;
+    if (!selectedHouse) b.title = 'Choose a house first';
+    b.addEventListener('click', () => { if (!selectedHouse) return; selectedGroup = l;
       gg.querySelectorAll('.group-btn').forEach(x => x.classList.toggle('selected', x.textContent === l));
       checkSignin(); });
     gg.appendChild(b);

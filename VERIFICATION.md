@@ -361,3 +361,52 @@ Teachers are reaching the games through GitHub Pages, so `main` — not the
 school-server package — is what they actually use. The two branches have
 diverged, and QLearn links should be pointed at whichever is intended to be
 live.
+
+---
+
+# Verification — group letters gated behind house selection (2026-08-05)
+
+Some responses in the score form arrive with the group as a bare letter ("G")
+rather than "House G". Every game was checked end to end for this.
+
+## Games are not the source
+
+All ten were played through in a browser and the URL each actually builds was
+captured and parsed. Every one submits house and letter together — Wordle
+"Moori A", Connections "Dibbil B", Countdown "Dibbil B", Crack the Code
+"Dibbil C", Wheel of Fortune "Bunar C", Alphabucks "Kabul C", Where's Smoulder
+"Kabul B", Guess the Strength "Kabul B", Stop the Clock "Bunar A", Fill the Bar
+"Kabul B". A different house and letter was used per game so a mismatch would
+show rather than coincidentally agree.
+
+The original January upload was checked too: every version concatenates. The
+practice games make no submissions at all, and the archived Count the Dots
+concatenates as well. "Staff" is submitted with no house prefix everywhere.
+
+## What was fixed
+
+Crack the Code and Guess the Strength rendered their letter buttons
+immediately. Choosing a letter before a house left the game holding a bare
+letter as its group, because both build the group by joining house and letter
+and Crack the Code trims an empty house away. Start and Reveal stayed disabled
+in that state, so it could not reach the form — but the other eight hide the
+letters until a house is chosen, and these two now match. Changing the house
+also clears any chosen letter.
+
+## Checks completed
+
+On both the plain pages and the gated build: letters are disabled until a house
+is picked, clicking a disabled letter sets nothing, letters enable once a house
+is chosen, changing the house clears the letter and its highlight, and a full
+round still submits house and letter together. No page errors.
+
+## Still to determine
+
+Since no game produces a bare letter, those responses are entering the form by
+another route. The most likely explanations are that the group question is a
+Choice rather than free text — Microsoft Forms only applies a pre-fill to a
+choice question when the value matches an option exactly, so "Moori A" against
+letter options would leave the field blank for the respondent to pick — or that
+someone is opening the form directly and typing the group by hand. Filtering the
+response sheet to the bare-letter rows and checking whether the Game and Week
+columns are populated in the games' formats will distinguish the two.
