@@ -410,3 +410,60 @@ letter options would leave the field blank for the respondent to pick — or tha
 someone is opening the form directly and typing the group by hand. Filtering the
 response sheet to the bare-letter rows and checking whether the Game and Week
 columns are populated in the games' formats will distinguish the two.
+
+---
+
+# Diagnosis — "Moori+G" and bare-letter groups in the form (2026-08-07)
+
+A screenshot of the response sheet identified the real cause, which the earlier
+end-to-end testing had missed because it parsed the query string rather than
+reading it literally.
+
+## What the sheet shows
+
+Two rows submitted in the same minute:
+
+    Connections        Moori    Moori+G    Term+3+·+Week+4
+    Wheel of Fortune   Moori    Moori M    Term 3 · Week 4
+
+## Cause
+
+`URLSearchParams` serialises to application/x-www-form-urlencoded, which encodes
+a space as `+`. Microsoft Forms does not decode `+` in a pre-fill value, so it
+stores the plus sign literally. Nine of the ten games built their link this way.
+Wheel of Fortune uses `encodeURIComponent`, which emits `%20`, so its rows have
+always been correct.
+
+Standard URL parsers treat `+` as a space, which is why every automated check
+until now reported the group as "Moori G" — the fault was only visible in what
+Forms actually recorded.
+
+A literal plus is encoded as `%2B`, so every bare `+` in a serialised query is a
+space. The query is now rewritten to `%20` in `cshsOpenForm` for all ten games,
+and at the URL builders in the character strengths survey and the retired Count
+the Dots.
+
+## The bare-letter groups
+
+Most likely a consequence of the same fault: a teacher shown "Moori+G" in the
+form has every reason to correct it by hand, and one row shows exactly that,
+reduced to "G". No game produces a bare letter — all ten were played through and
+checked.
+
+## Also fixed
+
+Where's Smoulder had `resetWeeklyGame` nested inside `selectHouse`, so its
+"Play Again" button called a function that was not in scope and silently did
+nothing. Both are now declared at top level.
+
+## Checks completed
+
+Full rounds played on the plain and gated builds: no bare `+` anywhere in the
+query, group decodes to "Moori G", week to "Term 3 · Week 4". `resetWeeklyGame`
+is reachable. All pages pass `node --check`, no page errors, and the staff gate
+suite still passes end to end.
+
+## Historic data
+
+Rows already recorded with `+` separators are unaffected by this change and will
+need cleaning if the leaderboard is to total them correctly.
