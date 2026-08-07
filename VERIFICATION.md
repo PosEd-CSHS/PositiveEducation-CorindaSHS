@@ -467,3 +467,45 @@ suite still passes end to end.
 
 Rows already recorded with `+` separators are unaffected by this change and will
 need cleaning if the leaderboard is to total them correctly.
+
+---
+
+# Verification — one score submission per attempt (2026-08-07)
+
+Where's Smoulder finished a round with a bright green, animated button that
+could be pressed repeatedly, sending the same score to the form each time. Every
+game had the same underlying behaviour: after the form opened they relabelled
+the button "Reopen form" and left it enabled. That was added so a blocked or
+accidentally closed tab could be recovered, but it also invited duplicates.
+
+## Change
+
+The button is disabled as soon as the form actually opens, and reads
+"Score sent — press Submit in the form tab" with no animation. The recovery path
+is kept for the case that needs it: when the browser blocks the tab nothing was
+submitted, so the button is left enabled and the fallback link is shown.
+
+Staff groups may replay, so the button is returned when the game moves on. Every
+game hides its result panel between rounds, which is a reliable "new attempt"
+signal; the original label and state are restored then. A game that never hides
+it keeps the button disabled, which is the safe default.
+
+The original label is captured synchronously, before each game relabels its own
+button, so a restored button reads "Submit Score" rather than "Reopen form".
+
+## Checks completed
+
+On the plain and gated builds: the form opens exactly once per attempt, the
+button is then disabled with no animation, further clicks submit nothing, and a
+blocked tab still leaves the button enabled with a working link. Two consecutive
+Staff rounds each submit exactly once, and the button returns to its original
+label between them. No page errors, and the staff gate suite still passes.
+
+## Note on the testing
+
+Several apparent failures during this work were faults in the test harness, not
+the games: Playwright invokes a stubbed window.open while serialising an
+evaluate's return value, which inflated the call count; its default dialog
+handling dismisses confirm(), so Smoulder's give-up path never reached the win
+panel; and calling a submit function directly bypasses the disabled button in a
+way a person cannot. Results here are from clicking the buttons as a user does.

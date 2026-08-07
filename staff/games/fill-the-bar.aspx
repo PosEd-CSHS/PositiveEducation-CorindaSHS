@@ -146,6 +146,10 @@
 <script>
 // Opens the score form. Returns false if the browser blocked the new tab, in
 // which case a real link is shown instead — clicking a link is never blocked.
+function cshsSubmitButton(){
+  return document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
+         document.querySelector('#score-form button');
+}
 function cshsOpenForm(url){
   // URLSearchParams encodes spaces as "+", which Microsoft Forms stores
   // literally ("Moori+G"). A real plus is encoded as %2B, so every bare "+"
@@ -154,7 +158,38 @@ function cshsOpenForm(url){
   var w=null;
   try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
   var box=document.getElementById('cshsFormFallback');
-  if(w){ if(box){ box.style.display='none'; } return true; }
+  if(w){
+    if(box){ box.style.display='none'; }
+    // The form is open, so this attempt is done. Runs after the caller's own
+    // button messaging so it is not overwritten.
+    // Captured now, before the caller relabels the button.
+    var btn0=cshsSubmitButton();
+    var was=btn0?{text:btn0.textContent, disabled:btn0.disabled, animation:btn0.style.animation,
+                  opacity:btn0.style.opacity, cursor:btn0.style.cursor}:null;
+    setTimeout(function(){
+      var btn=cshsSubmitButton();
+      if(!btn||!was){ return; }
+      btn.disabled=true;
+      btn.textContent='\u2713 Score sent \u2014 press Submit in the form tab';
+      btn.style.animation='none';
+      btn.style.opacity='0.6';
+      btn.style.cursor='default';
+      // Games hide the result panel between rounds, so treat the button being
+      // hidden as the start of a new attempt and give it back.
+      var watch=setInterval(function(){
+        if(!document.body.contains(btn)){ clearInterval(watch); return; }
+        if(btn.offsetParent===null){
+          btn.disabled=was.disabled;
+          btn.textContent=was.text;
+          btn.style.animation=was.animation;
+          btn.style.opacity=was.opacity;
+          btn.style.cursor=was.cursor;
+          clearInterval(watch);
+        }
+      },300);
+    },0);
+    return true;
+  }
   // Runs after the caller's own "submitted" messaging, so it can correct it.
   setTimeout(function(){
     var confirmEl=document.getElementById('submitConfirm');
@@ -177,8 +212,7 @@ function cshsOpenForm(url){
       a.style.cssText='display:inline-block;padding:9px 18px;border-radius:8px;background:#f2b400;'+
         'color:#00180f;font-weight:700;font-size:14px;text-decoration:none;';
       b.appendChild(msg); b.appendChild(a);
-      var anchor=document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
-                 document.querySelector('#score-form button');
+      var anchor=cshsSubmitButton();
       if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(b,anchor.nextSibling); }
       else{ document.body.appendChild(b); }
     }
