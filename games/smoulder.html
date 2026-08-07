@@ -366,6 +366,10 @@ header p{color:#e0e0e0;font-size:0.95rem;margin-top:6px;font-weight:600}
 // Opens the score form. Returns false if the browser blocked the new tab, in
 // which case a real link is shown instead — clicking a link is never blocked.
 function cshsOpenForm(url){
+  // URLSearchParams encodes spaces as "+", which Microsoft Forms stores
+  // literally ("Moori+G"). A real plus is encoded as %2B, so every bare "+"
+  // here is a space.
+  url = String(url).replace(/\+/g, '%20');
   var w=null;
   try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
   var box=document.getElementById('cshsFormFallback');
@@ -3263,7 +3267,9 @@ function selectHouse(h){
   selectedLetter = null;
   selectedGroup = null;
   document.getElementById('startBtn').disabled = true;
-  
+  renderWeeklyGate();
+}
+
 function resetWeeklyGame(){
   if (isStaffGroup(selectedGroup)) {
     init();
@@ -3278,9 +3284,6 @@ function resetWeeklyGame(){
   if (card) card.style.display = 'block';
   renderWeeklyGate();
   init();
-}
-
-renderWeeklyGate();
 }
 
 function selectLetter(l){

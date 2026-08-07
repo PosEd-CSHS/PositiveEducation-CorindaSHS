@@ -853,7 +853,7 @@ function buildShareUrl(name, house, homegroup, viaMatch) {
   if (viaMatch && FIELD_IDS.viaMatch !== 'PASTE_NEW_FIELD_ID_HERE') {
     params.set(FIELD_IDS.viaMatch, viaMatch);
   }
-  return `${FORM_BASE}?${params.toString()}`;
+  return `${FORM_BASE}?${params.toString().replace(/\+/g, '%20')}`;
 }
 
 document.getElementById('share-btn').addEventListener('click', () => {
