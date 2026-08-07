@@ -560,7 +560,10 @@ function cshsResultExtras(showStrength){
     }
   }
   var a=document.createElement('a');
-  a.href=cshsLeaderboardHref(); a.target='_blank'; a.rel='noopener';
+  // Same tab on purpose: a new tab does not inherit the staff access key, so
+  // the gated leaderboard would ask for it again. It also avoids leaving stray
+  // tabs open on a classroom projector.
+  a.href=cshsLeaderboardHref();
   a.textContent='See where your house is sitting \u2192';
   a.style.cssText='display:inline-block;font-size:13px;font-weight:700;color:#f2b400;text-decoration:underline;';
   box.appendChild(a);
