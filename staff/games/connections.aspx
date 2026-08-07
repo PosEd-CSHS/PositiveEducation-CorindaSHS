@@ -173,6 +173,62 @@ function cshsSubmitButton(){
   return document.getElementById('submitScoreBtn')||document.getElementById('submitBtn')||
          document.querySelector('#score-form button');
 }
+// Teaching week 1-40, derived from the shared term dates.
+function cshsAbsWeek(){
+  try{
+    var terms=window.CSHS_SITE_CONFIG.terms;
+    var pd=function(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);};
+    var monday=function(d){var x=new Date(d);x.setDate(x.getDate()-((x.getDay()+6)%7));x.setHours(0,0,0,0);return x;};
+    var today=new Date(); today.setHours(0,0,0,0);
+    var abs=0, current=0;
+    for(var i=0;i<terms.length;i++){
+      var end=pd(terms[i].end), m=monday(pd(terms[i].start));
+      while(m<=end){ abs++; if(m<=today){ current=abs; } m=new Date(m); m.setDate(m.getDate()+7); }
+    }
+    return current;
+  }catch(e){ return 0; }
+}
+function cshsWeekStrength(){
+  try{
+    var list=window.CSHS_SITE_CONFIG.strengths, n=cshsAbsWeek();
+    return (n && list && list[n-1]) ? list[n-1] : '';
+  }catch(e){ return ''; }
+}
+function cshsLeaderboardHref(){
+  var p=location.pathname;
+  return p.replace(/[^\/]*$/, 'leaderboard'+(/\.aspx$/i.test(p)?'.aspx':'.html'));
+}
+// Added next to the submit button, so it appears and hides with the result panel.
+function cshsResultExtras(showStrength){
+  var btn=cshsSubmitButton();
+  if(!btn||!btn.parentNode||document.getElementById('cshsResultExtras')){ return; }
+  var box=document.createElement('div');
+  box.id='cshsResultExtras';
+  box.style.cssText='margin-top:10px;text-align:center;line-height:1.6;';
+  if(showStrength){
+    var st=cshsWeekStrength();
+    if(st){
+      var p=document.createElement('p');
+      p.style.cssText='margin:0 0 6px;font-size:13px;opacity:.85;';
+      p.textContent="This week's character strength: "+st;
+      box.appendChild(p);
+    }
+  }
+  var a=document.createElement('a');
+  // Same tab on purpose: a new tab does not inherit the staff access key, so
+  // the gated leaderboard would ask for it again. It also avoids leaving stray
+  // tabs open on a classroom projector.
+  a.href=cshsLeaderboardHref();
+  a.textContent='See where your house is sitting \u2192';
+  a.style.cssText='display:inline-block;font-size:13px;font-weight:700;color:#f2b400;text-decoration:underline;';
+  box.appendChild(a);
+  btn.parentNode.insertBefore(box, btn.nextSibling);
+}
+(function(){
+  var go=function(){ cshsResultExtras(true); };
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',go,{once:true}); }
+  else { go(); }
+})();
 function cshsOpenForm(url){
   // URLSearchParams encodes spaces as "+", which Microsoft Forms stores
   // literally ("Moori+G"). A real plus is encoded as %2B, so every bare "+"

@@ -509,3 +509,57 @@ evaluate's return value, which inflated the call count; its default dialog
 handling dismisses confirm(), so Smoulder's give-up path never reached the win
 panel; and calling a submit function directly bypasses the disabled button in a
 way a person cannot. Results here are from clicking the buttons as a user does.
+
+---
+
+# Verification — engagement changes (2026-08-07)
+
+Three small changes intended to raise engagement.
+
+## The leaderboard is now reachable from every game
+
+Nine of the ten games never mentioned the leaderboard, so a class finished, saw
+a score, and the house competition that motivates the programme stayed a page
+away. Every game now shows "See where your house is sitting" beside the submit
+button, appearing and hiding with the result panel.
+
+The link opens in the same tab deliberately. A new tab does not inherit the
+staff access key held in sessionStorage, so on the school server the gated
+leaderboard asked for the key again — verified, and fixed by staying in the tab,
+which also avoids stray tabs on a classroom projector.
+
+## The week's character strength is now visible
+
+In most games the strength existed only as a code comment, so the puzzle never
+connected to the programme it belongs to. The forty weeks are listed once in
+`assets/site-config.js`, taken from the fortnightly lesson panels and
+cross-checked against the strength comments already written in Wordle — the two
+agreed on all forty. Crack the Code, Guess the Strength and Wheel of Fortune
+already display it and were left alone, so nothing is shown twice.
+
+The teaching week is derived from the shared term dates inside the helper,
+because the games name their own week functions differently
+(`cshsCurrentWeek`, `getAbsWeek`, `getCurrentWeek`).
+
+## Celebration on the four games that lacked one
+
+Countdown, Crack the Code, Fill the Bar and Stop the Clock ended on a plain
+score line. They now show a short confetti burst — on an exact answer, on a
+solve, and at the end of a round respectively. It is skipped for anyone who has
+asked for reduced motion, and removes itself afterwards.
+
+## Checks completed
+
+On the plain and gated builds: all ten games show the leaderboard link pointing
+at the right file for their branch; the seven that needed it show
+"This week's character strength: Leadership" (week 24) and the three that
+already showed it do not repeat it; the gated leaderboard opens unlocked from a
+game and renders; confetti fires and cleans up; reduced motion suppresses it;
+no page errors. The staff gate suite still passes end to end.
+
+## A bug introduced and caught here
+
+Stop the Clock briefly had the celebrate call without the helper function,
+because an earlier assertion aborted before the file was written while a manual
+edit added the call. It would have thrown at the end of every round. Caught by
+testing, and every game is now checked for a call without a definition.
