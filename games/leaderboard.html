@@ -110,7 +110,7 @@
 <script>
   (function(){
     // If the workbook moves to a school-owned SharePoint library, update this one URL only.
-    const WORKBOOK_EMBED_BASE = 'https://qedu-my.sharepoint.com/personal/agrev3_eq_edu_au/_layouts/15/Doc.aspx?sourcedoc={e8b963f3-5000-4896-80f0-52d995cb5771}&action=embedview&wdAllowInteractivity=False';
+    const WORKBOOK_EMBED_BASE = 'https://qedu.sharepoint.com/sites/msteams_2eafaa/_layouts/15/Doc.aspx?sourcedoc={d6762387-9c59-42ea-b2c4-c00757c18236}&action=embedview&wdAllowInteractivity=False';
     document.querySelectorAll('iframe[data-sheet]').forEach(function(frame){
       const grid = frame.dataset.sheet === 'Overall totals' ? '' : '&wdHideGridlines=True';
       frame.src = WORKBOOK_EMBED_BASE + '&Item=' + encodeURIComponent(frame.dataset.sheet) + grid + '&wdInConfigurator=True&edaebf=rslc0';
