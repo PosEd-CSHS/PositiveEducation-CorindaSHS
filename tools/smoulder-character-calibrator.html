@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smoulder character calibrator (dev tool)</title>
+<style>
+@import url('../assets/fonts/fonts.css');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#00180f;color:#fdfdfd;padding:20px}
+h1{font-family:'Fredoka One',cursive;color:#f2b400;font-size:1.4rem;margin-bottom:4px}
+p.lead{color:#c8c8c8;font-size:0.9rem;max-width:760px;margin-bottom:18px;line-height:1.5}
+.layout{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.panel{background:rgba(255,255,255,0.04);border:1px solid rgba(242,180,0,0.3);border-radius:12px;padding:16px;}
+.controls{width:360px;flex:none}
+label{display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:#f2b400;margin:12px 0 4px}
+label:first-child{margin-top:0}
+input[type=text],textarea,select{
+  width:100%;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.25);
+  background:rgba(0,0,0,0.3);color:#fdfdfd;font-family:'DM Mono',monospace;font-size:0.82rem;
+}
+textarea{min-height:160px;resize:vertical}
+.row{display:flex;align-items:center;gap:10px}
+.row input[type=range]{flex:1}
+.row .val{width:52px;text-align:right;font-family:'DM Mono',monospace;font-size:0.8rem;color:#f2b400}
+button{margin-top:14px;width:100%;padding:10px;border:none;border-radius:8px;background:#f2b400;color:#00180f;
+  font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;}
+button:hover{filter:brightness(1.08)}
+.err{color:#ff9a8a;font-size:0.8rem;margin-top:8px;white-space:pre-wrap}
+.canvas-wrap{flex:1;min-width:520px}
+canvas{background:#8fd0e8;border-radius:12px;border:2px solid rgba(242,180,0,0.4);max-width:100%}
+.output{margin-top:14px;background:#000;border-radius:8px;padding:12px;font-family:'DM Mono',monospace;
+  font-size:0.78rem;color:#7dffb0;overflow-x:auto;white-space:pre}
+.hint{font-size:0.78rem;color:#a8a8a8;margin-top:6px;line-height:1.5}
+</style>
+</head>
+<body>
+<h1>🎯 Smoulder character calibrator</h1>
+<p class="lead">Dev-only tool for tuning a new "Where's Smoulder" special-edition character. Paste the character's
+draw function (or point it at an image), pick a size to preview against, and drag the sliders until the feet sit on
+the ground line and the whole figure is inside the dashed click box. Copy the finished line into that edition's
+<code>EVENT_EXTRAS</code> array. Reference figures on the right show the actual crowd student size range (26–80px)
+this game uses.</p>
+
+<div class="layout">
+  <div class="panel controls">
+    <label>Character kind</label>
+    <select id="kind">
+      <option value="prop">Prop — code-drawn (canvas function)</option>
+      <option value="image">Image — PNG/JPG (URL or data: URI)</option>
+    </select>
+
+    <div id="propFields">
+      <label>Draw function code</label>
+      <textarea id="code" spellcheck="false">function drawSample(x,y,s){ctx.save();ctx.translate(x,y);
+  ctx.fillStyle='rgba(0,0,0,0.15)';ctx.beginPath();ctx.ellipse(0,s*0.04,s*0.3,s*0.05,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f2b400';ctx.beginPath();ctx.arc(0,-s*0.4,s*0.3,0,Math.PI*2);ctx.fill();
+  ctx.restore();}</textarea>
+      <label>Function name to call</label>
+      <input type="text" id="fnName" value="drawSample">
+    </div>
+
+    <div id="imageFields" style="display:none">
+      <label>Image URL or data: URI</label>
+      <input type="text" id="imgSrc" placeholder="../assets/events/book-week/thing.png">
+    </div>
+
+    <label>Preview at crowd size</label>
+    <select id="previewSize">
+      <option value="26">26px (far/small)</option>
+      <option value="50" selected>50px (mid)</option>
+      <option value="80">80px (near/large)</option>
+    </select>
+
+    <label>yOff — ground anchor (<span class="val" id="yOffVal">0.04</span>)</label>
+    <div class="row"><input type="range" id="yOff" min="-0.2" max="1.5" step="0.01" value="0.04"></div>
+
+    <label>topRise — click-box height above feet (<span class="val" id="topRiseVal">0.90</span>)</label>
+    <div class="row"><input type="range" id="topRise" min="0.2" max="2" step="0.01" value="0.90"></div>
+
+    <label>scale — size vs. a crowd student (<span class="val" id="scaleVal">1.00</span>)</label>
+    <div class="row"><input type="range" id="scale" min="0.3" max="2" step="0.01" value="1.00"></div>
+
+    <button onclick="render()">▶ Preview</button>
+    <div class="err" id="err"></div>
+
+    <div class="output" id="output"></div>
+    <p class="hint">This tool never saves anything — copy the output line into the special edition's
+    <code>EVENT_EXTRAS</code> array by hand, and add the matching draw function next to the other prop functions
+    if it isn't there yet.</p>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="scene" width="900" height="420"></canvas>
+  </div>
+</div>
+
+<script>
+const ctx = document.getElementById('scene').getContext('2d');
+const $ = id => document.getElementById(id);
+
+['yOff','topRise','scale'].forEach(id => {
+  $(id).addEventListener('input', () => { $(id+'Val').textContent = parseFloat($(id).value).toFixed(2); render(); });
+});
+$('kind').addEventListener('change', () => {
+  const isImg = $('kind').value === 'image';
+  $('propFields').style.display = isImg ? 'none' : 'block';
+  $('imageFields').style.display = isImg ? 'block' : 'none';
+  render();
+});
+$('previewSize').addEventListener('change', render);
+
+// A generic reference silhouette standing at (x,y=ground), for size comparison —
+// not the game's actual student figure (that's tightly coupled to the whole
+// smoulder file's internals), just enough to judge relative height/footprint.
+function drawReferenceFigure(x, y, s){
+  ctx.save(); ctx.translate(x, y);
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.beginPath(); ctx.ellipse(0, 0.02*s, 0.3*s, 0.05*s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#2a4a3a';
+  ctx.beginPath(); ctx.moveTo(-0.22*s, 0); ctx.lineTo(-0.16*s, -0.75*s);
+  ctx.lineTo(0.16*s, -0.75*s); ctx.lineTo(0.22*s, 0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#e8b87a';
+  ctx.beginPath(); ctx.arc(0, -0.9*s, 0.15*s, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+  // ground line
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x-40, y+0.5); ctx.lineTo(x+40, y+0.5); ctx.stroke();
+}
+
+function getDrawFn(){
+  if ($('kind').value === 'image') {
+    const src = $('imgSrc').value.trim();
+    if (!src) throw new Error('Enter an image URL or data: URI.');
+    if (!window._calibImg || window._calibImgSrc !== src) {
+      window._calibImg = new Image();
+      window._calibImg.src = src;
+      window._calibImgSrc = src;
+    }
+    const img = window._calibImg;
+    return (x, y, s) => {
+      if (!img.complete || !img.naturalWidth) return;
+      const w = s, h = s * (img.naturalHeight / img.naturalWidth);
+      ctx.drawImage(img, x - w/2, y - h, w, h);
+    };
+  }
+  const code = $('code').value;
+  const fnName = $('fnName').value.trim();
+  if (!fnName) throw new Error('Enter the function name to call.');
+  // eslint-disable-next-line no-new-func
+  (new Function(code + '\nwindow.__calibFn = ' + fnName + ';'))();
+  if (typeof window.__calibFn !== 'function') throw new Error('"' + fnName + '" is not defined by the pasted code.');
+  return window.__calibFn;
+}
+
+function render(){
+  $('err').textContent = '';
+  ctx.clearRect(0, 0, 900, 420);
+  ctx.fillStyle = '#8fd0e8'; ctx.fillRect(0, 0, 900, 420);
+  ctx.fillStyle = '#5a9a4a'; ctx.fillRect(0, 340, 900, 80);
+
+  const groundY = 340;
+  const refSizes = [26, 50, 80];
+  const refXs = [110, 260, 430];
+  refSizes.forEach((s, i) => drawReferenceFigure(refXs[i], groundY, s));
+  ctx.fillStyle = 'rgba(0,24,15,0.7)'; ctx.font = '12px Nunito, sans-serif'; ctx.textAlign = 'center';
+  refSizes.forEach((s, i) => ctx.fillText(s + 'px student', refXs[i], groundY + 20));
+
+  const previewSize = parseFloat($('previewSize').value);
+  const scale = parseFloat($('scale').value);
+  const yOff = parseFloat($('yOff').value);
+  const topRise = parseFloat($('topRise').value);
+  const cx = 680, cy = groundY;
+  const s = previewSize * scale;
+  const adjustedY = cy - s * yOff;
+
+  try {
+    const fn = getDrawFn();
+    fn(cx, adjustedY, s);
+  } catch (e) {
+    $('err').textContent = 'Error: ' + e.message;
+  }
+
+  // click-box overlay, matching drawHiddenChar's box logic
+  const boxTop = adjustedY - s * topRise;
+  const boxBottom = cy;
+  ctx.save();
+  ctx.strokeStyle = '#ff3860'; ctx.setLineDash([6,4]); ctx.lineWidth = 2;
+  ctx.strokeRect(cx - s*0.5, boxTop, s, boxBottom - boxTop);
+  ctx.restore();
+  ctx.fillStyle = 'rgba(0,24,15,0.7)'; ctx.font = '12px Nunito, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('preview @ ' + previewSize + 'px crowd size', cx, groundY + 20);
+
+  $('output').textContent =
+    "{ key:'yourkey', label:'🔖 Your label', count:1, kind:'" + $('kind').value + "', " +
+    ($('kind').value === 'image'
+      ? "src:'" + ($('imgSrc').value.trim() || 'PATH_HERE') + "', "
+      : "draw:(x,y,s)=>" + ($('fnName').value.trim() || 'drawSample') + "(x,y,s), ") +
+    "yOff:" + yOff.toFixed(2) + ", topRise:" + topRise.toFixed(2) + ", scale:" + scale.toFixed(2) + " },";
+}
+
+render();
+</script>
+</body>
+</html>
