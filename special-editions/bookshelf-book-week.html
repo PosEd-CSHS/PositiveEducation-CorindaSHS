@@ -68,7 +68,7 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 <body>
 <header>
   <h1>📚 Shelf Search — Book Week Special Edition</h1>
-  <p>Somewhere on these shelves are <span class="target-count">15</span> books with a gold star — eight
+  <p>Somewhere on these shelves are <span class="target-count">15</span> books with a small gold dot — eight
   classics, and one for each house plus Smoulder. Find and click each one to reveal it!</p>
 </header>
 
@@ -84,16 +84,16 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 <div class="instructions-panel" id="instructions-panel">
   <div class="instr-inner">
     <p><strong>Look closely.</strong> Most books on these shelves are just filler — plain spines with no
-    story behind them. <span class="target-count">15</span> of them have a small <strong>gold star</strong> on
+    story behind them. <span class="target-count">15</span> of them have a small <strong>gold dot</strong> on
     the spine: eight real classics, plus one themed on each of the six houses and one on Smoulder the Phoenix.
     Scroll and zoom around the shelves to spot them.</p>
-    <p style="margin-top:8px;">Click a starred book to reveal its title and a fun fact, and cross it off the
+    <p style="margin-top:8px;">Click a marked book to reveal its title and a fun fact, and cross it off the
     list above. Click a plain book and nothing happens — no penalty, just try again.</p>
     <p style="margin-top:8px;">Stuck? Hit <strong>💡 Hint</strong> to glow the shelf holding an unfound book —
     it won't say which one.</p>
     <p style="margin-top:8px;">Find them all to win. Reload the page (or hit <strong>Play Again</strong>) for a
-    brand new shelf layout — the star books move every time. Your best time is saved on this device, so beating
-    it is worth coming back for.</p>
+    brand new shelf layout — the marked books move every time. Your best time is saved on this device, so
+    beating it is worth coming back for.</p>
   </div>
 </div>
 
@@ -121,7 +121,7 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 <div class="win" id="win">
   <div class="winbox">
     <h2>🎉 ALL <span class="target-count">15</span> FOUND! 🎉</h2>
-    <p>You spotted every starred book on the shelves.</p>
+    <p>You spotted every marked book on the shelves.</p>
     <p id="win-time" style="margin-top:10px;font-family:'Fredoka One',cursive;font-size:1.2rem;color:#f2b400"></p>
     <p id="win-best" style="margin-top:2px;font-size:0.9rem;color:#e0e0e0"></p>
     <p style="margin-top:6px;font-size:0.85rem;opacity:0.7">Corinda SHS 🐦 Exceed Your Expectations — Book Week Special Edition</p>
@@ -144,21 +144,21 @@ const EVENT_NAME = 'Book Week';
 // are usually published and sold under, not truncations of the longer ones.
 const BOOK_CLASSICS_DATA = [
   { id:'alice',   title:'Alice in Wonderland', author:'Lewis Carroll',
-    color:'#7a3ca0', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
+    color:'#5a4a3a', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
   { id:'treasure',title:'Treasure Island', author:'Robert Louis Stevenson',
-    color:'#b4451e', fact:'This book gave the world the idea of an "X marks the spot" treasure map and classic pirate talk.' },
+    color:'#4a5a4a', fact:'This book gave the world the idea of an "X marks the spot" treasure map and classic pirate talk.' },
   { id:'oz',      title:'The Wizard of Oz', author:'L. Frank Baum',
-    color:'#2e8b57', fact:'Published in 1900 — one of the first famous fairy tales set in America rather than Europe.' },
+    color:'#4a4a5a', fact:'Published in 1900 — one of the first famous fairy tales set in America rather than Europe.' },
   { id:'jungle',  title:'The Jungle Book', author:'Rudyard Kipling',
-    color:'#c68a1e', fact:'Inspired by stories Kipling heard growing up in India. He later won one of the first Nobel Prizes in Literature.' },
+    color:'#5a4a4a', fact:'Inspired by stories Kipling heard growing up in India. He later won one of the first Nobel Prizes in Literature.' },
   { id:'peterpan',title:'Peter Pan', author:'J.M. Barrie',
-    color:'#1e7ac6', fact:'Peter Pan first appeared on stage as a play in 1904, before the novel was published.' },
+    color:'#4a5a5a', fact:'Peter Pan first appeared on stage as a play in 1904, before the novel was published.' },
   { id:'carol',   title:'A Christmas Carol', author:'Charles Dickens',
-    color:'#8a1e2e', fact:'Dickens wrote the whole book in just six weeks in 1843.' },
+    color:'#5a5a4a', fact:'Dickens wrote the whole book in just six weeks in 1843.' },
   { id:'crusoe',  title:'Robinson Crusoe', author:'Daniel Defoe',
-    color:'#3c6e8a', fact:'Published in 1719 — often called one of the very first English novels ever written.' },
+    color:'#5a4a52', fact:'Published in 1719 — often called one of the very first English novels ever written.' },
   { id:'anne',    title:'Anne of Green Gables', author:'L.M. Montgomery',
-    color:'#c65a8a', fact:"Set on Prince Edward Island in Canada, which is now a big tourist spot because of this book." },
+    color:'#455a4a', fact:"Set on Prince Edward Island in Canada, which is now a big tourist spot because of this book." },
 ];
 
 // One themed "book" per house mascot plus Smoulder — invented titles, but the
@@ -166,19 +166,19 @@ const BOOK_CLASSICS_DATA = [
 // history or naming beyond what the base games already state.
 const HOUSE_SPIRIT_DATA = [
   { id:'moori',    title:'Kangaroo Chronicles', author:'Moori House · White Kangaroo',
-    color:'#e4e4e4', fact:"Kangaroos can't walk backwards — their tail and leg shape make it physically impossible." },
+    color:'#4a4a4a', fact:"Kangaroos can't walk backwards — their tail and leg shape make it physically impossible." },
   { id:'bunar',    title:'Heart of the Red Gum', author:'Bunar House · Red Tree',
-    color:'#c0392b', fact:'Many Australian eucalypts shed their bark instead of growing tree rings, which is why the trunks look patchy and smooth.' },
+    color:'#5a3f3f', fact:'Many Australian eucalypts shed their bark instead of growing tree rings, which is why the trunks look patchy and smooth.' },
   { id:'dibbil',   title:'Wings Over the Range', author:'Dibbil House · Blue Eagle',
-    color:'#2e6da4', fact:"A wedge-tailed eagle's wingspan can reach 2.3 metres — among the largest eagles in the world, and native to Australia." },
+    color:'#3f4a5a', fact:"A wedge-tailed eagle's wingspan can reach 2.3 metres — among the largest eagles in the world, and native to Australia." },
   { id:'kabul',    title:'The Orange Serpent', author:'Kabul House · Orange Snake',
-    color:'#d4780a', fact:'Snakes "smell" with their tongue, flicking it to pick up scent particles from the air.' },
+    color:'#5a4a30', fact:'Snakes "smell" with their tongue, flicking it to pick up scent particles from the air.' },
   { id:'pirri',    title:'Roots in the Tide', author:'Pirri House · Maroon Mangrove',
-    color:'#7a2848', fact:'Mangrove trees filter out most of the salt from seawater before it ever reaches their leaves.' },
+    color:'#4a3a4a', fact:'Mangrove trees filter out most of the salt from seawater before it ever reaches their leaves.' },
   { id:'yarraman', title:'Hooves at Dawn', author:'Yarraman House · Black Horse',
-    color:'#242424', fact:'Horses can sleep standing up as well as lying down, thanks to a locking mechanism in their legs.' },
+    color:'#3a4a3a', fact:'Horses can sleep standing up as well as lying down, thanks to a locking mechanism in their legs.' },
   { id:'smoulder', title:'Ashes to Wings', author:'Corinda SHS · Phoenix Mascot',
-    color:'#f2841e', fact:'In old myths, the phoenix was said to live for centuries before bursting into flame and being reborn from its own ashes.' },
+    color:'#4a3a30', fact:'In old myths, the phoenix was said to live for centuries before bursting into flame and being reborn from its own ashes.' },
 ];
 const TARGET_DATA = [...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA];
 
@@ -198,12 +198,25 @@ function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xfff
 function rInt(a,b){return Math.floor(rand()*(b-a))+a}
 function rChoice(arr){return arr[rInt(0,arr.length)]}
 
-const FILLER_COLORS=['#4a3c2a','#5a4a20','#2a4a4a','#4a2a3a','#3a3a5a','#5a3a20','#2a3a2a','#4a2a2a','#3a4a5a',
-  '#3c2a4a','#4a3a2a','#2a4a3c','#5a2a3a','#2a3a5a','#4a5a2a'];
+// One shared, muted palette for every spine — decoys AND the 15 real finds.
+// Colour used to be a giveaway (the 15 targets each had their own brighter,
+// more saturated colour, so they stood out from across the room). Now every
+// book is drawn from the same close, low-contrast set of tones and the find
+// signal is only the small dot, not the spine.
+const MUTED_PALETTE=['#5a4a3a','#4a5a4a','#4a4a5a','#5a4a4a','#4a5a5a','#5a5a4a','#5a4a52','#455a4a',
+  '#4a4a4a','#5a3f3f','#3f4a5a','#5a4a30','#4a3a4a','#3a4a3a','#4a3a30','#3a3a4a',
+  '#5a4035','#3a4a5a','#4a3540','#3a3a3a','#5a4020','#455045'];
+
+// Pale, low-saturation title-text colours — varied per spine so the shelf
+// doesn't read as a wall of identical white labels, while still reading
+// clearly against the muted spine colours above.
+const TITLE_TEXT_COLORS=['rgba(255,255,255,0.85)','rgba(240,225,195,0.85)','rgba(215,225,240,0.85)',
+  'rgba(235,210,220,0.82)','rgba(210,230,215,0.82)','rgba(245,230,205,0.85)',
+  'rgba(200,220,215,0.8)','rgba(225,212,228,0.82)'];
 
 // Every decoy spine still gets a plausible (fictional) title, so the whole
 // shelf reads as a real, fully-stocked library rather than 15 real spines
-// standing out against blank filler — the actual tell stays the gold sticker.
+// standing out against blank filler — the actual tell stays the small dot.
 //
 // This is a fixed, hand-written list rather than mixing-and-matching
 // adjectives and nouns at random. A combinatorial generator was tried first
@@ -228,11 +241,11 @@ const FILLER_TITLES=[
 ];
 function fillerTitle(){ return rChoice(FILLER_TITLES); }
 
-function drawStar(cx,cy,r){
+// A small solid dot — the kind of genre sticker a real library spine
+// actually carries — reads as far less of a beacon than a star did.
+function drawTell(cx,cy,r){
   ctx.beginPath();
-  for(let i=0;i<10;i++){const ang=Math.PI/2+i*Math.PI/5;const rr=i%2===0?r:r*0.42;
-    ctx.lineTo(cx+Math.cos(ang)*rr,cy-Math.sin(ang)*rr);}
-  ctx.closePath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
 }
 
 // Spines are drawn side-on, as a real shelved book looks: narrow, upright,
@@ -242,7 +255,7 @@ function drawStar(cx,cy,r){
 // book leaning on its neighbour, like a real shelf) is just one extra
 // ctx.rotate — the click box stays the untilted rectangle, which is close
 // enough at these small angles that it never feels wrong to click on.
-function drawSpine(x,w,baseline,h,color,title,starred,tilt){
+function drawSpine(x,w,baseline,h,color,title,starred,tilt,textColor){
   ctx.save();
   ctx.translate(x+w/2, baseline);
   if(tilt) ctx.rotate(tilt);
@@ -268,7 +281,7 @@ function drawSpine(x,w,baseline,h,color,title,starred,tilt){
     ctx.save();
     ctx.translate(0, -h*0.18);
     ctx.rotate(-Math.PI/2);
-    ctx.fillStyle='rgba(255,255,255,0.88)';
+    ctx.fillStyle=textColor||'rgba(255,255,255,0.85)';
     ctx.textBaseline='middle';
     ctx.textAlign='left';
     ctx.font=fontSize+'px Nunito, sans-serif';
@@ -283,10 +296,10 @@ function drawSpine(x,w,baseline,h,color,title,starred,tilt){
   if(starred){
     // A small library-style sticker, not a giant beacon — sized and placed so
     // it takes an actual close look to spot among dozens of plain spines.
-    const r=Math.min(w,h)*0.13;
-    ctx.fillStyle='#ffd23c';
-    ctx.strokeStyle='#8a5a00';ctx.lineWidth=1;
-    drawStar(0,-h*0.06,r);
+    const r=Math.min(w,h)*0.1;
+    ctx.fillStyle='#d9a84a';
+    ctx.strokeStyle='#7a5a20';ctx.lineWidth=1;
+    drawTell(0,-h*0.06,r);
     ctx.fill();ctx.stroke();
   }
   ctx.restore();
@@ -295,7 +308,7 @@ function drawSpine(x,w,baseline,h,color,title,starred,tilt){
 // Decorative only (not clickable) — a small stack of books lying flat in a
 // shelf gap, the way a real shelf never quite stays perfectly upright.
 function drawFlatStack(x,baseline,w){
-  const colors=[rChoice(FILLER_COLORS),rChoice(FILLER_COLORS)];
+  const colors=[rChoice(MUTED_PALETTE),rChoice(MUTED_PALETTE)];
   const n=1+rInt(0,2);
   let y=baseline;
   for(let i=0;i<n;i++){
@@ -372,7 +385,8 @@ function generateSlots(){
         starred:isStar,
         target,
         title: isStar ? target.title : fillerTitle(),
-        color: isStar ? target.color : rChoice(FILLER_COLORS),
+        color: isStar ? target.color : rChoice(MUTED_PALETTE),
+        textColor: rChoice(TITLE_TEXT_COLORS),
         found:false
       });
     }
@@ -386,7 +400,7 @@ let hintGlowRow=null, hintGlowUntil=0;
 function render(){
   drawShelves();
   slots.forEach(s=>{
-    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.starred, s.tilt);
+    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.starred, s.tilt, s.textColor);
   });
   gaps.forEach(g=>{ drawFlatStack(g.x, g.baseline, g.w); });
   if(hintGlowRow!=null){

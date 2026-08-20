@@ -65,26 +65,35 @@ To make another event's edition:
 
 1. Copy `bookshelf-book-week.html` to a new file (e.g. `flags-pride-week.html`).
 2. Edit `TARGET_DATA` (currently `[...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA]`,
-   15 entries) — one entry per real find, each with a `color` and the text an
-   info panel should show when it's clicked. The array length is the only
-   thing that decides how many stars are hidden; nothing else needs to change
-   to add or remove one. `EVENT_NAME` also namespaces the personal-best
-   `localStorage` key, so a copied edition automatically gets its own best
-   time instead of sharing one with this file — just make sure it's still set
-   to something unique.
-3. Replace `drawSpine` (and the `FILLER_COLORS`/`FILLER_ADJ`/`FILLER_NOUN`
-   filler-title generator) with whatever this event's tile actually looks
-   like — a flag on a pole, an animal silhouette, whatever fits the theme.
-   Keep the function signature `(x, w, baseline, h, color, title, starred, tilt)`
-   so the grid engine doesn't change; draw in local coordinates around
+   15 entries) — one entry per real find, each with a `color` (from the
+   shared `MUTED_PALETTE` family — see below) and the text an info panel
+   should show when it's clicked. Keep titles to real, complete, commonly-used
+   forms rather than anything that needs shortening to fit — the spine
+   renderer will shrink the font to make a long title fit, but it never
+   truncates, so a title that's naturally too long just ends up too small to
+   read comfortably; better to pick a title that's actually the length it is.
+   The array length is the only thing that decides how many finds are
+   hidden; nothing else needs to change to add or remove one. `EVENT_NAME`
+   also namespaces the personal-best `localStorage` key, so a copied edition
+   automatically gets its own best time instead of sharing one with this
+   file — just make sure it's still set to something unique.
+3. Replace `drawSpine` (and the `MUTED_PALETTE`/`FILLER_TITLES` filler
+   content) with whatever this event's tile actually looks like — a flag on
+   a pole, an animal silhouette, whatever fits the theme. Keep the function
+   signature `(x, w, baseline, h, color, title, starred, tilt, textColor)` so
+   the grid engine doesn't change; draw in local coordinates around
    `(0, 0) = base-centre` the way this file does, so the `tilt` rotation and
-   the star's position keep working for free.
-   The "how a real find gets marked" convention (small, low-contrast, near
-   the base — not a giant beacon) is deliberate: see the note in `drawSpine`
-   about sizing the star so it takes an actual look to spot. Don't make a
-   future edition's tell bigger just because it's tempting to — a marker
-   visible from across the whole grid turns "spot the difference" into
-   "spot the obvious," which was a real problem in this file's first draft.
+   the find-marker's position keep working for free.
+   Two things are deliberate here, both learned from this file's first
+   draft: every tile — real find or filler — draws from **one shared, muted
+   colour palette**, so colour alone never gives away which ones are real
+   (the first draft gave each real find its own brighter colour, which was
+   a bigger tell than the marker). And the find-marker itself (currently a
+   small dot, not a star — see the note in `drawSpine`) is small,
+   low-contrast, and near the base, not a giant beacon; a marker visible
+   from across the whole grid turns "spot the difference" into "spot the
+   obvious." Don't make a future edition's tell bigger, brighter, or its
+   tiles more colourful than this one just because it's tempting to.
 4. Adjust `SHELF_ROWS`/`SLOTS_PER_ROW` if the new grid needs a different
    shape, and update the header, instructions and the `<title>`. The
    `.target-count` spans in the HTML update themselves from `TARGET_DATA.length`
