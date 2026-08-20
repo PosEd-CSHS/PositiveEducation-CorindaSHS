@@ -155,7 +155,7 @@ const W=2000, H=1300;
 const canvas=document.getElementById('scene');
 const ctx=canvas.getContext('2d');
 
-const SHELF_ROWS=6, SLOTS_PER_ROW=10;
+const SHELF_ROWS=6, SLOTS_PER_ROW=26;
 const SLOT_W = W / SLOTS_PER_ROW;
 const ROW_H = H / SHELF_ROWS;
 const SHELF_BOARD_H = 16;
@@ -166,7 +166,19 @@ function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xfff
 function rInt(a,b){return Math.floor(rand()*(b-a))+a}
 function rChoice(arr){return arr[rInt(0,arr.length)]}
 
-const FILLER_COLORS=['#4a3c2a','#5a4a20','#2a4a4a','#4a2a3a','#3a3a5a','#5a3a20','#2a3a2a','#4a2a2a','#3a4a5a'];
+const FILLER_COLORS=['#4a3c2a','#5a4a20','#2a4a4a','#4a2a3a','#3a3a5a','#5a3a20','#2a3a2a','#4a2a2a','#3a4a5a',
+  '#3c2a4a','#4a3a2a','#2a4a3c','#5a2a3a','#2a3a5a','#4a5a2a'];
+
+// Every decoy spine still gets a plausible (fictional) title, so the whole
+// shelf reads as a real, fully-stocked library rather than 8 real spines
+// standing out against blank filler — the actual tell stays the gold sticker.
+const FILLER_ADJ=['Silent','Hidden','Golden','Last','Secret','Forgotten','Bright','Quiet','Distant','Broken',
+  'Painted','Frozen','Restless','Endless','Crimson','Whispering','Faded','Wandering','Emerald','Midnight',
+  'Scarlet','Velvet','Amber','Lonely','Ancient'];
+const FILLER_NOUN=['Garden','River','Storm','Journey','Kingdom','Shadow','Ocean','Mountain','Forest','Star',
+  'Harbour','Orchard','Lantern','Bridge','Meadow','Tower','Island','Compass','Chapter','Horizon',
+  'Letter','Voyage','Orchid','Clockwork','Attic'];
+function fillerTitle(){ return rChoice(FILLER_ADJ)+' '+rChoice(FILLER_NOUN); }
 
 function drawStar(cx,cy,r){
   ctx.beginPath();
@@ -175,24 +187,49 @@ function drawStar(cx,cy,r){
   ctx.closePath();
 }
 
-function drawSpine(x,w,baseline,h,color,starred){
+// Spines are drawn side-on, as a real shelved book looks: narrow, upright,
+// with the title running bottom-to-top along the spine (tilt your head right
+// to read it) rather than a flat cover facing the viewer.
+function drawSpine(x,w,baseline,h,color,title,starred){
   ctx.save();
   ctx.fillStyle=color;
   ctx.fillRect(x,baseline-h,w,h);
-  ctx.fillStyle='rgba(0,0,0,0.18)';
-  ctx.fillRect(x,baseline-h,w*0.12,h);
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  ctx.fillRect(x,baseline-h,Math.max(1,w*0.14),h);
   ctx.fillStyle='rgba(255,255,255,0.16)';
-  ctx.fillRect(x+w-w*0.1,baseline-h,w*0.1,h);
-  ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.fillRect(x+w*0.15,baseline-h*0.84,w*0.7,h*0.018);
-  ctx.fillRect(x+w*0.15,baseline-h*0.16,w*0.7,h*0.018);
+  ctx.fillRect(x+w-Math.max(1,w*0.12),baseline-h,Math.max(1,w*0.12),h);
+  // headband + tailband — the small ribbed strip at the top/bottom of a real spine
+  ctx.fillStyle='rgba(0,0,0,0.3)';
+  ctx.fillRect(x,baseline-h,w,Math.max(1,h*0.02));
+  ctx.fillRect(x,baseline-Math.max(1,h*0.02),w,Math.max(1,h*0.02));
+
+  if(title){
+    const availH = h*0.7;
+    const pivotY = baseline - h*0.18;
+    let fontSize = Math.max(6.5, Math.min(w*0.5, 12));
+    ctx.save();
+    ctx.translate(x+w*0.5, pivotY);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillStyle='rgba(255,255,255,0.88)';
+    ctx.textBaseline='middle';
+    ctx.textAlign='left';
+    let text=title;
+    ctx.font=fontSize+'px Nunito, sans-serif';
+    while(ctx.measureText(text).width>availH && text.length>3){
+      text=text.slice(0,-1);
+    }
+    if(text.length<title.length){ text=text.slice(0,-2)+'…'; }
+    ctx.fillText(text,0,0);
+    ctx.restore();
+  }
+
   if(starred){
     // A small library-style sticker, not a giant beacon — sized and placed so
     // it takes an actual close look to spot among dozens of plain spines.
-    const r=Math.min(w,h)*0.09;
+    const r=Math.min(w,h)*0.13;
     ctx.fillStyle='#ffd23c';
     ctx.strokeStyle='#8a5a00';ctx.lineWidth=1;
-    drawStar(x+w*0.5,baseline-h*0.2,r);
+    drawStar(x+w*0.5,baseline-h*0.06,r);
     ctx.fill();ctx.stroke();
   }
   ctx.restore();
@@ -231,15 +268,18 @@ function generateSlots(){
     const maxH = ROW_H*0.82;
     for(let c=0;c<SLOTS_PER_ROW;c++){
       const idx=r*SLOTS_PER_ROW+c;
-      const w = rInt(SLOT_W*0.6, SLOT_W*0.95);
-      const h = rInt(maxH*0.6, maxH);
+      // Narrow, upright — a real book spine's width, not a flat cover.
+      const w = rInt(SLOT_W*0.45, SLOT_W*0.8);
+      const h = rInt(maxH*0.55, maxH);
       const x = c*SLOT_W + (SLOT_W-w)/2;
       const isStar = starredIdx.has(idx);
+      const target = isStar ? targetOrder[ti++] : null;
       out.push({
         x, y:baseline-h, w, h, baseline,
         starred:isStar,
-        target: isStar ? targetOrder[ti++] : null,
-        color: isStar ? targetOrder[ti-1].color : rChoice(FILLER_COLORS),
+        target,
+        title: isStar ? target.title : fillerTitle(),
+        color: isStar ? target.color : rChoice(FILLER_COLORS),
         found:false
       });
     }
@@ -250,7 +290,7 @@ function generateSlots(){
 function render(){
   drawShelves();
   slots.forEach(s=>{
-    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.starred);
+    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.starred);
   });
 }
 
