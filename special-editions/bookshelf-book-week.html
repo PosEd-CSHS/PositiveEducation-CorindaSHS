@@ -146,41 +146,43 @@ const EVENT_NAME = 'Book Week';
 // are usually published and sold under, not truncations of the longer ones.
 const BOOK_CLASSICS_DATA = [
   { id:'alice',   title:'Alice in Wonderland', author:'Lewis Carroll',
-    color:'#5a4a3a', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
+    color:'#6a2e8a', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
   { id:'treasure',title:'Treasure Island', author:'Robert Louis Stevenson',
-    color:'#4a5a4a', fact:'This book gave the world the idea of an "X marks the spot" treasure map and classic pirate talk.' },
+    color:'#1e5aa1', fact:'This book gave the world the idea of an "X marks the spot" treasure map and classic pirate talk.' },
   { id:'oz',      title:'The Wizard of Oz', author:'L. Frank Baum',
-    color:'#4a4a5a', fact:'Published in 1900 — one of the first famous fairy tales set in America rather than Europe.' },
+    color:'#1e8a4a', fact:'Published in 1900 — one of the first famous fairy tales set in America rather than Europe.' },
   { id:'jungle',  title:'The Jungle Book', author:'Rudyard Kipling',
-    color:'#5a4a4a', fact:'Inspired by stories Kipling heard growing up in India. He later won one of the first Nobel Prizes in Literature.' },
+    color:'#1e7a3e', fact:'Inspired by stories Kipling heard growing up in India. He later won one of the first Nobel Prizes in Literature.' },
   { id:'peterpan',title:'Peter Pan', author:'J.M. Barrie',
-    color:'#4a5a5a', fact:'Peter Pan first appeared on stage as a play in 1904, before the novel was published.' },
+    color:'#1e8a6e', fact:'Peter Pan first appeared on stage as a play in 1904, before the novel was published.' },
   { id:'carol',   title:'A Christmas Carol', author:'Charles Dickens',
-    color:'#5a5a4a', fact:'Dickens wrote the whole book in just six weeks in 1843.' },
+    color:'#a91e35', fact:'Dickens wrote the whole book in just six weeks in 1843.' },
   { id:'crusoe',  title:'Robinson Crusoe', author:'Daniel Defoe',
-    color:'#5a4a52', fact:'Published in 1719 — often called one of the very first English novels ever written.' },
+    color:'#1e6e8a', fact:'Published in 1719 — often called one of the very first English novels ever written.' },
   { id:'anne',    title:'Anne of Green Gables', author:'L.M. Montgomery',
-    color:'#455a4a', fact:"Set on Prince Edward Island in Canada, which is now a big tourist spot because of this book." },
+    color:'#4a8a1e', fact:"Set on Prince Edward Island in Canada, which is now a big tourist spot because of this book." },
 ];
 
 // One themed "book" per house mascot plus Smoulder — invented titles, but the
 // natural-history fact under each is real. No claims about house/mascot
-// history or naming beyond what the base games already state.
+// history or naming beyond what the base games already state. Colours nod
+// to each house's real mascot colour (see games/smoulder.html) without
+// trying to reproduce white or black literally on a book spine.
 const HOUSE_SPIRIT_DATA = [
   { id:'moori',    title:'Kangaroo Chronicles', author:'Moori House · White Kangaroo',
-    color:'#4a4a4a', fact:"Kangaroos can't walk backwards — their tail and leg shape make it physically impossible." },
+    color:'#d4a94a', fact:"Kangaroos can't walk backwards — their tail and leg shape make it physically impossible." },
   { id:'bunar',    title:'Heart of the Red Gum', author:'Bunar House · Red Tree',
-    color:'#5a3f3f', fact:'Many Australian eucalypts shed their bark instead of growing tree rings, which is why the trunks look patchy and smooth.' },
+    color:'#9e2e1e', fact:'Many Australian eucalypts shed their bark instead of growing tree rings, which is why the trunks look patchy and smooth.' },
   { id:'dibbil',   title:'Wings Over the Range', author:'Dibbil House · Blue Eagle',
-    color:'#3f4a5a', fact:"A wedge-tailed eagle's wingspan can reach 2.3 metres — among the largest eagles in the world, and native to Australia." },
+    color:'#2e3e9e', fact:"A wedge-tailed eagle's wingspan can reach 2.3 metres — among the largest eagles in the world, and native to Australia." },
   { id:'kabul',    title:'The Orange Serpent', author:'Kabul House · Orange Snake',
-    color:'#5a4a30', fact:'Snakes "smell" with their tongue, flicking it to pick up scent particles from the air.' },
+    color:'#c1521e', fact:'Snakes "smell" with their tongue, flicking it to pick up scent particles from the air.' },
   { id:'pirri',    title:'Roots in the Tide', author:'Pirri House · Maroon Mangrove',
-    color:'#4a3a4a', fact:'Mangrove trees filter out most of the salt from seawater before it ever reaches their leaves.' },
+    color:'#8a1e3a', fact:'Mangrove trees filter out most of the salt from seawater before it ever reaches their leaves.' },
   { id:'yarraman', title:'Hooves at Dawn', author:'Yarraman House · Black Horse',
-    color:'#3a4a3a', fact:'Horses can sleep standing up as well as lying down, thanks to a locking mechanism in their legs.' },
+    color:'#3a1e8a', fact:'Horses can sleep standing up as well as lying down, thanks to a locking mechanism in their legs.' },
   { id:'smoulder', title:'Ashes to Wings', author:'Corinda SHS · Phoenix Mascot',
-    color:'#4a3a30', fact:'In old myths, the phoenix was said to live for centuries before bursting into flame and being reborn from its own ashes.' },
+    color:'#c68a1e', fact:'In old myths, the phoenix was said to live for centuries before bursting into flame and being reborn from its own ashes.' },
 ];
 const TARGET_DATA = [...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA];
 
@@ -200,21 +202,29 @@ function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xfff
 function rInt(a,b){return Math.floor(rand()*(b-a))+a}
 function rChoice(arr){return arr[rInt(0,arr.length)]}
 
-// One shared, muted palette for every spine — decoys AND the 15 real finds.
-// Colour used to be a giveaway (the 15 targets each had their own brighter,
-// more saturated colour, so they stood out from across the room). Now every
-// book is drawn from the same close, low-contrast set of tones and the find
-// signal is only the small dot, not the spine.
-const MUTED_PALETTE=['#5a4a3a','#4a5a4a','#4a4a5a','#5a4a4a','#4a5a5a','#5a5a4a','#5a4a52','#455a4a',
-  '#4a4a4a','#5a3f3f','#3f4a5a','#5a4a30','#4a3a4a','#3a4a3a','#4a3a30','#3a3a4a',
-  '#5a4035','#3a4a5a','#4a3540','#3a3a3a','#5a4020','#455045'];
+// One shared, vibrant palette for every spine — decoys AND the 15 real
+// finds draw from exactly the same set. Colour used to be a giveaway (an
+// early draft gave the 15 targets their own brighter colours, so they stood
+// out from across the room); the fix was never "make everything dull," it
+// was "make colour the same pool for everyone." A real shelf is colourful —
+// muting it to solve that problem overcorrected, so this is deliberately
+// saturated and varied, just shared.
+const SPINE_PALETTE=['#8a1e3a','#1e6e8a','#1e8a4a','#c1521e','#6a2e8a','#a91e35','#b8791e','#1e8a6e',
+  '#2e3e9e','#a13c5a','#6e7a1e','#9e2e1e','#5a1e8a','#1e5aa1','#1e7a3e','#c68a1e',
+  '#8a3c1e','#3a1e8a','#1e8a8a','#8a1e6a','#4a8a1e','#d4a94a'];
 
 // Pale, low-saturation title-text colours — varied per spine so the shelf
 // doesn't read as a wall of identical white labels, while still reading
-// clearly against the muted spine colours above.
+// clearly against the more saturated spine colours above.
 const TITLE_TEXT_COLORS=['rgba(255,255,255,0.85)','rgba(240,225,195,0.85)','rgba(215,225,240,0.85)',
   'rgba(235,210,220,0.82)','rgba(210,230,215,0.82)','rgba(245,230,205,0.85)',
   'rgba(200,220,215,0.8)','rgba(225,212,228,0.82)'];
+
+// Real spines are often two-toned — a coloured "cap" at the head, a band, a
+// two-tone dust-jacket wrap — not always one flat colour. A minority of
+// spines (decoys and real finds alike, same odds either way) get a second
+// colour from the same shared palette, in one of these layouts.
+const SPINE_PATTERNS=['solid','solid','solid','solid','solid','capped','capped','banded','split'];
 
 // Real library spines often carry small coloured genre stickers. Roughly a
 // third of the decoy spines get one too — a plain circle, in one of these
@@ -272,12 +282,25 @@ function drawTriangleTell(cx,cy,r){
 // book leaning on its neighbour, like a real shelf) is just one extra
 // ctx.rotate — the click box stays the untilted rectangle, which is close
 // enough at these small angles that it never feels wrong to click on.
-function drawSpine(x,w,baseline,h,color,title,tilt,textColor,sticker){
+function drawSpine(x,w,baseline,h,color,title,tilt,textColor,sticker,pattern,color2,bandPos){
   ctx.save();
   ctx.translate(x+w/2, baseline);
   if(tilt) ctx.rotate(tilt);
+  // Body fill — plain colour, or one of a few real-book two-tone layouts.
   ctx.fillStyle=color;
   ctx.fillRect(-w/2,-h,w,h);
+  if(pattern==='capped'){
+    const capH=h*0.22;
+    ctx.fillStyle=color2;
+    ctx.fillRect(-w/2,-h,w,capH);
+  } else if(pattern==='banded'){
+    const bandY=-h*(bandPos!=null?bandPos:0.42), bandH=h*0.09;
+    ctx.fillStyle=color2;
+    ctx.fillRect(-w/2,bandY,w,bandH);
+  } else if(pattern==='split'){
+    ctx.fillStyle=color2;
+    ctx.fillRect(-w/2,-h*0.5,w,h*0.5);
+  }
   ctx.fillStyle='rgba(0,0,0,0.2)';
   ctx.fillRect(-w/2,-h,Math.max(1,w*0.14),h);
   ctx.fillStyle='rgba(255,255,255,0.16)';
@@ -328,7 +351,7 @@ function drawSpine(x,w,baseline,h,color,title,tilt,textColor,sticker){
 // Decorative only (not clickable) — a small stack of books lying flat in a
 // shelf gap, the way a real shelf never quite stays perfectly upright.
 function drawFlatStack(x,baseline,w){
-  const colors=[rChoice(MUTED_PALETTE),rChoice(MUTED_PALETTE)];
+  const colors=[rChoice(SPINE_PALETTE),rChoice(SPINE_PALETTE)];
   const n=1+rInt(0,2);
   let y=baseline;
   for(let i=0;i<n;i++){
@@ -406,12 +429,19 @@ function generateSlots(){
       const sticker = isStar
         ? {shape:'triangle', color:rChoice(STICKER_COLORS)}
         : (rand()<0.35 ? {shape:'circle', color:rChoice(STICKER_COLORS)} : null);
+      const color = isStar ? target.color : rChoice(SPINE_PALETTE);
+      const pattern = rChoice(SPINE_PATTERNS);
+      // A second colour, guaranteed different from the base so a two-tone
+      // spine actually reads as two colours rather than one by coincidence.
+      let color2 = color;
+      if(pattern!=='solid'){ while(color2===color){ color2=rChoice(SPINE_PALETTE); } }
       out.push({
         x, y:baseline-h, w, h, baseline, tilt, row:r,
         starred:isStar,
         target,
         title: isStar ? target.title : fillerTitle(),
-        color: isStar ? target.color : rChoice(MUTED_PALETTE),
+        color, pattern, color2,
+        bandPos: rF(0.32,0.56),
         textColor: rChoice(TITLE_TEXT_COLORS),
         sticker,
         found:false
@@ -427,7 +457,7 @@ let hintGlowRow=null, hintGlowUntil=0;
 function render(){
   drawShelves();
   slots.forEach(s=>{
-    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.tilt, s.textColor, s.sticker);
+    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.tilt, s.textColor, s.sticker, s.pattern, s.color2, s.bandPos);
   });
   gaps.forEach(g=>{ drawFlatStack(g.x, g.baseline, g.w); });
   if(hintGlowRow!=null){

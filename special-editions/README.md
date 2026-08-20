@@ -66,7 +66,7 @@ To make another event's edition:
 1. Copy `bookshelf-book-week.html` to a new file (e.g. `flags-pride-week.html`).
 2. Edit `TARGET_DATA` (currently `[...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA]`,
    15 entries) — one entry per real find, each with a `color` (from the
-   shared `MUTED_PALETTE` family — see below) and the text an info panel
+   shared `SPINE_PALETTE` — see below) and the text an info panel
    should show when it's clicked. Keep titles to real, complete, commonly-used
    forms rather than anything that needs shortening to fit — the spine
    renderer will shrink the font to make a long title fit, but it never
@@ -77,19 +77,26 @@ To make another event's edition:
    also namespaces the personal-best `localStorage` key, so a copied edition
    automatically gets its own best time instead of sharing one with this
    file — just make sure it's still set to something unique.
-3. Replace `drawSpine` (and the `MUTED_PALETTE`/`STICKER_COLORS`/
+3. Replace `drawSpine` (and the `SPINE_PALETTE`/`STICKER_COLORS`/
    `FILLER_TITLES` filler content) with whatever this event's tile actually
    looks like — a flag on a pole, an animal silhouette, whatever fits the
    theme. Keep the function signature
-   `(x, w, baseline, h, color, title, tilt, textColor, sticker)` so the grid
-   engine doesn't change; draw in local coordinates around
+   `(x, w, baseline, h, color, title, tilt, textColor, sticker, pattern, color2, bandPos)`
+   so the grid engine doesn't change; draw in local coordinates around
    `(0, 0) = base-centre` the way this file does, so the `tilt` rotation and
    the sticker's position keep working for free.
    Three things are deliberate here, all learned the hard way across this
    file's earlier drafts:
-   - Every tile — real find or filler — draws from **one shared, muted
-     colour palette**. An early draft gave each real find its own brighter
-     colour, which was a bigger tell than any marker.
+   - Every tile — real find or filler — draws from **one shared colour
+     palette**. An early draft gave each real find its own colour, which was
+     a bigger tell than any marker; a later draft overcorrected by making
+     that shared palette dull to be safe. Neither extreme is the actual
+     rule — the rule is *shared*, not *muted*. `SPINE_PALETTE` is deliberately
+     vibrant now, and `SPINE_PATTERNS` gives a minority of tiles (real finds
+     and filler alike, same odds) a second colour in a capped/banded/split
+     layout, the way real book spines often aren't one flat colour. Both are
+     shared across every tile — a new edition can restyle them, but should
+     keep them one shared pool, not a separate "special" set.
    - The find marker (currently a small **triangle**) is small,
      low-contrast, and near the base, not a giant beacon; a marker visible
      from across the whole grid turns "spot the difference" into "spot the
