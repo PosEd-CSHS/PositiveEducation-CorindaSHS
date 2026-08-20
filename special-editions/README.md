@@ -60,17 +60,25 @@ unrelated complexity.
 
 Everything from `// GRID ENGINE (generic)` down is the reusable part: slot
 generation, the shelf/grid renderer, click hit-testing, the info modal, the
-progress chips, win detection, zoom. To make another event's edition:
+progress chips, win detection, zoom, the hint and personal-best systems.
+To make another event's edition:
 
 1. Copy `bookshelf-book-week.html` to a new file (e.g. `flags-pride-week.html`).
-2. Edit `TARGET_DATA` — one entry per real find, each with a `color` and the
-   text an info panel should show when it's clicked. The array length is the
-   only thing that decides how many stars are hidden; nothing else needs to
-   change to add or remove one.
-3. Replace `drawSpine` (and the `FILLER_COLORS` palette) with whatever this
-   event's tile actually looks like — a flag on a pole, an animal silhouette,
-   whatever fits the theme. Keep drawing it as one function that takes
-   `(x, w, baseline, h, color, starred)` so the grid engine doesn't change.
+2. Edit `TARGET_DATA` (currently `[...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA]`,
+   15 entries) — one entry per real find, each with a `color` and the text an
+   info panel should show when it's clicked. The array length is the only
+   thing that decides how many stars are hidden; nothing else needs to change
+   to add or remove one. `EVENT_NAME` also namespaces the personal-best
+   `localStorage` key, so a copied edition automatically gets its own best
+   time instead of sharing one with this file — just make sure it's still set
+   to something unique.
+3. Replace `drawSpine` (and the `FILLER_COLORS`/`FILLER_ADJ`/`FILLER_NOUN`
+   filler-title generator) with whatever this event's tile actually looks
+   like — a flag on a pole, an animal silhouette, whatever fits the theme.
+   Keep the function signature `(x, w, baseline, h, color, title, starred, tilt)`
+   so the grid engine doesn't change; draw in local coordinates around
+   `(0, 0) = base-centre` the way this file does, so the `tilt` rotation and
+   the star's position keep working for free.
    The "how a real find gets marked" convention (small, low-contrast, near
    the base — not a giant beacon) is deliberate: see the note in `drawSpine`
    about sizing the star so it takes an actual look to spot. Don't make a
@@ -78,11 +86,23 @@ progress chips, win detection, zoom. To make another event's edition:
    visible from across the whole grid turns "spot the difference" into
    "spot the obvious," which was a real problem in this file's first draft.
 4. Adjust `SHELF_ROWS`/`SLOTS_PER_ROW` if the new grid needs a different
-   shape, and update the header, instructions and the `<title>`.
+   shape, and update the header, instructions and the `<title>`. The
+   `.target-count` spans in the HTML update themselves from `TARGET_DATA.length`
+   in `init()` — don't hand-edit the numbers in the header/instructions text.
 
-**Content note:** the book facts here are safe, well-established trivia I
-wrote myself. A Pride-flag edition's info panel would be showing real
-community identity content (flag names, meanings) — that's worth having
-whoever runs Pride Week at the school check for accuracy before it ships,
-not something to publish from a general-knowledge first draft the way Book
-Week's facts were.
+**Engagement features already built in, reusable as-is:** a 💡 Hint button
+that glows the shelf *row* (never the exact book) holding a random unfound
+target; a personal-best timer saved to `localStorage` per device that
+survives "New shelf" and page reloads, shown in the find-bar and compared on
+every win; and shelf realism (per-book tilt, occasional gaps, decorative
+flat-lying stacks) that's part of `generateSlots`/`render`, not something a
+new edition needs to redo.
+
+**Content note:** the book facts (both the eight classics and the
+house/Smoulder spirit books) are safe, well-established trivia I wrote
+myself — animal/plant facts for the house books, nothing about house or
+mascot history beyond what the base games already state. A Pride-flag
+edition's info panel would be showing real community identity content (flag
+names, meanings) — that's worth having whoever runs Pride Week at the school
+check for accuracy before it ships, not something to publish from a
+general-knowledge first draft the way this content was.

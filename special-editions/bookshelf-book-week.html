@@ -68,29 +68,36 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 <body>
 <header>
   <h1>📚 Shelf Search — Book Week Special Edition</h1>
-  <p>Somewhere on these shelves are 8 books with a gold star. Find and click each one to reveal it!</p>
+  <p>Somewhere on these shelves are <span class="target-count">15</span> books with a gold star — eight
+  classics, and one for each house plus Smoulder. Find and click each one to reveal it!</p>
 </header>
 
 <div class="find-bar" id="findBar">
   <span>FOUND:</span>
   <div id="chipRow" style="display:contents;"></div>
-  <div class="progress" id="progress">0 / 8</div>
+  <div class="progress" id="progress">0 / 15</div>
+  <div class="progress" id="bestTime" style="display:none"></div>
+  <button class="how-btn" onclick="giveHint()">💡 Hint</button>
   <button class="how-btn" onclick="toggleInstructions()">❓ How to Play</button>
 </div>
 
 <div class="instructions-panel" id="instructions-panel">
   <div class="instr-inner">
     <p><strong>Look closely.</strong> Most books on these shelves are just filler — plain spines with no
-    story behind them. Eight of them have a small <strong>gold star</strong> on the spine. Scroll and zoom
-    around the shelves to spot them.</p>
+    story behind them. <span class="target-count">15</span> of them have a small <strong>gold star</strong> on
+    the spine: eight real classics, plus one themed on each of the six houses and one on Smoulder the Phoenix.
+    Scroll and zoom around the shelves to spot them.</p>
     <p style="margin-top:8px;">Click a starred book to reveal its title and a fun fact, and cross it off the
     list above. Click a plain book and nothing happens — no penalty, just try again.</p>
-    <p style="margin-top:8px;">Find all 8 to win. Reload the page (or hit <strong>Play Again</strong>) for a
-    brand new shelf layout — the star books move every time.</p>
+    <p style="margin-top:8px;">Stuck? Hit <strong>💡 Hint</strong> to glow the shelf holding an unfound book —
+    it won't say which one.</p>
+    <p style="margin-top:8px;">Find them all to win. Reload the page (or hit <strong>Play Again</strong>) for a
+    brand new shelf layout — the star books move every time. Your best time is saved on this device, so beating
+    it is worth coming back for.</p>
   </div>
 </div>
 
-<div class="hint-bar">Dozens of books, only eight worth finding — scroll to explore the whole shelf…</div>
+<div class="hint-bar">Dozens and dozens of books, only a few worth finding — scroll to explore the whole shelf…</div>
 
 <div class="zoom-controls">
   <button onclick="zoomBy(-1)">−</button>
@@ -113,9 +120,10 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 
 <div class="win" id="win">
   <div class="winbox">
-    <h2>🎉 ALL 8 FOUND! 🎉</h2>
+    <h2>🎉 ALL <span class="target-count">15</span> FOUND! 🎉</h2>
     <p>You spotted every starred book on the shelves.</p>
     <p id="win-time" style="margin-top:10px;font-family:'Fredoka One',cursive;font-size:1.2rem;color:#f2b400"></p>
+    <p id="win-best" style="margin-top:2px;font-size:0.9rem;color:#e0e0e0"></p>
     <p style="margin-top:6px;font-size:0.85rem;opacity:0.7">Corinda SHS 🐦 Exceed Your Expectations — Book Week Special Edition</p>
     <button onclick="init()">🔄 New shelf</button>
   </div>
@@ -131,7 +139,7 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 // generic and shouldn't need to change between editions.
 // ══════════════════════════════════════════════════════════════════════════
 const EVENT_NAME = 'Book Week';
-const TARGET_DATA = [
+const BOOK_CLASSICS_DATA = [
   { id:'alice',   title:"Alice's Adventures in Wonderland", author:'Lewis Carroll',
     color:'#7a3ca0', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
   { id:'treasure',title:'Treasure Island', author:'Robert Louis Stevenson',
@@ -149,6 +157,27 @@ const TARGET_DATA = [
   { id:'anne',    title:'Anne of Green Gables', author:'L.M. Montgomery',
     color:'#c65a8a', fact:"Set on Prince Edward Island in Canada, which is now a big tourist spot because of this book." },
 ];
+
+// One themed "book" per house mascot plus Smoulder — invented titles, but the
+// natural-history fact under each is real. No claims about house/mascot
+// history or naming beyond what the base games already state.
+const HOUSE_SPIRIT_DATA = [
+  { id:'moori',    title:'The Kangaroo Chronicles', author:'Moori House · White Kangaroo',
+    color:'#e4e4e4', fact:"Kangaroos can't walk backwards — their tail and leg shape make it physically impossible." },
+  { id:'bunar',    title:'Heart of the Red Gum', author:'Bunar House · Red Tree',
+    color:'#c0392b', fact:'Many Australian eucalypts shed their bark instead of growing tree rings, which is why the trunks look patchy and smooth.' },
+  { id:'dibbil',   title:'Wings Over the Range', author:'Dibbil House · Blue Eagle',
+    color:'#2e6da4', fact:"A wedge-tailed eagle's wingspan can reach 2.3 metres — among the largest eagles in the world, and native to Australia." },
+  { id:'kabul',    title:'The Orange Serpent', author:'Kabul House · Orange Snake',
+    color:'#d4780a', fact:'Snakes "smell" with their tongue, flicking it to pick up scent particles from the air.' },
+  { id:'pirri',    title:'Roots in the Tide', author:'Pirri House · Maroon Mangrove',
+    color:'#7a2848', fact:'Mangrove trees filter out most of the salt from seawater before it ever reaches their leaves.' },
+  { id:'yarraman', title:'Hooves at Dawn', author:'Yarraman House · Black Horse',
+    color:'#242424', fact:'Horses can sleep standing up as well as lying down, thanks to a locking mechanism in their legs.' },
+  { id:'smoulder', title:'Smoulder: Ashes to Wings', author:'Corinda SHS · Phoenix Mascot',
+    color:'#f2841e', fact:'In old myths, the phoenix was said to live for centuries before bursting into flame and being reborn from its own ashes.' },
+];
+const TARGET_DATA = [...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA];
 
 // ── GRID ENGINE (generic) ────────────────────────────────────────────────
 const W=2000, H=1300;
@@ -189,26 +218,31 @@ function drawStar(cx,cy,r){
 
 // Spines are drawn side-on, as a real shelved book looks: narrow, upright,
 // with the title running bottom-to-top along the spine (tilt your head right
-// to read it) rather than a flat cover facing the viewer.
-function drawSpine(x,w,baseline,h,color,title,starred){
+// to read it) rather than a flat cover facing the viewer. Drawn in local
+// coordinates around the spine's own base-centre so a small random tilt (a
+// book leaning on its neighbour, like a real shelf) is just one extra
+// ctx.rotate — the click box stays the untilted rectangle, which is close
+// enough at these small angles that it never feels wrong to click on.
+function drawSpine(x,w,baseline,h,color,title,starred,tilt){
   ctx.save();
+  ctx.translate(x+w/2, baseline);
+  if(tilt) ctx.rotate(tilt);
   ctx.fillStyle=color;
-  ctx.fillRect(x,baseline-h,w,h);
+  ctx.fillRect(-w/2,-h,w,h);
   ctx.fillStyle='rgba(0,0,0,0.2)';
-  ctx.fillRect(x,baseline-h,Math.max(1,w*0.14),h);
+  ctx.fillRect(-w/2,-h,Math.max(1,w*0.14),h);
   ctx.fillStyle='rgba(255,255,255,0.16)';
-  ctx.fillRect(x+w-Math.max(1,w*0.12),baseline-h,Math.max(1,w*0.12),h);
+  ctx.fillRect(w/2-Math.max(1,w*0.12),-h,Math.max(1,w*0.12),h);
   // headband + tailband — the small ribbed strip at the top/bottom of a real spine
   ctx.fillStyle='rgba(0,0,0,0.3)';
-  ctx.fillRect(x,baseline-h,w,Math.max(1,h*0.02));
-  ctx.fillRect(x,baseline-Math.max(1,h*0.02),w,Math.max(1,h*0.02));
+  ctx.fillRect(-w/2,-h,w,Math.max(1,h*0.02));
+  ctx.fillRect(-w/2,-Math.max(1,h*0.02),w,Math.max(1,h*0.02));
 
   if(title){
     const availH = h*0.7;
-    const pivotY = baseline - h*0.18;
     let fontSize = Math.max(6.5, Math.min(w*0.5, 12));
     ctx.save();
-    ctx.translate(x+w*0.5, pivotY);
+    ctx.translate(0, -h*0.18);
     ctx.rotate(-Math.PI/2);
     ctx.fillStyle='rgba(255,255,255,0.88)';
     ctx.textBaseline='middle';
@@ -229,11 +263,28 @@ function drawSpine(x,w,baseline,h,color,title,starred){
     const r=Math.min(w,h)*0.13;
     ctx.fillStyle='#ffd23c';
     ctx.strokeStyle='#8a5a00';ctx.lineWidth=1;
-    drawStar(x+w*0.5,baseline-h*0.06,r);
+    drawStar(0,-h*0.06,r);
     ctx.fill();ctx.stroke();
   }
   ctx.restore();
 }
+
+// Decorative only (not clickable) — a small stack of books lying flat in a
+// shelf gap, the way a real shelf never quite stays perfectly upright.
+function drawFlatStack(x,baseline,w){
+  const colors=[rChoice(FILLER_COLORS),rChoice(FILLER_COLORS)];
+  const n=1+rInt(0,2);
+  let y=baseline;
+  for(let i=0;i<n;i++){
+    const bw=w*rF(0.75,0.95), bh=Math.max(6,w*0.16);
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.fillRect(x+(w-bw)/2, y-bh, bw, bh);
+    ctx.fillStyle='rgba(255,255,255,0.14)';
+    ctx.fillRect(x+(w-bw)/2, y-bh, bw, Math.max(1,bh*0.15));
+    y-=bh;
+  }
+}
+function rF(a,b){return rand()*(b-a)+a}
 
 function drawShelves(){
   ctx.fillStyle='#3a2a1a';
@@ -250,32 +301,48 @@ function drawShelves(){
 }
 
 let slots=[]; // {x,y,w,h,starred,targetId,found}
+let gaps=[];  // decorative-only flat stacks, never clickable
 let foundIds=new Set();
 let startedAt=null;
 
 function generateSlots(){
   seed=SESSION_SEED;
   const total=SHELF_ROWS*SLOTS_PER_ROW;
+
+  // A real shelf has occasional gaps — books out being read, or just missing.
+  // Reserve those slots first so a target never lands in an empty gap.
+  const gapIdx=new Set();
+  for(let i=0;i<total;i++){ if(rand()<0.07) gapIdx.add(i); }
+
   const starredIdx=new Set();
-  while(starredIdx.size<TARGET_DATA.length){ starredIdx.add(rInt(0,total)); }
-  const starredArr=[...starredIdx];
+  while(starredIdx.size<TARGET_DATA.length){
+    const idx=rInt(0,total);
+    if(!gapIdx.has(idx)) starredIdx.add(idx);
+  }
   const targetOrder=[...TARGET_DATA].sort(()=>rand()-0.5);
 
-  const out=[];
+  const out=[]; const gapOut=[];
   let ti=0;
   for(let r=0;r<SHELF_ROWS;r++){
     const baseline=(r+1)*ROW_H - 2;
     const maxH = ROW_H*0.82;
     for(let c=0;c<SLOTS_PER_ROW;c++){
       const idx=r*SLOTS_PER_ROW+c;
+      if(gapIdx.has(idx)){
+        if(rand()<0.45){ gapOut.push({x:c*SLOT_W, baseline, w:SLOT_W}); }
+        continue;
+      }
       // Narrow, upright — a real book spine's width, not a flat cover.
       const w = rInt(SLOT_W*0.45, SLOT_W*0.8);
       const h = rInt(maxH*0.55, maxH);
       const x = c*SLOT_W + (SLOT_W-w)/2;
       const isStar = starredIdx.has(idx);
       const target = isStar ? targetOrder[ti++] : null;
+      // A slight lean, like a book resting against its neighbour — mostly
+      // small, occasionally a proper lean, never enough to misfire clicks.
+      const tilt = (rand()<0.7 ? rF(-0.05,0.05) : rF(-0.14,0.14));
       out.push({
-        x, y:baseline-h, w, h, baseline,
+        x, y:baseline-h, w, h, baseline, tilt, row:r,
         starred:isStar,
         target,
         title: isStar ? target.title : fillerTitle(),
@@ -285,13 +352,26 @@ function generateSlots(){
     }
   }
   slots=out;
+  gaps=gapOut;
 }
+
+let hintGlowRow=null, hintGlowUntil=0;
 
 function render(){
   drawShelves();
   slots.forEach(s=>{
-    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.starred);
+    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.starred, s.tilt);
   });
+  gaps.forEach(g=>{ drawFlatStack(g.x, g.baseline, g.w); });
+  if(hintGlowRow!=null){
+    // Glows the whole shelf row, not the book — a nudge, not the answer.
+    const t=(Date.now()%900)/900;
+    const alpha=0.10+0.09*Math.sin(t*Math.PI*2);
+    ctx.save();
+    ctx.fillStyle='rgba(242,180,0,'+Math.max(0,alpha)+')';
+    ctx.fillRect(0, hintGlowRow*ROW_H, W, ROW_H);
+    ctx.restore();
+  }
 }
 
 function buildChips(){
@@ -317,16 +397,59 @@ function openModal(target){
   document.getElementById('modalFact').textContent = target.fact;
   document.getElementById('modalBackdrop').classList.add('show');
 }
+// ── personal best (per device, per edition — never submitted anywhere) ──
+const BEST_TIME_KEY='shelfSearch:bestTime:'+EVENT_NAME;
+function getBestTime(){
+  try{ const v=localStorage.getItem(BEST_TIME_KEY); return v===null?null:parseInt(v,10); }catch(e){ return null; }
+}
+function setBestTime(secs){ try{ localStorage.setItem(BEST_TIME_KEY,String(secs)); }catch(e){} }
+function fmtTime(secs){ const m=Math.floor(secs/60), s=secs%60; return m+':'+(s<10?'0':'')+s; }
+function updateBestTimeDisplay(){
+  const el=document.getElementById('bestTime');
+  const best=getBestTime();
+  if(best===null){ el.style.display='none'; return; }
+  el.style.display='';
+  el.textContent='🏅 Best: '+fmtTime(best);
+}
+
 function closeModal(){
   document.getElementById('modalBackdrop').classList.remove('show');
   if(foundIds.size>=TARGET_DATA.length){
     setTimeout(()=>{
       const secs=Math.round((Date.now()-startedAt)/1000);
-      const m=Math.floor(secs/60), s=secs%60;
-      document.getElementById('win-time').textContent='⏱ Your time: '+m+':'+(s<10?'0':'')+s;
+      document.getElementById('win-time').textContent='⏱ Your time: '+fmtTime(secs);
+      const best=getBestTime();
+      const winBestEl=document.getElementById('win-best');
+      if(best===null || secs<best){
+        setBestTime(secs);
+        winBestEl.textContent = best===null ? '🏅 First time recorded on this device!' : '🏅 New best! (previous: '+fmtTime(best)+')';
+        updateBestTimeDisplay();
+      } else {
+        winBestEl.textContent = 'Best on this device: '+fmtTime(best);
+      }
       document.getElementById('win').classList.add('show');
     },200);
   }
+}
+
+// ── hint (glows the shelf row, never the exact book) ──
+function giveHint(){
+  const unfound = slots.filter(s=>s.starred && !s.found);
+  if(unfound.length===0) return;
+  const target = unfound[Math.floor(Math.random()*unfound.length)];
+  const rect=canvas.getBoundingClientRect();
+  const scaleY=rect.height/H;
+  const rowCenter=(target.row+0.5)*ROW_H*scaleY;
+  const wrap=document.getElementById('sceneWrap');
+  wrap.scrollTop=Math.max(0, rowCenter-wrap.clientHeight/2);
+  hintGlowRow=target.row;
+  hintGlowUntil=Date.now()+2200;
+  hintTick();
+}
+function hintTick(){
+  render();
+  if(Date.now()<hintGlowUntil){ requestAnimationFrame(hintTick); }
+  else { hintGlowRow=null; render(); }
 }
 
 canvas.addEventListener('click', function(e){
@@ -390,10 +513,13 @@ window.addEventListener('resize', ()=>{ if(zoomLevel===0) applyZoom(); });
 function init(){
   document.getElementById('win').classList.remove('show');
   document.getElementById('modalBackdrop').classList.remove('show');
+  document.querySelectorAll('.target-count').forEach(el=>{ el.textContent=TARGET_DATA.length; });
   foundIds=new Set();
   startedAt=null;
+  hintGlowRow=null;
   buildChips();
   updateProgress();
+  updateBestTimeDisplay();
   generateSlots();
   render();
   applyZoom();
