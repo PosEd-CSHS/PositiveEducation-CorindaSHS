@@ -139,12 +139,15 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 // generic and shouldn't need to change between editions.
 // ══════════════════════════════════════════════════════════════════════════
 const EVENT_NAME = 'Book Week';
+// Titles here are kept to real, complete, commonly-used forms — "Alice in
+// Wonderland" and "The Wizard of Oz" are the actual short titles these books
+// are usually published and sold under, not truncations of the longer ones.
 const BOOK_CLASSICS_DATA = [
-  { id:'alice',   title:"Alice's Adventures in Wonderland", author:'Lewis Carroll',
+  { id:'alice',   title:'Alice in Wonderland', author:'Lewis Carroll',
     color:'#7a3ca0', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
   { id:'treasure',title:'Treasure Island', author:'Robert Louis Stevenson',
     color:'#b4451e', fact:'This book gave the world the idea of an "X marks the spot" treasure map and classic pirate talk.' },
-  { id:'oz',      title:'The Wonderful Wizard of Oz', author:'L. Frank Baum',
+  { id:'oz',      title:'The Wizard of Oz', author:'L. Frank Baum',
     color:'#2e8b57', fact:'Published in 1900 — one of the first famous fairy tales set in America rather than Europe.' },
   { id:'jungle',  title:'The Jungle Book', author:'Rudyard Kipling',
     color:'#c68a1e', fact:'Inspired by stories Kipling heard growing up in India. He later won one of the first Nobel Prizes in Literature.' },
@@ -162,7 +165,7 @@ const BOOK_CLASSICS_DATA = [
 // natural-history fact under each is real. No claims about house/mascot
 // history or naming beyond what the base games already state.
 const HOUSE_SPIRIT_DATA = [
-  { id:'moori',    title:'The Kangaroo Chronicles', author:'Moori House · White Kangaroo',
+  { id:'moori',    title:'Kangaroo Chronicles', author:'Moori House · White Kangaroo',
     color:'#e4e4e4', fact:"Kangaroos can't walk backwards — their tail and leg shape make it physically impossible." },
   { id:'bunar',    title:'Heart of the Red Gum', author:'Bunar House · Red Tree',
     color:'#c0392b', fact:'Many Australian eucalypts shed their bark instead of growing tree rings, which is why the trunks look patchy and smooth.' },
@@ -174,7 +177,7 @@ const HOUSE_SPIRIT_DATA = [
     color:'#7a2848', fact:'Mangrove trees filter out most of the salt from seawater before it ever reaches their leaves.' },
   { id:'yarraman', title:'Hooves at Dawn', author:'Yarraman House · Black Horse',
     color:'#242424', fact:'Horses can sleep standing up as well as lying down, thanks to a locking mechanism in their legs.' },
-  { id:'smoulder', title:'Smoulder: Ashes to Wings', author:'Corinda SHS · Phoenix Mascot',
+  { id:'smoulder', title:'Ashes to Wings', author:'Corinda SHS · Phoenix Mascot',
     color:'#f2841e', fact:'In old myths, the phoenix was said to live for centuries before bursting into flame and being reborn from its own ashes.' },
 ];
 const TARGET_DATA = [...BOOK_CLASSICS_DATA, ...HOUSE_SPIRIT_DATA];
@@ -199,15 +202,31 @@ const FILLER_COLORS=['#4a3c2a','#5a4a20','#2a4a4a','#4a2a3a','#3a3a5a','#5a3a20'
   '#3c2a4a','#4a3a2a','#2a4a3c','#5a2a3a','#2a3a5a','#4a5a2a'];
 
 // Every decoy spine still gets a plausible (fictional) title, so the whole
-// shelf reads as a real, fully-stocked library rather than 8 real spines
+// shelf reads as a real, fully-stocked library rather than 15 real spines
 // standing out against blank filler — the actual tell stays the gold sticker.
-const FILLER_ADJ=['Silent','Hidden','Golden','Last','Secret','Forgotten','Bright','Quiet','Distant','Broken',
-  'Painted','Frozen','Restless','Endless','Crimson','Whispering','Faded','Wandering','Emerald','Midnight',
-  'Scarlet','Velvet','Amber','Lonely','Ancient'];
-const FILLER_NOUN=['Garden','River','Storm','Journey','Kingdom','Shadow','Ocean','Mountain','Forest','Star',
-  'Harbour','Orchard','Lantern','Bridge','Meadow','Tower','Island','Compass','Chapter','Horizon',
-  'Letter','Voyage','Orchid','Clockwork','Attic'];
-function fillerTitle(){ return rChoice(FILLER_ADJ)+' '+rChoice(FILLER_NOUN); }
+//
+// This is a fixed, hand-written list rather than mixing-and-matching
+// adjectives and nouns at random. A combinatorial generator was tried first
+// and dropped: with 25 adjectives and 25 nouns that's 625 unreviewed
+// combinations, and at least one of them read as an off-colour joke by
+// accident ("Golden River"). Every title below has actually been read.
+const FILLER_TITLES=[
+  'The Silent Garden','Hidden Harbour','The Last Voyage','Secret of the Attic','Forgotten Kingdom',
+  'Bright Horizon','The Quiet Orchard','Beyond the Bridge','The Painted Tower','Frozen Meadow',
+  'Restless Compass','The Endless Forest','Whispering Pines','Faded Letters','The Wandering Star',
+  'Emerald Chapter','Midnight Orchid','The Crimson Tower','Velvet Shadow','The Amber Compass',
+  'Lonely Lighthouse','Ancient Clockwork','The Distant Isle','Storm at the Harbour','The Forest Gate',
+  'Journey to Nowhere','The Bridge of Stars','Kingdom of Paper','The Shadow Chapter','Mountain of Ash',
+  'The Star Collector','Harbour Lights','The Orchard Keeper','Lantern in the Fog','Meadow of Bells',
+  'The Tower Watch','Island of Echoes','The Compass Rose','Letters from the Attic','The Long Horizon',
+  'Voyage of the Lantern','The Orchid Garden','Clockwork Bridge','The Attic Door','Beneath the Willow',
+  'The Paper Kingdom','Song of the Forest','The Painted Sky',"Winter's Compass",'The Hollow Tower',
+  'Feathers and Ash','The Quiet Harbour','Ember and Frost','The Lantern Keeper','Beyond the Meadow',
+  'The Silver Orchard','Tales of the Attic','The Wandering Chapter','Echoes of the Storm','The Garden Gate',
+  'Shadows on the Bridge','Whispers of the Sea','The Hidden Compass',"Autumn's Lantern",'The Forgotten Tower',
+  'Roots and Stone','The Silent Voyage','Kingdom by the Sea','The Painted Door','Frost on the Meadow',
+];
+function fillerTitle(){ return rChoice(FILLER_TITLES); }
 
 function drawStar(cx,cy,r){
   ctx.beginPath();
@@ -239,6 +258,11 @@ function drawSpine(x,w,baseline,h,color,title,starred,tilt){
   ctx.fillRect(-w/2,-Math.max(1,h*0.02),w,Math.max(1,h*0.02));
 
   if(title){
+    // Never truncated — the font shrinks to fit the full title instead of
+    // cutting words off with an ellipsis. Starred (findable) slots are given
+    // generous height in generateSlots() specifically so their real titles
+    // never need to shrink past a comfortable reading size; this loop is the
+    // guarantee that holds even so, and covers the shorter filler titles too.
     const availH = h*0.7;
     let fontSize = Math.max(6.5, Math.min(w*0.5, 12));
     ctx.save();
@@ -247,13 +271,12 @@ function drawSpine(x,w,baseline,h,color,title,starred,tilt){
     ctx.fillStyle='rgba(255,255,255,0.88)';
     ctx.textBaseline='middle';
     ctx.textAlign='left';
-    let text=title;
     ctx.font=fontSize+'px Nunito, sans-serif';
-    while(ctx.measureText(text).width>availH && text.length>3){
-      text=text.slice(0,-1);
+    while(ctx.measureText(title).width>availH && fontSize>3.5){
+      fontSize-=0.5;
+      ctx.font=fontSize+'px Nunito, sans-serif';
     }
-    if(text.length<title.length){ text=text.slice(0,-2)+'…'; }
-    ctx.fillText(text,0,0);
+    ctx.fillText(title,0,0);
     ctx.restore();
   }
 
@@ -334,9 +357,12 @@ function generateSlots(){
       }
       // Narrow, upright — a real book spine's width, not a flat cover.
       const w = rInt(SLOT_W*0.45, SLOT_W*0.8);
-      const h = rInt(maxH*0.55, maxH);
-      const x = c*SLOT_W + (SLOT_W-w)/2;
       const isStar = starredIdx.has(idx);
+      // Findable books get generous height so their real title always has
+      // comfortable room — the shrink-to-fit in drawSpine is a safety net,
+      // not something a target's title should actually need to lean on.
+      const h = isStar ? rInt(maxH*0.9, maxH) : rInt(maxH*0.55, maxH);
+      const x = c*SLOT_W + (SLOT_W-w)/2;
       const target = isStar ? targetOrder[ti++] : null;
       // A slight lean, like a book resting against its neighbour — mostly
       // small, occasionally a proper lean, never enough to misfire clicks.
