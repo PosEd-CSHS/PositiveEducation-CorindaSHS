@@ -45,3 +45,44 @@ submission, and the "see where your house is sitting" leaderboard link. A
 special edition is for fun, played on demand — it doesn't feed the official
 Home Group scoring data. If a future event genuinely needs scores collected,
 that's a deliberate decision to wire back in, not a default.
+
+## Shelf Search — Book Week (`bookshelf-book-week.html`)
+
+A second, different template: a dense grid of lookalike items (here, book
+spines on shelves) where most are filler and a handful are the real find —
+clicking one shows an info panel instead of just a checkmark. This is the
+right shape for "dozens of X, only a few of which matter": a wall of flags,
+a paddock of farm animals, a rack of anything. It shares no code with the
+Smoulder template — no crowd, no zoom-heavy human figures — because a tiled
+grid of one repeated item is a genuinely simpler scene than a crowd, and
+building it standalone keeps it that way rather than dragging in Smoulder's
+unrelated complexity.
+
+Everything from `// GRID ENGINE (generic)` down is the reusable part: slot
+generation, the shelf/grid renderer, click hit-testing, the info modal, the
+progress chips, win detection, zoom. To make another event's edition:
+
+1. Copy `bookshelf-book-week.html` to a new file (e.g. `flags-pride-week.html`).
+2. Edit `TARGET_DATA` — one entry per real find, each with a `color` and the
+   text an info panel should show when it's clicked. The array length is the
+   only thing that decides how many stars are hidden; nothing else needs to
+   change to add or remove one.
+3. Replace `drawSpine` (and the `FILLER_COLORS` palette) with whatever this
+   event's tile actually looks like — a flag on a pole, an animal silhouette,
+   whatever fits the theme. Keep drawing it as one function that takes
+   `(x, w, baseline, h, color, starred)` so the grid engine doesn't change.
+   The "how a real find gets marked" convention (small, low-contrast, near
+   the base — not a giant beacon) is deliberate: see the note in `drawSpine`
+   about sizing the star so it takes an actual look to spot. Don't make a
+   future edition's tell bigger just because it's tempting to — a marker
+   visible from across the whole grid turns "spot the difference" into
+   "spot the obvious," which was a real problem in this file's first draft.
+4. Adjust `SHELF_ROWS`/`SLOTS_PER_ROW` if the new grid needs a different
+   shape, and update the header, instructions and the `<title>`.
+
+**Content note:** the book facts here are safe, well-established trivia I
+wrote myself. A Pride-flag edition's info panel would be showing real
+community identity content (flag names, meanings) — that's worth having
+whoever runs Pride Week at the school check for accuracy before it ships,
+not something to publish from a general-knowledge first draft the way Book
+Week's facts were.

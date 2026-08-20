@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shelf Search — Book Week Special Edition – Corinda SHS</title>
+<style>
+@import url('../assets/fonts/fonts.css');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',sans-serif;background:#00180f;color:#fdfdfd;overflow-x:hidden}
+header{background:linear-gradient(135deg,#00180f,#022b1c);padding:16px 20px;text-align:center;border-bottom:3px solid #f2b400}
+h1{font-family:'Fredoka One',cursive;color:#f2b400;font-size:1.7rem;text-shadow:0 2px 0 rgba(0,0,0,0.4)}
+header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
+
+.find-bar{background:#022b1c;border-bottom:2px solid #f2b400;padding:10px 16px;display:flex;flex-wrap:wrap;
+  gap:8px;align-items:center;justify-content:center}
+.find-bar>span{font-weight:900;color:#f2b400;font-size:0.85rem;text-transform:uppercase;letter-spacing:.06em}
+.slot-chip{background:rgba(255,255,255,0.08);border:1px solid rgba(242,180,0,0.35);border-radius:20px;
+  padding:6px 12px;font-size:0.82rem;font-weight:700;color:#c8c8c8;transition:all .2s}
+.slot-chip.found{background:#f2b400;color:#00180f;border-color:#f2b400}
+.progress{background:#00180f;border:1px solid #f2b400;border-radius:20px;padding:6px 14px;font-weight:900;
+  color:#f2b400;font-family:'DM Mono',monospace}
+.how-btn{background:#f2b400;color:#00180f;border:none;border-radius:20px;padding:6px 14px;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;font-size:0.82rem}
+.how-btn:hover{filter:brightness(1.08)}
+
+.instructions-panel{max-height:0;overflow:hidden;transition:max-height .3s ease;background:#01100a}
+.instructions-panel.open{max-height:260px}
+.instr-inner{padding:16px 20px;max-width:820px;margin:0 auto;font-size:0.9rem;line-height:1.6;color:#d8d8d8}
+.instr-inner strong{color:#f2b400}
+
+.zoom-controls{position:sticky;top:8px;left:8px;z-index:50;display:inline-flex;gap:6px;margin:10px 0 0 10px}
+.zoom-controls button{width:40px;height:40px;border-radius:10px;border:2px solid #f2b400;background:#00180f;
+  color:#f2b400;font-size:1.2rem;font-weight:900;cursor:pointer;line-height:1}
+.zoom-controls button.fit{width:auto;padding:0 12px;font-size:0.8rem}
+
+.scene-wrap{overflow:auto;max-height:75vh;background:#3a2a1a}
+#scene{display:block}
+
+.hint-bar{text-align:center;padding:8px;font-size:0.85rem;color:#a8a8a8;background:#01100a}
+
+/* info modal shown when a special book is found */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,10,6,0.75);display:none;align-items:center;
+  justify-content:center;z-index:400;padding:20px}
+.modal-backdrop.show{display:flex}
+.modal-box{background:linear-gradient(160deg,#022b1c,#00180f);border:2px solid #f2b400;border-radius:16px;
+  max-width:440px;width:100%;padding:26px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.modal-box .spine-preview{width:70px;height:100px;margin:0 auto 14px;border-radius:4px 8px 8px 4px}
+.modal-box h2{font-family:'Fredoka One',cursive;color:#f2b400;font-size:1.3rem;margin-bottom:4px}
+.modal-box .author{color:#c8c8c8;font-size:0.85rem;margin-bottom:14px;font-style:italic}
+.modal-box p.fact{font-size:0.92rem;line-height:1.55;color:#e8e8e8;margin-bottom:18px}
+.modal-box button{background:#f2b400;color:#00180f;border:none;border-radius:20px;padding:10px 26px;
+  font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif}
+.modal-box button:hover{filter:brightness(1.08)}
+
+.win{position:fixed;inset:0;background:rgba(0,10,6,0.85);display:none;align-items:center;justify-content:center;
+  z-index:500;padding:20px}
+.win.show{display:flex}
+.winbox{background:linear-gradient(160deg,#022b1c,#00180f);border:2px solid #f2b400;border-radius:18px;
+  max-width:480px;width:100%;padding:32px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+.winbox h2{font-family:'Fredoka One',cursive;color:#f2b400;font-size:1.6rem;text-shadow:0 2px 0 rgba(0,0,0,0.4)}
+.winbox p{color:#e0e0e0;margin-top:8px;font-size:1rem;line-height:1.5}
+.winbox button{margin-top:16px;background:#f2b400;color:#00180f;border:none;border-radius:20px;
+  padding:12px 26px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;font-size:1rem}
+.winbox button:hover{transform:scale(1.05)}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 Shelf Search — Book Week Special Edition</h1>
+  <p>Somewhere on these shelves are 8 books with a gold star. Find and click each one to reveal it!</p>
+</header>
+
+<div class="find-bar" id="findBar">
+  <span>FOUND:</span>
+  <div id="chipRow" style="display:contents;"></div>
+  <div class="progress" id="progress">0 / 8</div>
+  <button class="how-btn" onclick="toggleInstructions()">❓ How to Play</button>
+</div>
+
+<div class="instructions-panel" id="instructions-panel">
+  <div class="instr-inner">
+    <p><strong>Look closely.</strong> Most books on these shelves are just filler — plain spines with no
+    story behind them. Eight of them have a small <strong>gold star</strong> on the spine. Scroll and zoom
+    around the shelves to spot them.</p>
+    <p style="margin-top:8px;">Click a starred book to reveal its title and a fun fact, and cross it off the
+    list above. Click a plain book and nothing happens — no penalty, just try again.</p>
+    <p style="margin-top:8px;">Find all 8 to win. Reload the page (or hit <strong>Play Again</strong>) for a
+    brand new shelf layout — the star books move every time.</p>
+  </div>
+</div>
+
+<div class="hint-bar">Dozens of books, only eight worth finding — scroll to explore the whole shelf…</div>
+
+<div class="zoom-controls">
+  <button onclick="zoomBy(-1)">−</button>
+  <button class="fit" onclick="zoomReset()">Fit</button>
+  <button onclick="zoomBy(1)">+</button>
+</div>
+<div class="scene-wrap" id="sceneWrap">
+  <canvas id="scene" width="2000" height="1300"></canvas>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal-box">
+    <div class="spine-preview" id="modalSpine"></div>
+    <h2 id="modalTitle"></h2>
+    <p class="author" id="modalAuthor"></p>
+    <p class="fact" id="modalFact"></p>
+    <button onclick="closeModal()">Back to the shelves</button>
+  </div>
+</div>
+
+<div class="win" id="win">
+  <div class="winbox">
+    <h2>🎉 ALL 8 FOUND! 🎉</h2>
+    <p>You spotted every starred book on the shelves.</p>
+    <p id="win-time" style="margin-top:10px;font-family:'Fredoka One',cursive;font-size:1.2rem;color:#f2b400"></p>
+    <p style="margin-top:6px;font-size:0.85rem;opacity:0.7">Corinda SHS 🐦 Exceed Your Expectations — Book Week Special Edition</p>
+    <button onclick="init()">🔄 New shelf</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// TEMPLATE — "spot the specific ones among dozens of lookalikes". This file
+// is the Book Week edition (a shelf of books). The same shape works for a
+// wall of flags, a paddock of farm animals, etc: swap TARGET_DATA for that
+// event's content, swap drawFillerTile/drawTargetTile for that event's art,
+// and adjust the header/instructions text. Everything below "GRID ENGINE" is
+// generic and shouldn't need to change between editions.
+// ══════════════════════════════════════════════════════════════════════════
+const EVENT_NAME = 'Book Week';
+const TARGET_DATA = [
+  { id:'alice',   title:"Alice's Adventures in Wonderland", author:'Lewis Carroll',
+    color:'#7a3ca0', fact:"Written in 1865 — Carroll first told the story out loud to a real girl named Alice on a boat trip." },
+  { id:'treasure',title:'Treasure Island', author:'Robert Louis Stevenson',
+    color:'#b4451e', fact:'This book gave the world the idea of an "X marks the spot" treasure map and classic pirate talk.' },
+  { id:'oz',      title:'The Wonderful Wizard of Oz', author:'L. Frank Baum',
+    color:'#2e8b57', fact:'Published in 1900 — one of the first famous fairy tales set in America rather than Europe.' },
+  { id:'jungle',  title:'The Jungle Book', author:'Rudyard Kipling',
+    color:'#c68a1e', fact:'Inspired by stories Kipling heard growing up in India. He later won one of the first Nobel Prizes in Literature.' },
+  { id:'peterpan',title:'Peter Pan', author:'J.M. Barrie',
+    color:'#1e7ac6', fact:'Peter Pan first appeared on stage as a play in 1904, before the novel was published.' },
+  { id:'carol',   title:'A Christmas Carol', author:'Charles Dickens',
+    color:'#8a1e2e', fact:'Dickens wrote the whole book in just six weeks in 1843.' },
+  { id:'crusoe',  title:'Robinson Crusoe', author:'Daniel Defoe',
+    color:'#3c6e8a', fact:'Published in 1719 — often called one of the very first English novels ever written.' },
+  { id:'anne',    title:'Anne of Green Gables', author:'L.M. Montgomery',
+    color:'#c65a8a', fact:"Set on Prince Edward Island in Canada, which is now a big tourist spot because of this book." },
+];
+
+// ── GRID ENGINE (generic) ────────────────────────────────────────────────
+const W=2000, H=1300;
+const canvas=document.getElementById('scene');
+const ctx=canvas.getContext('2d');
+
+const SHELF_ROWS=6, SLOTS_PER_ROW=10;
+const SLOT_W = W / SLOTS_PER_ROW;
+const ROW_H = H / SHELF_ROWS;
+const SHELF_BOARD_H = 16;
+
+let seed=1;
+const SESSION_SEED = Date.now() & 0x7fffffff;
+function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xffffffff}
+function rInt(a,b){return Math.floor(rand()*(b-a))+a}
+function rChoice(arr){return arr[rInt(0,arr.length)]}
+
+const FILLER_COLORS=['#4a3c2a','#5a4a20','#2a4a4a','#4a2a3a','#3a3a5a','#5a3a20','#2a3a2a','#4a2a2a','#3a4a5a'];
+
+function drawStar(cx,cy,r){
+  ctx.beginPath();
+  for(let i=0;i<10;i++){const ang=Math.PI/2+i*Math.PI/5;const rr=i%2===0?r:r*0.42;
+    ctx.lineTo(cx+Math.cos(ang)*rr,cy-Math.sin(ang)*rr);}
+  ctx.closePath();
+}
+
+function drawSpine(x,w,baseline,h,color,starred){
+  ctx.save();
+  ctx.fillStyle=color;
+  ctx.fillRect(x,baseline-h,w,h);
+  ctx.fillStyle='rgba(0,0,0,0.18)';
+  ctx.fillRect(x,baseline-h,w*0.12,h);
+  ctx.fillStyle='rgba(255,255,255,0.16)';
+  ctx.fillRect(x+w-w*0.1,baseline-h,w*0.1,h);
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillRect(x+w*0.15,baseline-h*0.84,w*0.7,h*0.018);
+  ctx.fillRect(x+w*0.15,baseline-h*0.16,w*0.7,h*0.018);
+  if(starred){
+    // A small library-style sticker, not a giant beacon — sized and placed so
+    // it takes an actual close look to spot among dozens of plain spines.
+    const r=Math.min(w,h)*0.09;
+    ctx.fillStyle='#ffd23c';
+    ctx.strokeStyle='#8a5a00';ctx.lineWidth=1;
+    drawStar(x+w*0.5,baseline-h*0.2,r);
+    ctx.fill();ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawShelves(){
+  ctx.fillStyle='#3a2a1a';
+  ctx.fillRect(0,0,W,H);
+  for(let r=0;r<SHELF_ROWS;r++){
+    const boardY=(r+1)*ROW_H - 2;
+    ctx.fillStyle='#5a3e22';
+    ctx.fillRect(0,boardY,W,SHELF_BOARD_H);
+    ctx.fillStyle='rgba(0,0,0,0.25)';
+    ctx.fillRect(0,boardY+SHELF_BOARD_H,W,6);
+    ctx.fillStyle='rgba(255,255,255,0.08)';
+    ctx.fillRect(0,boardY,W,3);
+  }
+}
+
+let slots=[]; // {x,y,w,h,starred,targetId,found}
+let foundIds=new Set();
+let startedAt=null;
+
+function generateSlots(){
+  seed=SESSION_SEED;
+  const total=SHELF_ROWS*SLOTS_PER_ROW;
+  const starredIdx=new Set();
+  while(starredIdx.size<TARGET_DATA.length){ starredIdx.add(rInt(0,total)); }
+  const starredArr=[...starredIdx];
+  const targetOrder=[...TARGET_DATA].sort(()=>rand()-0.5);
+
+  const out=[];
+  let ti=0;
+  for(let r=0;r<SHELF_ROWS;r++){
+    const baseline=(r+1)*ROW_H - 2;
+    const maxH = ROW_H*0.82;
+    for(let c=0;c<SLOTS_PER_ROW;c++){
+      const idx=r*SLOTS_PER_ROW+c;
+      const w = rInt(SLOT_W*0.6, SLOT_W*0.95);
+      const h = rInt(maxH*0.6, maxH);
+      const x = c*SLOT_W + (SLOT_W-w)/2;
+      const isStar = starredIdx.has(idx);
+      out.push({
+        x, y:baseline-h, w, h, baseline,
+        starred:isStar,
+        target: isStar ? targetOrder[ti++] : null,
+        color: isStar ? targetOrder[ti-1].color : rChoice(FILLER_COLORS),
+        found:false
+      });
+    }
+  }
+  slots=out;
+}
+
+function render(){
+  drawShelves();
+  slots.forEach(s=>{
+    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.starred);
+  });
+}
+
+function buildChips(){
+  const row=document.getElementById('chipRow');
+  row.innerHTML='';
+  TARGET_DATA.forEach(t=>{
+    const chip=document.createElement('div');
+    chip.className='slot-chip';
+    chip.id='chip-'+t.id;
+    chip.textContent='?';
+    row.appendChild(chip);
+  });
+}
+
+function updateProgress(){
+  document.getElementById('progress').textContent = foundIds.size+' / '+TARGET_DATA.length;
+}
+
+function openModal(target){
+  document.getElementById('modalSpine').style.background = target.color;
+  document.getElementById('modalTitle').textContent = target.title;
+  document.getElementById('modalAuthor').textContent = target.author;
+  document.getElementById('modalFact').textContent = target.fact;
+  document.getElementById('modalBackdrop').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modalBackdrop').classList.remove('show');
+  if(foundIds.size>=TARGET_DATA.length){
+    setTimeout(()=>{
+      const secs=Math.round((Date.now()-startedAt)/1000);
+      const m=Math.floor(secs/60), s=secs%60;
+      document.getElementById('win-time').textContent='⏱ Your time: '+m+':'+(s<10?'0':'')+s;
+      document.getElementById('win').classList.add('show');
+    },200);
+  }
+}
+
+canvas.addEventListener('click', function(e){
+  if(!startedAt) startedAt=Date.now();
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=W/rect.width, scaleY=H/rect.height;
+  const cx=(e.clientX-rect.left)*scaleX, cy=(e.clientY-rect.top)*scaleY;
+  for(const s of slots){
+    if(cx>=s.x && cx<=s.x+s.w && cy>=s.y && cy<=s.y+s.h){
+      if(!s.starred){
+        flashSlot(s,'#e84c4c');
+        return;
+      }
+      if(!s.found){
+        s.found=true;
+        foundIds.add(s.target.id);
+        const chip=document.getElementById('chip-'+s.target.id);
+        chip.textContent=s.target.title;
+        chip.classList.add('found');
+        updateProgress();
+      }
+      openModal(s.target);
+      return;
+    }
+  }
+});
+
+function flashSlot(s,color){
+  let n=0;
+  const iv=setInterval(()=>{
+    render();
+    if(n%2===0){
+      ctx.save();ctx.globalAlpha=0.5;ctx.fillStyle=color;ctx.fillRect(s.x,s.y,s.w,s.h);ctx.restore();
+    }
+    n++;
+    if(n>3){clearInterval(iv);render();}
+  },90);
+}
+
+function toggleInstructions(){
+  document.getElementById('instructions-panel').classList.toggle('open');
+}
+
+// ── zoom (same pattern as the Smoulder edition) ──
+let zoomLevel=0;
+const ZOOM_WIDTHS=[null,1300,1700,2000];
+function applyZoom(){
+  const sc=document.getElementById('scene');
+  if(zoomLevel<=0){
+    zoomLevel=0;
+    const wrap=document.getElementById('sceneWrap');
+    sc.style.width=Math.max(900, wrap.clientWidth-4)+'px';
+  } else {
+    sc.style.width=ZOOM_WIDTHS[Math.min(zoomLevel,ZOOM_WIDTHS.length-1)]+'px';
+  }
+}
+function zoomBy(dir){ zoomLevel=Math.max(0,Math.min(ZOOM_WIDTHS.length-1,zoomLevel+dir)); applyZoom(); }
+function zoomReset(){ zoomLevel=0; applyZoom(); }
+window.addEventListener('resize', ()=>{ if(zoomLevel===0) applyZoom(); });
+
+function init(){
+  document.getElementById('win').classList.remove('show');
+  document.getElementById('modalBackdrop').classList.remove('show');
+  foundIds=new Set();
+  startedAt=null;
+  buildChips();
+  updateProgress();
+  generateSlots();
+  render();
+  applyZoom();
+}
+
+init();
+</script>
+</body>
+</html>
