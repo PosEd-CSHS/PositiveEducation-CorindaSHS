@@ -77,23 +77,34 @@ To make another event's edition:
    also namespaces the personal-best `localStorage` key, so a copied edition
    automatically gets its own best time instead of sharing one with this
    file — just make sure it's still set to something unique.
-3. Replace `drawSpine` (and the `MUTED_PALETTE`/`FILLER_TITLES` filler
-   content) with whatever this event's tile actually looks like — a flag on
-   a pole, an animal silhouette, whatever fits the theme. Keep the function
-   signature `(x, w, baseline, h, color, title, starred, tilt, textColor)` so
-   the grid engine doesn't change; draw in local coordinates around
+3. Replace `drawSpine` (and the `MUTED_PALETTE`/`STICKER_COLORS`/
+   `FILLER_TITLES` filler content) with whatever this event's tile actually
+   looks like — a flag on a pole, an animal silhouette, whatever fits the
+   theme. Keep the function signature
+   `(x, w, baseline, h, color, title, tilt, textColor, sticker)` so the grid
+   engine doesn't change; draw in local coordinates around
    `(0, 0) = base-centre` the way this file does, so the `tilt` rotation and
-   the find-marker's position keep working for free.
-   Two things are deliberate here, both learned from this file's first
-   draft: every tile — real find or filler — draws from **one shared, muted
-   colour palette**, so colour alone never gives away which ones are real
-   (the first draft gave each real find its own brighter colour, which was
-   a bigger tell than the marker). And the find-marker itself (currently a
-   small dot, not a star — see the note in `drawSpine`) is small,
-   low-contrast, and near the base, not a giant beacon; a marker visible
-   from across the whole grid turns "spot the difference" into "spot the
-   obvious." Don't make a future edition's tell bigger, brighter, or its
-   tiles more colourful than this one just because it's tempting to.
+   the sticker's position keep working for free.
+   Three things are deliberate here, all learned the hard way across this
+   file's earlier drafts:
+   - Every tile — real find or filler — draws from **one shared, muted
+     colour palette**. An early draft gave each real find its own brighter
+     colour, which was a bigger tell than any marker.
+   - The find marker (currently a small **triangle**) is small,
+     low-contrast, and near the base, not a giant beacon; a marker visible
+     from across the whole grid turns "spot the difference" into "spot the
+     obvious."
+   - **Colour carries no information on its own.** A later draft used one
+     reserved gold colour for every real find and nothing else — meaning
+     the colour alone was spottable from across the shelf even after the
+     marker itself had been shrunk down. The fix: give roughly a third of
+     the *filler* tiles a same-coloured circle sticker too (`STICKER_COLORS`,
+     shared with the real finds), so a coloured sticker means nothing by
+     itself — only the shape (triangle vs. circle) is the actual signal, and
+     only up close. Keep this shared-colour-pool structure in any new
+     edition; don't reserve a colour for real finds again.
+   Don't make a future edition's tell bigger, brighter, or its real finds
+   more colourful than this one just because it's tempting to.
 4. Adjust `SHELF_ROWS`/`SLOTS_PER_ROW` if the new grid needs a different
    shape, and update the header, instructions and the `<title>`. The
    `.target-count` spans in the HTML update themselves from `TARGET_DATA.length`

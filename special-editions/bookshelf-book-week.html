@@ -68,8 +68,8 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 <body>
 <header>
   <h1>📚 Shelf Search — Book Week Special Edition</h1>
-  <p>Somewhere on these shelves are <span class="target-count">15</span> books with a small gold dot — eight
-  classics, and one for each house plus Smoulder. Find and click each one to reveal it!</p>
+  <p>Somewhere on these shelves are <span class="target-count">15</span> books with a small triangle sticker —
+  eight classics, and one for each house plus Smoulder. Find and click each one to reveal it!</p>
 </header>
 
 <div class="find-bar" id="findBar">
@@ -84,11 +84,13 @@ header p{color:#d8d8d8;margin-top:4px;font-size:0.95rem}
 <div class="instructions-panel" id="instructions-panel">
   <div class="instr-inner">
     <p><strong>Look closely.</strong> Most books on these shelves are just filler — plain spines with no
-    story behind them. <span class="target-count">15</span> of them have a small <strong>gold dot</strong> on
-    the spine: eight real classics, plus one themed on each of the six houses and one on Smoulder the Phoenix.
-    Scroll and zoom around the shelves to spot them.</p>
-    <p style="margin-top:8px;">Click a marked book to reveal its title and a fun fact, and cross it off the
-    list above. Click a plain book and nothing happens — no penalty, just try again.</p>
+    story behind them. Some of them carry a small coloured circle sticker, which also means nothing — real
+    libraries sticker books all the time. <span class="target-count">15</span> books carry a small
+    <strong>triangle</strong> sticker instead: eight real classics, plus one themed on each of the six houses
+    and one on Smoulder the Phoenix. The colour never tells you anything — only the shape does. Scroll and
+    zoom around the shelves to spot them.</p>
+    <p style="margin-top:8px;">Click a triangle-marked book to reveal its title and a fun fact, and cross it
+    off the list above. Click any other book and nothing happens — no penalty, just try again.</p>
     <p style="margin-top:8px;">Stuck? Hit <strong>💡 Hint</strong> to glow the shelf holding an unfound book —
     it won't say which one.</p>
     <p style="margin-top:8px;">Find them all to win. Reload the page (or hit <strong>Play Again</strong>) for a
@@ -214,9 +216,14 @@ const TITLE_TEXT_COLORS=['rgba(255,255,255,0.85)','rgba(240,225,195,0.85)','rgba
   'rgba(235,210,220,0.82)','rgba(210,230,215,0.82)','rgba(245,230,205,0.85)',
   'rgba(200,220,215,0.8)','rgba(225,212,228,0.82)'];
 
-// Every decoy spine still gets a plausible (fictional) title, so the whole
-// shelf reads as a real, fully-stocked library rather than 15 real spines
-// standing out against blank filler — the actual tell stays the small dot.
+// Real library spines often carry small coloured genre stickers. Roughly a
+// third of the decoy spines get one too — a plain circle, in one of these
+// same muted tones — so a coloured sticker on its own means nothing. A real
+// find always gets one, but drawn as a small triangle instead of a circle.
+// Shape is the only signal now; colour is shared and tells you nothing —
+// a single reserved "find colour" (this file's first draft used gold) is
+// exactly the shortcut that made the real finds too easy to spot.
+const STICKER_COLORS=['#8a4a4a','#4a6a8a','#5a8a5a','#8a6a3a','#7a5a8a','#6a7a4a'];
 //
 // This is a fixed, hand-written list rather than mixing-and-matching
 // adjectives and nouns at random. A combinatorial generator was tried first
@@ -241,11 +248,21 @@ const FILLER_TITLES=[
 ];
 function fillerTitle(){ return rChoice(FILLER_TITLES); }
 
-// A small solid dot — the kind of genre sticker a real library spine
-// actually carries — reads as far less of a beacon than a star did.
-function drawTell(cx,cy,r){
+// Decoy sticker — a plain circle, the kind of genre dot a real library
+// spine actually carries. Means nothing on its own; see STICKER_COLORS.
+function drawDotTell(cx,cy,r){
   ctx.beginPath();
   ctx.arc(cx,cy,r,0,Math.PI*2);
+}
+// Real-find sticker — a small triangle. The only thing that distinguishes
+// it from a decoy's circle sticker is this shape; colour is shared with
+// the decoys on purpose.
+function drawTriangleTell(cx,cy,r){
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-r);
+  ctx.lineTo(cx+r*0.87,cy+r*0.5);
+  ctx.lineTo(cx-r*0.87,cy+r*0.5);
+  ctx.closePath();
 }
 
 // Spines are drawn side-on, as a real shelved book looks: narrow, upright,
@@ -255,7 +272,7 @@ function drawTell(cx,cy,r){
 // book leaning on its neighbour, like a real shelf) is just one extra
 // ctx.rotate — the click box stays the untilted rectangle, which is close
 // enough at these small angles that it never feels wrong to click on.
-function drawSpine(x,w,baseline,h,color,title,starred,tilt,textColor){
+function drawSpine(x,w,baseline,h,color,title,tilt,textColor,sticker){
   ctx.save();
   ctx.translate(x+w/2, baseline);
   if(tilt) ctx.rotate(tilt);
@@ -293,13 +310,16 @@ function drawSpine(x,w,baseline,h,color,title,starred,tilt,textColor){
     ctx.restore();
   }
 
-  if(starred){
-    // A small library-style sticker, not a giant beacon — sized and placed so
-    // it takes an actual close look to spot among dozens of plain spines.
-    const r=Math.min(w,h)*0.1;
-    ctx.fillStyle='#d9a84a';
-    ctx.strokeStyle='#7a5a20';ctx.lineWidth=1;
-    drawTell(0,-h*0.06,r);
+  if(sticker){
+    // A small library-style sticker, not a giant beacon — sized and placed
+    // so it takes an actual close look to tell a find's triangle from a
+    // decoy's circle. Colour carries no information (STICKER_COLORS is
+    // shared by both), so it can't be spotted from across the shelf.
+    const r=Math.min(w,h)*(sticker.shape==='triangle'?0.12:0.1);
+    ctx.fillStyle=sticker.color;
+    ctx.strokeStyle='rgba(0,0,0,0.4)';ctx.lineWidth=1;
+    if(sticker.shape==='triangle'){ drawTriangleTell(0,-h*0.07,r); }
+    else{ drawDotTell(0,-h*0.06,r); }
     ctx.fill();ctx.stroke();
   }
   ctx.restore();
@@ -380,6 +400,12 @@ function generateSlots(){
       // A slight lean, like a book resting against its neighbour — mostly
       // small, occasionally a proper lean, never enough to misfire clicks.
       const tilt = (rand()<0.7 ? rF(-0.05,0.05) : rF(-0.14,0.14));
+      // Every find gets a triangle sticker; roughly a third of decoys get a
+      // circle one too, in the same colours, so the sticker's presence
+      // alone (or its colour) never gives a find away — only its shape does.
+      const sticker = isStar
+        ? {shape:'triangle', color:rChoice(STICKER_COLORS)}
+        : (rand()<0.35 ? {shape:'circle', color:rChoice(STICKER_COLORS)} : null);
       out.push({
         x, y:baseline-h, w, h, baseline, tilt, row:r,
         starred:isStar,
@@ -387,6 +413,7 @@ function generateSlots(){
         title: isStar ? target.title : fillerTitle(),
         color: isStar ? target.color : rChoice(MUTED_PALETTE),
         textColor: rChoice(TITLE_TEXT_COLORS),
+        sticker,
         found:false
       });
     }
@@ -400,7 +427,7 @@ let hintGlowRow=null, hintGlowUntil=0;
 function render(){
   drawShelves();
   slots.forEach(s=>{
-    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.starred, s.tilt, s.textColor);
+    drawSpine(s.x, s.w, s.baseline, s.h, s.color, s.title, s.tilt, s.textColor, s.sticker);
   });
   gaps.forEach(g=>{ drawFlatStack(g.x, g.baseline, g.w); });
   if(hintGlowRow!=null){
