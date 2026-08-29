@@ -35,14 +35,18 @@ Then check that weekly content banks contain one entry for each teaching week. W
 ## School server installation
 
 **Deployment status:** the SharePoint document library was last updated by hand
-from commit `a412873` ("Add the two Book Week special editions to the school
-server, open"), uploaded a few days before 2026-08-29. This is a manual step —
-pushing to this branch does **not** publish anything. Every commit on this
-branch after `a412873` exists only here until someone runs
-`tools/build-staff-gate.py` + `tools/package-upload.py` again and re-uploads
-the resulting zip. Update this note (the commit hash and rough date) each time
-a real upload happens, so it's always obvious how stale the live site might be
-relative to this branch.
+from commit `639a47b` ("Point the leaderboard at the relocated workbook"),
+uploaded a few days before 2026-08-29. This is a manual step — pushing to this
+branch does **not** publish anything. Every commit on this branch after
+`639a47b` exists only here until someone runs `tools/build-staff-gate.py` +
+`tools/package-upload.py` again and re-uploads the resulting zip. Update this
+note (the commit hash and rough date) each time a real upload happens, so it's
+always obvious how stale the live site might be relative to this branch.
+
+The two Book Week special editions (`smoulder-book-week`, `bookshelf-book-week`)
+were built and are kept on GitHub Pages (`main` branch, `special-editions/`)
+only, deliberately — they are not part of this branch or the school server
+deployment.
 
 The site is hosted from a SharePoint document library under
 `/ourcurriculum/TeachingAndLearning/Documents/PosEd/`. Copy the contents of this
