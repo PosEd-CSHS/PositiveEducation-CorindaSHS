@@ -1728,6 +1728,14 @@
           <div class="res-type">🔗 Resource Hub</div>
         </div>
       </a>
+      <a class="resource-card" href="https://www.edresearch.edu.au" target="_blank">
+        <span class="res-icon">🤝</span>
+        <div class="res-content">
+          <h4>AERO — Australian Education Research Organisation</h4>
+          <p>Evidence-graded practice guides for Australian schools, including <em>Encouraging a sense of belonging and connectedness in secondary schools</em> — directly relevant to the Relationships pillar above.</p>
+          <div class="res-type">🔗 Free Guides</div>
+        </div>
+      </a>
     </div>
 
     <!-- COMPLETION BLOCK -->
