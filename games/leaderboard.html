@@ -97,7 +97,6 @@
       <div class="cell-game"><div class="cell-label">🔍 Where's Smoulder</div><iframe data-sheet="Where's Smoulder" title="Where's Smoulder leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">⏱ Stop the Clock</div><iframe data-sheet="Stop the clock" title="Stop the Clock leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">▓ Fill the Bar</div><iframe data-sheet="Fill the bar" title="Fill the Bar leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-      <div class="cell-game"><div class="cell-label">🔐 Crack the Code</div><iframe data-sheet="Crack the code" title="Crack the Code leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">💪 Guess the Strength</div><iframe data-sheet="Guess the strength" title="Guess the Strength leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
     </div>
   </div>
