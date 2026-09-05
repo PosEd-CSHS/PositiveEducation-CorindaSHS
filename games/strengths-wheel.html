@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strengths Wheel — Positive Education</title>
+<style>
+  @import url('../assets/fonts/fonts.css');
+
+  :root {
+    --green: #00180f;
+    --green-mid: #003d1f;
+    --green-light: #005a2e;
+    --gold: #f2b400;
+    --gold-dim: rgba(242,180,0,0.15);
+    --gold-border: rgba(242,180,0,0.3);
+    --white: #fdfdfd;
+    --muted: rgba(255,255,255,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+
+  header { text-align: center; margin-bottom: 6px; }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 6vw, 42px); letter-spacing: 0.02em; }
+  h1 span { color: var(--gold); }
+  .lede { max-width: 480px; margin: 8px auto 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+  .wheel-wrap {
+    position: relative;
+    margin: 28px auto 8px;
+    width: min(420px, 88vw);
+  }
+  .pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 26px solid var(--gold);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.4));
+    z-index: 3;
+  }
+  .hub {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 17%; height: 17%;
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid var(--gold);
+    z-index: 2;
+  }
+  canvas#wheel {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    box-shadow: 0 10px 40px rgba(0,0,0,.5);
+    transition: transform 0s;
+  }
+
+  #spin-btn {
+    display: block;
+    margin: 22px auto 0;
+    background: var(--gold);
+    color: var(--green);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.15s;
+  }
+  #spin-btn:hover:not(:disabled) { filter: brightness(1.08); }
+  #spin-btn:active:not(:disabled) { transform: scale(0.97); }
+  #spin-btn:disabled { opacity: 0.5; cursor: default; }
+
+  #result {
+    max-width: 480px;
+    width: 100%;
+    margin: 26px auto 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--gold-border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  #result.show { opacity: 1; transform: translateY(0); }
+  #result .virtue-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  #result .strength-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  #result .strength-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  #result .prompt {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 13px;
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas#wheel { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Corinda State High School</div>
+  <h1>Strengths <span>Wheel</span></h1>
+  <p class="lede">Spin for a random VIA character strength — use it as a quick discussion starter: when have you shown this one, or seen someone else show it?</p>
+</header>
+
+<div class="wheel-wrap">
+  <div class="pointer"></div>
+  <canvas id="wheel" width="800" height="800"></canvas>
+  <div class="hub"></div>
+</div>
+
+<button id="spin-btn">🎡 Spin the wheel</button>
+
+<div id="result">
+  <div class="virtue-tag" id="result-virtue"></div>
+  <div class="strength-name" id="result-name"></div>
+  <div class="strength-desc" id="result-desc"></div>
+  <div class="prompt">When have you shown this strength — or seen someone else show it?</div>
+</div>
+
+<footer>
+  <a href="../character-strengths/index.html">See every strength's activities →</a>
+</footer>
+
+<script>
+// Canonical 24 VIA strengths, current terminology, matching character-strengths/index.html
+// and games/guess-the-strength.html. Six virtues, each a colour family so the wheel reads
+// the same way the physical spinner it's modelled on does.
+const VIRTUES = [
+  { name: 'Wisdom',       hue: 355 }, // red
+  { name: 'Courage',      hue: 42  }, // gold/amber
+  { name: 'Humanity',     hue: 150 }, // green
+  { name: 'Justice',      hue: 205 }, // blue
+  { name: 'Temperance',   hue: 225 }, // navy
+  { name: 'Transcendence',hue: 300 }, // magenta
+];
+
+const STRENGTHS = [
+  { name: 'Creativity', virtue: 'Wisdom', desc: 'Coming up with ideas is your natural mode. When something isn’t working, your instinct is to invent a different route rather than push harder down the existing one.' },
+  { name: 'Curiosity', virtue: 'Wisdom', desc: 'Unanswered questions bother you in the best way. New topics, places, and ideas pull you in, and you’d rather investigate something than leave it unexplained.' },
+  { name: 'Judgement', virtue: 'Wisdom', desc: 'You weigh things up before you commit to a view. Evidence matters more to you than first impressions, and being shown you were wrong feels useful rather than threatening.' },
+  { name: 'Love of Learning', virtue: 'Wisdom', desc: 'Adding to what you know is genuinely satisfying, whether or not anyone is grading it. You build skills and knowledge for their own sake.' },
+  { name: 'Perspective', virtue: 'Wisdom', desc: 'You tend to see how the pieces of a situation fit together, which is why people seek your take when things get complicated.' },
+  { name: 'Bravery', virtue: 'Courage', desc: 'Discomfort doesn’t decide your actions. Whether it’s a hard conversation or an unpopular stance, you’d rather act on your convictions than stay safely quiet.' },
+  { name: 'Perseverance', virtue: 'Courage', desc: 'Once you’ve started something, abandoning it doesn’t sit right. Obstacles tend to sharpen your focus rather than drain it.' },
+  { name: 'Honesty', virtue: 'Courage', desc: 'What people see from you is what’s actually there. You’d rather deliver an uncomfortable truth than maintain a comfortable pretence.' },
+  { name: 'Zest', virtue: 'Courage', desc: 'You bring energy with you. Days feel like something to be used rather than gotten through, and your enthusiasm tends to be contagious.' },
+  { name: 'Love', virtue: 'Humanity', desc: 'The people closest to you are central to how you live, not an accessory to it. You invest in those relationships openly.' },
+  { name: 'Kindness', virtue: 'Humanity', desc: 'Helping is your default setting. You notice what others need, often before they ask.' },
+  { name: 'Social Intelligence', virtue: 'Humanity', desc: 'You read rooms well. Shifts in mood, unspoken tension, what someone actually means — you pick these up quickly.' },
+  { name: 'Teamwork', virtue: 'Justice', desc: 'When you’re part of a group, the group’s result becomes your result. People learn quickly that you can be counted on.' },
+  { name: 'Fairness', virtue: 'Justice', desc: 'Even-handedness matters to you on principle. You apply the same standards to people you like and people you don’t.' },
+  { name: 'Leadership', virtue: 'Justice', desc: 'When a group needs direction, you’re willing to provide it — and you make sure nobody gets left on the outside while it happens.' },
+  { name: 'Forgiveness', virtue: 'Temperance', desc: 'You give people a way back. Holding onto resentment strikes you as a poor trade.' },
+  { name: 'Humility', virtue: 'Temperance', desc: 'You don’t need to be the headline. Your work can speak for itself, and you take feedback without bristling.' },
+  { name: 'Prudence', virtue: 'Temperance', desc: 'You look before you leap, habitually. Choices get weighed against where they lead, not just how they feel right now.' },
+  { name: 'Self-Regulation', virtue: 'Temperance', desc: 'You run yourself with discipline. Impulses and moods get a vote but not a veto.' },
+  { name: 'Appreciation of Beauty & Excellence', virtue: 'Transcendence', desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly.' },
+  { name: 'Gratitude', virtue: 'Transcendence', desc: 'You keep track of the good in your life rather than taking it as given, and you make sure people know what they’ve meant to you.' },
+  { name: 'Hope', virtue: 'Transcendence', desc: 'You treat the future as something to build, not something that happens to you. Your optimism comes with effort attached.' },
+  { name: 'Humour', virtue: 'Transcendence', desc: 'You find the light side and you share it. You can take the heaviness out of a room without taking the substance out of it.' },
+  { name: 'Spirituality', virtue: 'Transcendence', desc: 'Your life is organised around a sense of meaning that goes beyond the day-to-day.' },
+];
+
+const N = STRENGTHS.length;
+const SLICE = (Math.PI * 2) / N;
+const virtueHue = Object.fromEntries(VIRTUES.map(v => [v.name, v.hue]));
+
+// index within its own virtue band, for a light-to-dark shade ramp per band (matches
+// the physical wheel's look: each category is one hue, shading from light to bold).
+const bandIndex = {};
+const bandTotal = {};
+STRENGTHS.forEach(s => { bandTotal[s.virtue] = (bandTotal[s.virtue] || 0) + 1; });
+const seen = {};
+STRENGTHS.forEach(s => {
+  seen[s.virtue] = (seen[s.virtue] || 0);
+  bandIndex[s.name] = seen[s.virtue];
+  seen[s.virtue]++;
+});
+
+function sliceColor(s) {
+  const hue = virtueHue[s.virtue];
+  const t = bandIndex[s.name] / Math.max(1, bandTotal[s.virtue] - 1);
+  const light = 68 - t * 26; // 68% down to ~42%
+  return `hsl(${hue}, 72%, ${light}%)`;
+}
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const R = canvas.width / 2;
+
+function drawWheel(rotation) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(R, R);
+  ctx.rotate(rotation);
+
+  STRENGTHS.forEach((s, i) => {
+    const start = i * SLICE;
+    const end = start + SLICE;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, R - 4, start, end);
+    ctx.closePath();
+    ctx.fillStyle = sliceColor(s);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // label, curved along the slice
+    ctx.save();
+    ctx.rotate(start + SLICE / 2);
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(0,0,0,0.82)';
+    ctx.font = '600 15px "DM Sans", sans-serif';
+    ctx.fillText(s.name, R - 16, 0);
+    ctx.restore();
+  });
+  ctx.restore();
+}
+
+drawWheel(0);
+
+let currentRotation = 0; // radians, current visual rotation
+let spinning = false;
+
+function pickRandomIndex() {
+  return Math.floor(Math.random() * N);
+}
+
+function spin() {
+  if (spinning) return;
+  spinning = true;
+  document.getElementById('spin-btn').disabled = true;
+  const result = document.getElementById('result');
+  result.classList.remove('show');
+
+  const targetIndex = pickRandomIndex();
+  // Pointer is fixed at angle -90deg (top, pointing down into the wheel) in screen space.
+  // We want slice `targetIndex`'s centre to land under the pointer after rotating.
+  const sliceCentre = targetIndex * SLICE + SLICE / 2;
+  const pointerAngle = -Math.PI / 2;
+  // Rotation needed (mod 2pi) so that sliceCentre + rotation == pointerAngle (mod 2pi)
+  let delta = pointerAngle - sliceCentre - currentRotation;
+  delta = ((delta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  const extraSpins = 6 + Math.floor(Math.random() * 3); // 6-8 full turns for effect
+  const totalDelta = delta + extraSpins * Math.PI * 2;
+  const startRotation = currentRotation;
+  const finalRotation = currentRotation + totalDelta;
+
+  const duration = 4200; // ms
+  const startTime = performance.now();
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function frame(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / duration);
+    const eased = easeOutCubic(t);
+    currentRotation = startRotation + totalDelta * eased;
+    drawWheel(currentRotation);
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      currentRotation = finalRotation % (Math.PI * 2);
+      drawWheel(currentRotation);
+      showResult(STRENGTHS[targetIndex]);
+      spinning = false;
+      document.getElementById('spin-btn').disabled = false;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function showResult(s) {
+  document.getElementById('result-virtue').textContent = s.virtue;
+  document.getElementById('result-virtue').style.color = `hsl(${virtueHue[s.virtue]}, 75%, 72%)`;
+  document.getElementById('result-name').textContent = s.name;
+  document.getElementById('result-desc').textContent = s.desc;
+  document.getElementById('result').classList.add('show');
+}
+
+document.getElementById('spin-btn').addEventListener('click', spin);
+</script>
+</body>
+</html>
