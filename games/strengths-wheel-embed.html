@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This Fortnight's Strength — Positive Education</title>
+<script src="../assets/site-config.js"></script>
+<style>
+  @import url('../assets/fonts/fonts.css');
+
+  :root {
+    --green: #00180f;
+    --green-mid: #003d1f;
+    --gold: #f2b400;
+    --gold-border: rgba(242,180,0,0.3);
+    --white: #fdfdfd;
+    --muted: rgba(255,255,255,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--green);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 12px 18px;
+  }
+
+  header { text-align: center; margin-bottom: 2px; }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(18px, 5vw, 24px); letter-spacing: 0.02em; }
+  h1 span { color: var(--gold); }
+
+  .wheel-wrap {
+    position: relative;
+    margin: 14px auto 4px;
+    width: min(230px, 60vw);
+  }
+  .pointer {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 16px solid var(--gold);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.4));
+    z-index: 3;
+  }
+  .hub {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 17%; height: 17%;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--gold);
+    z-index: 2;
+  }
+  canvas#wheel {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    box-shadow: 0 6px 22px rgba(0,0,0,.5);
+  }
+
+  #focus-card {
+    max-width: 320px;
+    width: 100%;
+    margin: 10px auto 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--gold-border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: center;
+  }
+  #focus-card .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  #focus-card .virtue-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  #focus-card .strength-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  #focus-card .strength-desc {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  #spin-btn {
+    display: block;
+    margin: 12px auto 0;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-border);
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #spin-btn:hover:not(:disabled) { background: rgba(242,180,0,0.1); }
+  #spin-btn:disabled { opacity: 0.5; cursor: default; }
+
+  footer {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Corinda State High School</div>
+  <h1>This Fortnight's <span>Strength</span></h1>
+</header>
+
+<div class="wheel-wrap">
+  <div class="pointer"></div>
+  <canvas id="wheel" width="800" height="800"></canvas>
+  <div class="hub"></div>
+</div>
+
+<div id="focus-card">
+  <div class="eyebrow" id="focus-eyebrow">This fortnight</div>
+  <div class="virtue-tag" id="result-virtue"></div>
+  <div class="strength-name" id="result-name"></div>
+  <div class="strength-desc" id="result-desc"></div>
+</div>
+
+<button id="spin-btn">🎡 Spin a random strength instead</button>
+
+<footer>
+  <a href="../character-strengths/index.html">See every strength's activities →</a>
+</footer>
+
+<script>
+// Canonical 24 VIA strengths, current terminology, matching character-strengths/index.html
+// and games/guess-the-strength.html. Six virtues, each a colour family so the wheel reads
+// the same way the physical spinner it's modelled on does. Kept identical to
+// games/strengths-wheel.html so the two never drift apart.
+const VIRTUES = [
+  { name: 'Wisdom',       hue: 355 }, // red
+  { name: 'Courage',      hue: 42  }, // gold/amber
+  { name: 'Humanity',     hue: 150 }, // green
+  { name: 'Justice',      hue: 205 }, // blue
+  { name: 'Temperance',   hue: 225 }, // navy
+  { name: 'Transcendence',hue: 300 }, // magenta
+];
+
+const STRENGTHS = [
+  { name: 'Creativity', virtue: 'Wisdom', desc: 'Coming up with ideas is your natural mode. When something isn’t working, your instinct is to invent a different route rather than push harder down the existing one.' },
+  { name: 'Curiosity', virtue: 'Wisdom', desc: 'Unanswered questions bother you in the best way. New topics, places, and ideas pull you in, and you’d rather investigate something than leave it unexplained.' },
+  { name: 'Judgement', virtue: 'Wisdom', desc: 'You weigh things up before you commit to a view. Evidence matters more to you than first impressions, and being shown you were wrong feels useful rather than threatening.' },
+  { name: 'Love of Learning', virtue: 'Wisdom', desc: 'Adding to what you know is genuinely satisfying, whether or not anyone is grading it. You build skills and knowledge for their own sake.' },
+  { name: 'Perspective', virtue: 'Wisdom', desc: 'You tend to see how the pieces of a situation fit together, which is why people seek your take when things get complicated.' },
+  { name: 'Bravery', virtue: 'Courage', desc: 'Discomfort doesn’t decide your actions. Whether it’s a hard conversation or an unpopular stance, you’d rather act on your convictions than stay safely quiet.' },
+  { name: 'Perseverance', virtue: 'Courage', desc: 'Once you’ve started something, abandoning it doesn’t sit right. Obstacles tend to sharpen your focus rather than drain it.' },
+  { name: 'Honesty', virtue: 'Courage', desc: 'What people see from you is what’s actually there. You’d rather deliver an uncomfortable truth than maintain a comfortable pretence.' },
+  { name: 'Zest', virtue: 'Courage', desc: 'You bring energy with you. Days feel like something to be used rather than gotten through, and your enthusiasm tends to be contagious.' },
+  { name: 'Love', virtue: 'Humanity', desc: 'The people closest to you are central to how you live, not an accessory to it. You invest in those relationships openly.' },
+  { name: 'Kindness', virtue: 'Humanity', desc: 'Helping is your default setting. You notice what others need, often before they ask.' },
+  { name: 'Social Intelligence', virtue: 'Humanity', desc: 'You read rooms well. Shifts in mood, unspoken tension, what someone actually means — you pick these up quickly.' },
+  { name: 'Teamwork', virtue: 'Justice', desc: 'When you’re part of a group, the group’s result becomes your result. People learn quickly that you can be counted on.' },
+  { name: 'Fairness', virtue: 'Justice', desc: 'Even-handedness matters to you on principle. You apply the same standards to people you like and people you don’t.' },
+  { name: 'Leadership', virtue: 'Justice', desc: 'When a group needs direction, you’re willing to provide it — and you make sure nobody gets left on the outside while it happens.' },
+  { name: 'Forgiveness', virtue: 'Temperance', desc: 'You give people a way back. Holding onto resentment strikes you as a poor trade.' },
+  { name: 'Humility', virtue: 'Temperance', desc: 'You don’t need to be the headline. Your work can speak for itself, and you take feedback without bristling.' },
+  { name: 'Prudence', virtue: 'Temperance', desc: 'You look before you leap, habitually. Choices get weighed against where they lead, not just how they feel right now.' },
+  { name: 'Self-Regulation', virtue: 'Temperance', desc: 'You run yourself with discipline. Impulses and moods get a vote but not a veto.' },
+  { name: 'Appreciation of Beauty & Excellence', short: 'Appreciation & Awe', virtue: 'Transcendence', desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly.' },
+  { name: 'Gratitude', virtue: 'Transcendence', desc: 'You keep track of the good in your life rather than taking it as given, and you make sure people know what they’ve meant to you.' },
+  { name: 'Hope', virtue: 'Transcendence', desc: 'You treat the future as something to build, not something that happens to you. Your optimism comes with effort attached.' },
+  { name: 'Humour', virtue: 'Transcendence', desc: 'You find the light side and you share it. You can take the heaviness out of a room without taking the substance out of it.' },
+  { name: 'Spirituality', virtue: 'Transcendence', desc: 'Your life is organised around a sense of meaning that goes beyond the day-to-day.' },
+];
+
+const N = STRENGTHS.length;
+const SLICE = (Math.PI * 2) / N;
+const virtueHue = Object.fromEntries(VIRTUES.map(v => [v.name, v.hue]));
+
+const bandIndex = {};
+const bandTotal = {};
+STRENGTHS.forEach(s => { bandTotal[s.virtue] = (bandTotal[s.virtue] || 0) + 1; });
+const seen = {};
+STRENGTHS.forEach(s => {
+  seen[s.virtue] = (seen[s.virtue] || 0);
+  bandIndex[s.name] = seen[s.virtue];
+  seen[s.virtue]++;
+});
+
+function sliceColor(s) {
+  const hue = virtueHue[s.virtue];
+  const t = bandIndex[s.name] / Math.max(1, bandTotal[s.virtue] - 1);
+  const light = 68 - t * 26;
+  return `hsl(${hue}, 72%, ${light}%)`;
+}
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const R = canvas.width / 2;
+
+const VIRTUE_BAND = 0.20;
+const VIRTUE_RADIUS = R * (1 - VIRTUE_BAND / 2) - 4;
+const STRENGTH_OUTER = R * (1 - VIRTUE_BAND) - 10;
+const STRENGTH_INNER = R * 0.26;
+
+const virtueSpans = [];
+{
+  let i = 0;
+  while (i < N) {
+    const v = STRENGTHS[i].virtue;
+    let j = i;
+    while (j < N && STRENGTHS[j].virtue === v) j++;
+    virtueSpans.push({ virtue: v, start: i * SLICE, end: j * SLICE });
+    i = j;
+  }
+}
+
+function drawCurvedLabel(text, radius, midAngle, fontPx) {
+  ctx.save();
+  ctx.font = `700 ${fontPx}px "Bebas Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const letters = text.split('');
+  const spacing = fontPx * 0.18;
+  const widths = letters.map(ch => ctx.measureText(ch).width);
+  const totalArc = widths.reduce((a, b) => a + b + spacing, -spacing);
+  let travelled = -totalArc / 2;
+  letters.forEach((ch, i) => {
+    const w = widths[i];
+    const charCentre = travelled + w / 2;
+    const angle = midAngle + charCentre / radius;
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.translate(radius, 0);
+    ctx.rotate(Math.PI / 2);
+    ctx.lineWidth = fontPx * 0.22;
+    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+    ctx.strokeText(ch, 0, 0);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(ch, 0, 0);
+    ctx.restore();
+    travelled += w + spacing;
+  });
+  ctx.restore();
+}
+
+function drawStrengthLabel(text, midAngle) {
+  const available = STRENGTH_OUTER - STRENGTH_INNER - 10;
+  let fontPx = 18;
+  ctx.font = `700 ${fontPx}px "DM Sans", sans-serif`;
+  while (fontPx > 9 && ctx.measureText(text).width > available) {
+    fontPx -= 1;
+    ctx.font = `700 ${fontPx}px "DM Sans", sans-serif`;
+  }
+  ctx.save();
+  ctx.rotate(midAngle);
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.strokeText(text, STRENGTH_OUTER, 0);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(text, STRENGTH_OUTER, 0);
+  ctx.restore();
+}
+
+function drawWheel(rotation) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(R, R);
+  ctx.rotate(rotation);
+
+  STRENGTHS.forEach((s, i) => {
+    const start = i * SLICE;
+    const end = start + SLICE;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, R - 4, start, end);
+    ctx.closePath();
+    ctx.fillStyle = sliceColor(s);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    drawStrengthLabel(s.short || s.name, start + SLICE / 2);
+  });
+
+  const virtueFont = Math.max(15, Math.min(22, (R * 0.09)));
+  virtueSpans.forEach(v => {
+    drawCurvedLabel(v.virtue.toUpperCase(), VIRTUE_RADIUS, (v.start + v.end) / 2, virtueFont);
+  });
+
+  ctx.restore();
+}
+
+let currentRotation = 0;
+let spinning = false;
+
+// ---------- Current-fortnight resolution, shared date logic with every other game ----------
+// Reads the same window.CSHS_SITE_CONFIG (assets/site-config.js) that Wordle, Connections
+// and the rest use for their weekly schedule, so this widget stays in sync with them for
+// free on every annual rollover — no separate date logic to maintain here.
+function cshsAbsWeek(){
+  try{
+    var terms=window.CSHS_SITE_CONFIG.terms;
+    var pd=function(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);};
+    var monday=function(d){var x=new Date(d);x.setDate(x.getDate()-((x.getDay()+6)%7));x.setHours(0,0,0,0);return x;};
+    var today=new Date(); today.setHours(0,0,0,0);
+    var abs=0, current=0;
+    for(var i=0;i<terms.length;i++){
+      var end=pd(terms[i].end), m=monday(pd(terms[i].start));
+      while(m<=end){ abs++; if(m<=today){ current=abs; } m=new Date(m); m.setDate(m.getDate()+7); }
+    }
+    return current;
+  }catch(e){ return 0; }
+}
+
+// site-config.js's week labels don't always spell a strength exactly the way this
+// wheel's STRENGTHS list does (e.g. a short form, or the bare virtue name for the
+// first week of a fortnight) — these are the only two real mismatches today.
+const LABEL_ALIASES = {
+  'Spirituality / Meaning': 'Spirituality',
+  'Appreciation of Beauty': 'Appreciation of Beauty & Excellence',
+};
+
+function findStrengthByLabel(label) {
+  const resolved = LABEL_ALIASES[label] || label;
+  return STRENGTHS.find(s => s.name === resolved) || null;
+}
+
+// A fortnight pairs two consecutive weeks in site-config's strengths[] (1-indexed).
+// Often week 1 of the pair is just the parent virtue's name and week 2 is the actual
+// strength (e.g. "Courage" then "Zest") — sometimes both weeks are real strengths,
+// sometimes neither is (an orientation/review fortnight). Resolve today's actual week
+// first; only fall back to its partner week if today's own label isn't a strength.
+function resolveFocus() {
+  const list = (window.CSHS_SITE_CONFIG && window.CSHS_SITE_CONFIG.strengths) || [];
+  const absWeek = cshsAbsWeek();
+  if (!absWeek || !list.length) return null;
+  const label = list[absWeek - 1] || '';
+  let match = findStrengthByLabel(label);
+  if (match) return { strength: match, weekLabel: label };
+
+  const partnerWeek = (absWeek % 2 === 1) ? absWeek + 1 : absWeek - 1;
+  const partnerLabel = list[partnerWeek - 1] || '';
+  match = findStrengthByLabel(partnerLabel);
+  if (match) return { strength: match, weekLabel: partnerLabel, introducedAs: label || null };
+
+  return { strength: null, weekLabel: label };
+}
+
+function rotationForIndex(index) {
+  const sliceCentre = index * SLICE + SLICE / 2;
+  const pointerAngle = -Math.PI / 2;
+  let delta = pointerAngle - sliceCentre;
+  delta = ((delta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  return delta;
+}
+
+function showFocus(focus) {
+  const card = document.getElementById('focus-card');
+  const eyebrow = document.getElementById('focus-eyebrow');
+  if (!focus || !focus.strength) {
+    eyebrow.textContent = 'This fortnight';
+    document.getElementById('result-virtue').textContent = '';
+    document.getElementById('result-name').textContent = focus && focus.weekLabel ? focus.weekLabel : 'Between focuses';
+    document.getElementById('result-desc').textContent = 'No single character strength is the focus this fortnight.';
+    return;
+  }
+  eyebrow.textContent = focus.introducedAs ? `This fortnight — introducing ${focus.introducedAs}` : 'This fortnight';
+  showResult(focus.strength);
+}
+
+function showResult(s) {
+  document.getElementById('result-virtue').textContent = s.virtue;
+  document.getElementById('result-virtue').style.color = `hsl(${virtueHue[s.virtue]}, 75%, 72%)`;
+  document.getElementById('result-name').textContent = s.name;
+  document.getElementById('result-desc').textContent = s.desc;
+}
+
+function pickRandomIndex() { return Math.floor(Math.random() * N); }
+
+function spin() {
+  if (spinning) return;
+  spinning = true;
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('focus-eyebrow').textContent = 'Random strength';
+
+  const targetIndex = pickRandomIndex();
+  const pointerAngle = -Math.PI / 2;
+  const sliceCentre = targetIndex * SLICE + SLICE / 2;
+  let delta = pointerAngle - sliceCentre - currentRotation;
+  delta = ((delta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  const extraSpins = 5 + Math.floor(Math.random() * 3);
+  const totalDelta = delta + extraSpins * Math.PI * 2;
+  const startRotation = currentRotation;
+  const duration = 3600;
+  const startTime = performance.now();
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function frame(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(1, elapsed / duration);
+    currentRotation = startRotation + totalDelta * easeOutCubic(t);
+    drawWheel(currentRotation);
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      currentRotation = currentRotation % (Math.PI * 2);
+      drawWheel(currentRotation);
+      showResult(STRENGTHS[targetIndex]);
+      spinning = false;
+      document.getElementById('spin-btn').disabled = false;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+document.getElementById('spin-btn').addEventListener('click', spin);
+
+// Land on the actual current fortnight's strength on load — no animation needed for
+// the default state, since this is meant to sit quietly in an iframe and just be
+// correct, not perform a spin every time the embedding page reloads.
+const focus = resolveFocus();
+if (focus && focus.strength) {
+  const idx = STRENGTHS.indexOf(focus.strength);
+  currentRotation = rotationForIndex(idx);
+}
+drawWheel(currentRotation);
+showFocus(focus);
+</script>
+</body>
+</html>
