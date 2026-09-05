@@ -248,6 +248,80 @@ const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
 const R = canvas.width / 2;
 
+// Outer band reserved for the curved virtue name, matching the physical wheel's
+// outer-rim lettering; strength labels live inside it, never under it.
+const VIRTUE_BAND = 0.20;
+const VIRTUE_RADIUS = R * (1 - VIRTUE_BAND / 2) - 4;
+const STRENGTH_OUTER = R * (1 - VIRTUE_BAND) - 10;
+const STRENGTH_INNER = R * 0.26;
+
+// Each virtue's angular span, in strength order, for the curved outer label.
+const virtueSpans = [];
+{
+  let i = 0;
+  while (i < N) {
+    const v = STRENGTHS[i].virtue;
+    let j = i;
+    while (j < N && STRENGTHS[j].virtue === v) j++;
+    virtueSpans.push({ virtue: v, start: i * SLICE, end: j * SLICE });
+    i = j;
+  }
+}
+
+// Draws `text` curved along an arc centred on the given radius, letters spaced
+// by their own measured width so long and short virtue names both read cleanly.
+function drawCurvedLabel(text, radius, midAngle, fontPx) {
+  ctx.save();
+  ctx.font = `700 ${fontPx}px "Bebas Neue", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const letters = text.split('');
+  const spacing = fontPx * 0.18;
+  const widths = letters.map(ch => ctx.measureText(ch).width);
+  const totalArc = widths.reduce((a, b) => a + b + spacing, -spacing);
+  let travelled = -totalArc / 2;
+  letters.forEach((ch, i) => {
+    const w = widths[i];
+    const charCentre = travelled + w / 2;
+    const angle = midAngle + charCentre / radius;
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.translate(radius, 0);
+    ctx.rotate(Math.PI / 2);
+    ctx.lineWidth = fontPx * 0.22;
+    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+    ctx.strokeText(ch, 0, 0);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(ch, 0, 0);
+    ctx.restore();
+    travelled += w + spacing;
+  });
+  ctx.restore();
+}
+
+// Draws a strength name radially, shrinking the font until it fits the radial
+// span available to it — never truncated, same rule the site's other tiled
+// games (e.g. bookshelf-book-week's spine titles) use for the same reason.
+function drawStrengthLabel(text, midAngle) {
+  const available = STRENGTH_OUTER - STRENGTH_INNER - 10;
+  let fontPx = 18;
+  ctx.font = `700 ${fontPx}px "DM Sans", sans-serif`;
+  while (fontPx > 9 && ctx.measureText(text).width > available) {
+    fontPx -= 1;
+    ctx.font = `700 ${fontPx}px "DM Sans", sans-serif`;
+  }
+  ctx.save();
+  ctx.rotate(midAngle);
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.strokeText(text, STRENGTH_OUTER, 0);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(text, STRENGTH_OUTER, 0);
+  ctx.restore();
+}
+
 function drawWheel(rotation) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.save();
@@ -267,16 +341,14 @@ function drawWheel(rotation) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // label, curved along the slice
-    ctx.save();
-    ctx.rotate(start + SLICE / 2);
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgba(0,0,0,0.82)';
-    ctx.font = '600 15px "DM Sans", sans-serif';
-    ctx.fillText(s.name, R - 16, 0);
-    ctx.restore();
+    drawStrengthLabel(s.name, start + SLICE / 2);
   });
+
+  const virtueFont = Math.max(15, Math.min(22, (R * 0.09)));
+  virtueSpans.forEach(v => {
+    drawCurvedLabel(v.virtue.toUpperCase(), VIRTUE_RADIUS, (v.start + v.end) / 2, virtueFont);
+  });
+
   ctx.restore();
 }
 
