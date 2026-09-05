@@ -61,6 +61,16 @@
   .score-big{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--gold);letter-spacing:.04em;line-height:1;margin:10px 0;}
   .score-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
   .choice-btn:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  .form-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;margin-top:14px;}
+  .group-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:8px;}
+  .group-btn{background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--white);padding:8px 6px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center;}
+  .group-btn:hover{background:rgba(242,180,0,0.28);border-color:var(--gold);}
+  .group-btn.selected{background:var(--gold);color:var(--green);border-color:var(--gold);}
+  .group-btn[disabled]{opacity:.4;cursor:not-allowed;}
+  .lock-notice{display:none;background:rgba(224,82,82,0.12);border:1px solid rgba(224,82,82,0.35);border-radius:10px;padding:12px 16px;margin-bottom:12px;font-size:12px;color:#ffb3b3;text-align:center;font-family:'DM Mono',monospace;line-height:1.5;}
+  .lock-notice.show{display:block;}
+  .warn-line{font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;font-family:'DM Mono',monospace;}
+  .submit-confirm{display:none;text-align:center;color:var(--correct);font-size:12.5px;margin-top:10px;}
   @media (max-width:460px){body{padding:14px 10px}.card{padding:16px}.rebus-clue{font-size:clamp(1.5rem,11vw,2.6rem)}}
 </style>
 </head>
@@ -70,7 +80,17 @@
   <h1>Weekly <span>Trivia</span></h1>
   <div class="header-sub">Ten quick rounds for the whole class: this fortnight's focus, Crack the Code, a logo, six general knowledge questions, and what's on the calendar right now.</div>
 </div>
-<div class="card">
+
+<div class="card" id="signinCard">
+  <div class="week-tag" id="weekTagSignin">—</div>
+  <span class="form-label">House</span><div class="group-select" id="houseSelectBtns"></div>
+  <span class="form-label">Home Group</span><div class="group-select" id="groupSelectBtns"></div>
+  <div class="lock-notice" id="lockNotice" role="status" aria-live="polite"></div>
+  <div class="warn-line">One attempt per home group, per week. Staff can replay freely.</div>
+  <button class="btn btn-primary" id="startBtn" disabled>Start Weekly Trivia</button>
+</div>
+
+<div class="card" id="playCard" style="display:none">
   <div class="week-tag" id="weekTag">—</div>
   <div class="progress" id="progressDots"></div>
 
@@ -87,7 +107,9 @@
     <div class="stage-label">Weekly Trivia — Results</div>
     <div class="score-big" id="scoreBig">0 / 10</div>
     <div class="score-sub" id="scoreSub">—</div>
-    <button class="btn btn-primary" id="playAgainBtn">Play again</button>
+    <button class="btn btn-primary" id="submitScoreBtn">Submit score to leaderboard</button>
+    <div class="submit-confirm" id="submitConfirm" role="status" aria-live="polite">✓ Form opened in a new tab — press Submit there to finish.</div>
+    <button class="btn btn-outline" id="playAgainBtn">Play again</button>
     <button class="btn btn-outline" id="backBtn">Back to Home Group games</button>
   </div>
 </div>
@@ -271,9 +293,18 @@ function showResults(){
   const msgs = ['Have another crack next fortnight!','A solid effort.','Nice work.','Great round!','Weekly Trivia champions!'];
   const bracket = Math.min(Math.floor(score / STAGE_LABELS.length * msgs.length), msgs.length - 1);
   scoreSub.textContent = msgs[bracket];
+  window._lastResult = { group: fullGroupName(), house: selectedHouse || 'Staff', score: score };
+  if (selectedGroup !== 'Staff') {
+    const g = fullGroupName();
+    const played = readPlayedList();
+    if (!played.includes(g)) { played.push(g); writePlayedList(played); }
+  }
+  document.getElementById('submitScoreBtn').textContent = 'Submit score to leaderboard';
+  document.getElementById('submitScoreBtn').disabled = false;
+  document.getElementById('submitConfirm').style.display = 'none';
 }
 
-function init(){
+function startRound(){
   round = currentWeekRound();
   weekTag.textContent = 'Term ' + round.term + ' · Week ' + round.weekInTerm;
   stage = 0; score = 0;
@@ -282,13 +313,169 @@ function init(){
   renderStage();
 }
 
+/* ── SIGN IN (house / home group, one attempt per group per week — same
+   pattern as the rest of the suite, reusing Crack the Code's lock logic
+   verbatim since this round replaces it) ── */
+const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
+const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Staff'];
+let selectedHouse = null, selectedGroup = null;
+function fullGroupName(){ if(!selectedGroup) return ''; return selectedGroup === 'Staff' ? 'Staff' : ((selectedHouse||'') + ' ' + selectedGroup).trim(); }
+function normaliseGroupName(group){ return String(group||'').trim().replace(/\s+/g,' '); }
+function isStaffGroup(group){ const g = normaliseGroupName(group); return g === 'Staff' || g.endsWith(' Staff'); }
+function weekLabel(){ const r = currentWeekRound(); return 'Term ' + r.term + ' · Week ' + r.weekInTerm; }
+function getPlayedKey(){ return 'trivia:played:' + weekLabel(); }
+function readPlayedList(){ try{ const d = JSON.parse(localStorage.getItem(getPlayedKey())||'[]'); return Array.isArray(d)?d:[]; }catch(e){ return []; } }
+function writePlayedList(d){ try{ localStorage.setItem(getPlayedKey(), JSON.stringify([...new Set(d.map(normaliseGroupName))])); }catch(e){} }
+function isPlayed(group){ const g = normaliseGroupName(group); if(!g||isStaffGroup(g)) return false; return readPlayedList().includes(g); }
+
+const lockNotice = document.getElementById('lockNotice'), startBtn = document.getElementById('startBtn'),
+  weekTagSignin = document.getElementById('weekTagSignin'), signinCard = document.getElementById('signinCard'),
+  playCard = document.getElementById('playCard');
+
+function selectHouse(h){
+  selectedHouse = h; selectedGroup = null;
+  document.querySelectorAll('#houseSelectBtns .group-btn').forEach(b => b.classList.toggle('selected', b.textContent === h));
+  document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b => { b.disabled = false; b.removeAttribute('title'); b.classList.remove('selected'); });
+  checkSignin();
+}
+function selectGroup(g){
+  if(!selectedHouse) return;
+  selectedGroup = g;
+  document.querySelectorAll('#groupSelectBtns .group-btn').forEach(b => b.classList.toggle('selected', b.textContent === g));
+  checkSignin();
+}
+function checkSignin(){
+  const full = fullGroupName();
+  if (full && isPlayed(full)) {
+    lockNotice.textContent = full + ' has already played Weekly Trivia on this browser for ' + weekLabel() + '. Choose Staff to practise, or come back next fortnight.';
+    lockNotice.classList.add('show');
+    startBtn.disabled = true;
+    return;
+  }
+  lockNotice.classList.remove('show');
+  startBtn.disabled = !(selectedHouse && selectedGroup);
+}
+function buildSignin(){
+  weekTagSignin.textContent = weekLabel();
+  document.getElementById('houseSelectBtns').innerHTML = HOUSES.map(h => `<button type="button" class="group-btn" onclick="selectHouse('${h}')">${h}</button>`).join('');
+  document.getElementById('groupSelectBtns').innerHTML = GROUPS.map(g => `<button type="button" class="group-btn" onclick="selectGroup('${g}')" ${selectedHouse ? '' : 'disabled title="Choose a house first"'}>${g}</button>`).join('');
+}
+function resetToSignin(){
+  selectedHouse = null; selectedGroup = null;
+  playCard.style.display = 'none';
+  signinCard.style.display = '';
+  buildSignin();
+  checkSignin();
+}
+startBtn.addEventListener('click', () => {
+  if (!(selectedHouse && selectedGroup)) return;
+  signinCard.style.display = 'none';
+  playCard.style.display = '';
+  startRound();
+});
+
+/* ── SUBMIT (shared Microsoft Form used by every Home Group game) ── */
+function cshsSubmitButton(){ return document.getElementById('submitScoreBtn'); }
+function cshsOpenForm(url){
+  // URLSearchParams encodes spaces as "+", which Microsoft Forms stores
+  // literally ("Moori+G"). A real plus is encoded as %2B, so every bare "+"
+  // here is a space.
+  url = String(url).replace(/\+/g, '%20');
+  var w=null;
+  try{ w=window.open(url,'_blank'); }catch(e){ w=null; }
+  var box=document.getElementById('cshsFormFallback');
+  if(w){
+    if(box){ box.style.display='none'; }
+    var btn0=cshsSubmitButton();
+    var was=btn0?{text:btn0.textContent, disabled:btn0.disabled, animation:btn0.style.animation,
+                  opacity:btn0.style.opacity, cursor:btn0.style.cursor}:null;
+    setTimeout(function(){
+      var btn=cshsSubmitButton();
+      if(!btn||!was){ return; }
+      btn.disabled=true;
+      btn.textContent='✓ Score sent — press Submit in the form tab';
+      btn.style.animation='none';
+      btn.style.opacity='0.6';
+      btn.style.cursor='default';
+      var watch=setInterval(function(){
+        if(!document.body.contains(btn)){ clearInterval(watch); return; }
+        if(btn.offsetParent===null){
+          btn.disabled=was.disabled;
+          btn.textContent=was.text;
+          btn.style.animation=was.animation;
+          btn.style.opacity=was.opacity;
+          btn.style.cursor=was.cursor;
+          clearInterval(watch);
+        }
+      },300);
+    },0);
+    return true;
+  }
+  setTimeout(function(){
+    var confirmEl=document.getElementById('submitConfirm');
+    if(confirmEl){ confirmEl.style.display='none'; }
+    var b=document.getElementById('cshsFormFallback');
+    if(!b){
+      b=document.createElement('div');
+      b.id='cshsFormFallback';
+      b.setAttribute('role','alert');
+      b.style.cssText='margin:12px 0;padding:12px 14px;border:1px solid rgba(242,180,0,.5);'+
+        'border-radius:10px;background:rgba(242,180,0,.12);text-align:center;';
+      var msg=document.createElement('div');
+      msg.style.cssText='font-size:13px;line-height:1.5;color:#fdfdfd;margin-bottom:9px;';
+      msg.textContent='Your browser blocked the new tab, so the score form did not open. '+
+        'Use this link instead — your score is already filled in.';
+      var a=document.createElement('a');
+      a.id='cshsFormFallbackLink';
+      a.target='_blank'; a.rel='noopener';
+      a.textContent='Open the score form';
+      a.style.cssText='display:inline-block;padding:9px 18px;border-radius:8px;background:#f2b400;'+
+        'color:#00180f;font-weight:700;font-size:14px;text-decoration:none;';
+      b.appendChild(msg); b.appendChild(a);
+      var anchor=cshsSubmitButton();
+      if(anchor&&anchor.parentNode){ anchor.parentNode.insertBefore(b,anchor.nextSibling); }
+      else{ document.body.appendChild(b); }
+    }
+    document.getElementById('cshsFormFallbackLink').href=url;
+    b.style.display='';
+    try{ b.scrollIntoView({block:'nearest'}); }catch(e){}
+  },0);
+  return false;
+}
+
+/* ── SUITE CONSTANTS (shared with all CSHS games) ── */
+const CSHS_FORM_BASE = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx';
+const CSHS_FORM_ID = 'xccAZrUWr0uekzI72MAduqpmcw_jVYVCjN05AfEP1IdUOUtFVUJQOFhZWjRZNjAzRkMyWlozTUpTUy4u';
+const CSHS_F_WEEK = 'rb28fecc633264af694f45d8cf2b3b8c1', CSHS_F_GAME = 'rdbbd457b83da425e93f978536b950482';
+const CSHS_F_HOUSE = 'rd04d4cf9da8a4213820791f91cdcf6ba', CSHS_F_GROUP = 'r3022db1950b649218496e706728c203f';
+const CSHS_F_SCORE = 'r8b61653d0854482a9e7e329026083f7b';
+
+function submitScoreWT(){
+  const r = window._lastResult;
+  if (!r) return;
+  const params = new URLSearchParams({
+    id: CSHS_FORM_ID,
+    [CSHS_F_WEEK]: weekLabel(),
+    [CSHS_F_GAME]: 'Weekly Trivia',
+    [CSHS_F_HOUSE]: r.house,
+    [CSHS_F_GROUP]: r.group,
+    [CSHS_F_SCORE]: String(r.score)
+  });
+  cshsOpenForm(CSHS_FORM_BASE + '?' + params.toString());
+  document.getElementById('submitConfirm').style.display = 'block';
+  document.getElementById('submitScoreBtn').textContent = '↗ Reopen form';
+  document.getElementById('submitScoreBtn').disabled = false;
+}
+
 nextBtn.addEventListener('click', nextRound);
-document.getElementById('playAgainBtn').addEventListener('click', init);
+document.getElementById('submitScoreBtn').addEventListener('click', submitScoreWT);
+document.getElementById('playAgainBtn').addEventListener('click', resetToSignin);
 document.getElementById('backBtn').addEventListener('click', () => {
   window.location.href = (window.CSHS_SITE_CONFIG && window.CSHS_SITE_CONFIG.gamesHubUrl) || '../index.html';
 });
 
-init();
+buildSignin();
+checkSignin();
 </script>
 </body>
 </html>
