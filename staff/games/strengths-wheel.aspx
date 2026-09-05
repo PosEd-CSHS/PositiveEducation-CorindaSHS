@@ -214,7 +214,7 @@ const STRENGTHS = [
   { name: 'Humility', virtue: 'Temperance', desc: 'You don’t need to be the headline. Your work can speak for itself, and you take feedback without bristling.' },
   { name: 'Prudence', virtue: 'Temperance', desc: 'You look before you leap, habitually. Choices get weighed against where they lead, not just how they feel right now.' },
   { name: 'Self-Regulation', virtue: 'Temperance', desc: 'You run yourself with discipline. Impulses and moods get a vote but not a veto.' },
-  { name: 'Appreciation of Beauty & Excellence', virtue: 'Transcendence', desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly.' },
+  { name: 'Appreciation of Beauty & Excellence', short: 'Appreciation & Awe', virtue: 'Transcendence', desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly.' },
   { name: 'Gratitude', virtue: 'Transcendence', desc: 'You keep track of the good in your life rather than taking it as given, and you make sure people know what they’ve meant to you.' },
   { name: 'Hope', virtue: 'Transcendence', desc: 'You treat the future as something to build, not something that happens to you. Your optimism comes with effort attached.' },
   { name: 'Humour', virtue: 'Transcendence', desc: 'You find the light side and you share it. You can take the heaviness out of a room without taking the substance out of it.' },
@@ -341,7 +341,7 @@ function drawWheel(rotation) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    drawStrengthLabel(s.name, start + SLICE / 2);
+    drawStrengthLabel(s.short || s.name, start + SLICE / 2);
   });
 
   const virtueFont = Math.max(15, Math.min(22, (R * 0.09)));
