@@ -182,8 +182,8 @@
 </footer>
 
 <script>
-// Canonical 24 VIA strengths, current terminology, matching character-strengths/index.html
-// and games/guess-the-strength.html. Six virtues, each a colour family so the wheel reads
+// Canonical 24 VIA strengths, current terminology, matching character-strengths/index.html.
+// Six virtues, each a colour family so the wheel reads
 // the same way the physical spinner it's modelled on does.
 const VIRTUES = [
   { name: 'Wisdom',       hue: 355 }, // red
