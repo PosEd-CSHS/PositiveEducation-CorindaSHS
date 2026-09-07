@@ -170,11 +170,6 @@
         <div class="card-title">Connections</div>
         <div class="card-desc">Find four groups of four — a new puzzle every round.</div>
       </a>
-      <a class="card" href="games/countdown.aspx">
-        <span class="card-emoji">🔢</span>
-        <div class="card-title">Countdown</div>
-        <div class="card-desc">Use the numbers to reach a fresh target — any combination.</div>
-      </a>
       <a class="card" href="games/wheel-of-fortune.aspx">
         <span class="card-emoji">🎡</span>
         <div class="card-title">Wheel of Fortune</div>
