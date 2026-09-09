@@ -194,6 +194,17 @@
     </div>
   </section>
 
+  <section>
+    <div class="section-head"><h2>Wellbeing</h2><span>self-reflection</span></div>
+    <div class="grid">
+      <a class="card" href="permah-audit/index.aspx">
+        <span class="card-emoji">🌿</span>
+        <div class="card-title">PERMAH Wellbeing Audit</div>
+        <div class="card-desc">A short self-check across the six PERMAH pillars, with suggested next steps — nothing is recorded or submitted.</div>
+      </a>
+    </div>
+  </section>
+
   <footer>
     <span>Corinda SHS Positive Education</span>
   </footer>
