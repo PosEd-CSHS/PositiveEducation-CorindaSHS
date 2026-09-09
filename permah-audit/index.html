@@ -20,29 +20,29 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+  body { font-family: 'Inter', Arial, sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
 
   header { background: var(--green); padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1rem; }
   .logo-ring { width: 44px; height: 44px; border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .logo-ring svg { width: 24px; height: 24px; fill: var(--gold); }
-  header h1 { font-family: 'DM Serif Display', serif; color: var(--white); font-size: 1.2rem; line-height: 1.2; }
-  header h1 span { display: block; font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--gold-lt); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.15rem; }
+  header h1 { font-family: 'DM Serif Display', Georgia, serif; color: var(--white); font-size: 1.2rem; line-height: 1.2; }
+  header h1 span { display: block; font-family: 'Inter', Arial, sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--gold-lt); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.15rem; }
 
   main { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
 
   .intro { background: var(--white); border: 1px solid var(--border); border-top: 4px solid var(--gold); border-radius: 8px; padding: 1.75rem 2rem; margin-bottom: 2rem; }
-  .intro h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--green); margin-bottom: 0.5rem; }
+  .intro h2 { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.6rem; color: var(--green); margin-bottom: 0.5rem; }
   .intro p { color: var(--muted); font-size: 0.92rem; line-height: 1.6; }
   .intro p + p { margin-top: 0.5rem; }
 
   .stage-badge { display: inline-block; background: var(--green); color: var(--gold-lt); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 99px; margin-bottom: 0.75rem; }
 
   .role-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
-  .role-btn { border: 2px solid var(--border); border-radius: 10px; background: var(--white); padding: 1.5rem 1.25rem; cursor: pointer; text-align: center; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .role-btn { border: 2px solid var(--border); border-radius: 10px; background: var(--white); padding: 1.5rem 1.25rem; cursor: pointer; text-align: center; transition: all 0.15s; font-family: 'Inter', Arial, sans-serif; }
   .role-btn:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,162,39,0.15); }
   .role-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .role-btn:active { transform: translateY(0); }
-  .role-btn-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--green); margin-bottom: 0.4rem; }
+  .role-btn-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.3rem; color: var(--green); margin-bottom: 0.4rem; }
   .role-btn-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
   @media (max-width: 520px) { .role-options { grid-template-columns: 1fr; } }
 
@@ -74,12 +74,16 @@
 
   #results { display: none; }
   .results-header { background: var(--green); color: var(--white); border-radius: 10px; padding: 2rem; margin-bottom: 2rem; text-align: center; }
-  .results-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .results-header h2 { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.8rem; margin-bottom: 0.3rem; }
   .results-header p { font-size: 0.88rem; opacity: 0.85; }
 
-  .profile-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--green); margin-bottom: 0.9rem; }
+  .profile-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.25rem; color: var(--green); margin-bottom: 0.4rem; }
+  .snapshot-note { font-size: 0.85rem; color: var(--muted); line-height: 1.55; margin-bottom: 1.1rem; }
+
+  .support-box { background: #f4ede0; border: 1px solid var(--gold); border-radius: 10px; padding: 1.2rem 1.5rem; margin-bottom: 1rem; font-size: 0.9rem; line-height: 1.6; color: var(--ink); }
+  .support-box strong { color: var(--green); }
   .pillar-row { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.85rem; }
-  .pillar-letter { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--white); }
+  .pillar-letter { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', Georgia, serif; font-size: 1.05rem; font-weight: 700; color: var(--white); }
   .pillar-main { flex: 1; min-width: 0; }
   .pillar-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem; }
   .pillar-name { font-weight: 700; font-size: 0.92rem; }
@@ -87,9 +91,10 @@
   .pillar-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
   .pillar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
 
-  .focus-box { background: var(--white); border: 1px solid var(--border); border-left: 5px solid var(--gold); border-radius: 10px; padding: 1.4rem 1.6rem; margin: 2rem 0 0.75rem; }
+  .focus-box { background: var(--white); border: 1px solid var(--border); border-left: 5px solid var(--gold); border-radius: 10px; padding: 1.4rem 1.6rem; margin: 0 0 0.75rem; }
+  .focus-boxes-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.15rem; color: var(--green); margin: 2rem 0 0.9rem; }
   .focus-eyebrow { font-size: 0.7rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
-  .focus-name { font-family: 'DM Serif Display', serif; font-size: 1.35rem; color: var(--green); margin-bottom: 0.6rem; }
+  .focus-name { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.35rem; color: var(--green); margin-bottom: 0.6rem; }
   .focus-list { list-style: none; }
   .focus-list li { font-size: 0.9rem; line-height: 1.55; color: var(--ink); padding: 0.55rem 0; border-top: 1px solid var(--border); }
   .focus-list li:first-child { border-top: none; padding-top: 0; }
@@ -101,6 +106,7 @@
   @media (max-width: 520px) {
     main { padding: 1.25rem 1rem 3rem; }
     .rating-btn { width: 38px; height: 38px; font-size: 0.8rem; }
+    #survey .progress-wrap { position: sticky; top: 0; background: var(--cream); padding: 0.6rem 0.2rem 0.5rem; margin: 0 -0.2rem 1.4rem; z-index: 5; }
   }
 
   @media print {
@@ -130,6 +136,7 @@
     <div class="intro">
       <span class="stage-badge">Before you begin</span>
       <h2>Who's completing this audit?</h2>
+      <p>This is a brief Corinda SHS reflection tool based on the PERMAH framework. It is not a validated psychological assessment.</p>
       <p>The wording of a few questions is simplified for students, but the pillars, scoring and suggestions are exactly the same either way.</p>
     </div>
     <div class="role-options">
@@ -170,9 +177,11 @@
       <p id="results-sub"></p>
     </div>
 
-    <div class="profile-title">Your six pillars</div>
+    <div class="profile-title">Your PERMAH snapshot</div>
+    <p class="snapshot-note">There is no ideal shape. These scores are a snapshot of how things feel right now, and they may change over time.</p>
     <div id="pillar-rows"></div>
 
+    <div id="support-box-wrap"></div>
     <div id="focus-boxes"></div>
 
     <div class="results-actions">
@@ -208,12 +217,12 @@ const CONTENT = {
       'I feel genuinely good or content during an average day.',
       'Even on a hard day, I can usually find something to feel good about.',
       'I experience moments of joy, amusement or delight fairly often.',
-      'Most weeks, I have more good moments than bad ones.'
+      'There are usually things in my week that I genuinely enjoy.'
     ],
     E: [
       'I get absorbed in what I’m doing, to the point of losing track of time.',
       'I have parts of my work or life that fully hold my attention.',
-      'I feel energised, rather than drained, by how I spend most of my time.',
+      'I regularly do things that challenge me in a way I enjoy.',
       'I regularly get to use the things I’m genuinely good at.'
     ],
     R: [
@@ -231,7 +240,7 @@ const CONTENT = {
     A: [
       'I regularly follow through on things I set out to do.',
       'I feel a sense of real progress toward goals that matter to me.',
-      'I keep the commitments I make to myself, not just to other people.',
+      'When I work towards something important, I can usually see myself making progress.',
       'I feel capable when I take on something difficult.'
     ],
     H: [
@@ -246,12 +255,12 @@ const CONTENT = {
       'I feel genuinely happy or good during an average day.',
       'Even on a bad day, I can usually find something to feel okay about.',
       'I laugh or feel real joy fairly often.',
-      'Most weeks, I have more good moments than bad ones.'
+      'There are usually things in my week that I genuinely enjoy.'
     ],
     E: [
       'I get so into something I’m doing that I lose track of time.',
       'I have things I do that fully hold my attention — school or not.',
-      'I feel more energised than drained by how I spend most of my time.',
+      'I regularly do things that challenge me in a way I actually enjoy.',
       'I regularly get to do things I’m actually good at.'
     ],
     R: [
@@ -269,7 +278,7 @@ const CONTENT = {
     A: [
       'I regularly follow through on things I set out to do.',
       'I feel like I’m making real progress on things that matter to me.',
-      'I keep the promises I make to myself, not just to other people.',
+      'When I work towards something important, I can usually see myself making progress.',
       'I feel capable when something is genuinely hard.'
     ],
     H: [
@@ -282,36 +291,70 @@ const CONTENT = {
 };
 
 const SUGGESTIONS = {
-  P: [
-    'Notice and name three good moments at the end of each day — writing them down works better than just thinking them.',
-    'Build one small thing you enjoy into today, on purpose, rather than waiting to feel like it.',
-    'Spend time on something that reliably makes you laugh — a person, a show, an activity — at least once this week.'
-  ],
-  E: [
-    'Notice what you were doing the last time you lost track of time, and find a way to do more of it.',
-    'Try using one of your strongest character strengths in a new setting this week — see the Character Strengths directory for ideas.',
-    'Cut one low-engagement habit (scrolling, background TV) and swap the time for something that actually absorbs you.'
-  ],
-  R: [
-    'Reach out to one person you care about this week — a message, not just a like, and something more specific than "how are you".',
-    'Tell someone specifically what you appreciate about them — vague thanks lands differently to a specific one.',
-    'If a relationship feels distant right now, pick one small, low-pressure way back in rather than waiting for a big moment.'
-  ],
-  M: [
-    'Write one sentence on why something you did this week actually mattered — to you or to someone else.',
-    'Find one small way to connect a task you find dull to something you actually care about.',
-    'Spend ten minutes with something bigger than your day-to-day — nature, community, faith, creative work, whatever that is for you.'
-  ],
-  A: [
-    'Pick one goal that’s genuinely yours (not set for you) and break it into a next step you could do this week.',
-    'Finish one small thing you’ve been putting off — completion itself builds momentum for bigger goals.',
-    'Notice one thing you’ve actually achieved recently before reaching for the next target — progress you don’t register doesn’t motivate you.'
-  ],
-  H: [
-    'Pick one sleep habit to fix this week — a consistent wake time matters more than total hours for most people.',
-    'Add one short burst of movement to a day that currently has none — it doesn’t need to be a workout to count.',
-    'Identify what you actually do when stressed, and swap one unhelpful default (doomscrolling, skipping meals) for something that helps.'
-  ]
+  staff: {
+    P: [
+      'Notice and name three good moments at the end of each day — writing them down works better than just thinking them.',
+      'Build one small thing you enjoy into today, on purpose, rather than waiting to feel like it.',
+      'Spend time on something that reliably makes you laugh — a person, a show, an activity — at least once this week.'
+    ],
+    E: [
+      'Notice what you were doing the last time you lost track of time, and find a way to do more of it.',
+      'Try using one of your strongest character strengths in a new setting this week — see the Character Strengths directory for ideas.',
+      'Cut one low-engagement habit (scrolling, background TV) and swap the time for something that actually absorbs you.'
+    ],
+    R: [
+      'Reach out to one person you care about this week — a message, not just a like, and something more specific than "how are you".',
+      'Tell someone specifically what you appreciate about them — vague thanks lands differently to a specific one.',
+      'If a relationship feels distant right now, pick one small, low-pressure way back in rather than waiting for a big moment.'
+    ],
+    M: [
+      'Write one sentence on why something you did this week actually mattered — to you or to someone else.',
+      'Find one small way to connect a task you find dull to something you actually care about.',
+      'Spend ten minutes with something bigger than your day-to-day — nature, community, faith, creative work, whatever that is for you.'
+    ],
+    A: [
+      'Pick one goal that’s genuinely yours (not set for you) and break it into a next step you could do this week.',
+      'Finish one small thing you’ve been putting off — completion itself builds momentum for bigger goals.',
+      'Notice one thing you’ve actually achieved recently before reaching for the next target — progress you don’t register doesn’t motivate you.'
+    ],
+    H: [
+      'Aim for enough sleep and a reasonably consistent sleep and wake time — small changes to your routine can make sleep easier.',
+      'Add one short burst of movement to a day that currently has none — it doesn’t need to be a workout to count.',
+      'Identify what you actually do when stressed, and swap one unhelpful default (doomscrolling, skipping meals) for something that helps.'
+    ]
+  },
+  student: {
+    P: [
+      'At the end of the day, think of three good moments — even small ones count, like a good song or a laugh with a friend.',
+      'Plan one thing you actually enjoy into today, instead of waiting until you feel like doing it.',
+      'Spend time this week with something that reliably makes you laugh — a person, a show, a game, whatever that is for you.'
+    ],
+    E: [
+      'Think about what you were doing the last time you totally lost track of time, and find a way to do more of it.',
+      'Try one of your strengths somewhere new this week — sport, art, a hobby, not just school. The Character Strengths directory has ideas.',
+      'Swap fifteen minutes of scrolling for something that actually interests you — a hobby, a game, a project, anything you’d genuinely choose over your phone.'
+    ],
+    R: [
+      'Message one person you care about this week — something more than just "hey", like actually asking how their week is going.',
+      'Tell someone specifically what you like about them — a real reason lands better than just "you\'re nice".',
+      'If you’ve drifted from someone, try one small, low-pressure way back in — you don’t need a big moment to reconnect.'
+    ],
+    M: [
+      'Write one sentence about why something you did this week actually mattered, to you or to someone else.',
+      'Find one way to make a boring task feel less pointless — connect it to something you actually care about.',
+      'Spend some time on something bigger than school — a cause, a community, a creative project, whatever gives you that feeling.'
+    ],
+    A: [
+      'Pick one goal that’s actually yours, not just something you’re told to do, and figure out one step you could take this week.',
+      'Finish one small thing you’ve been putting off — it makes starting the next thing easier.',
+      'Notice one thing you’ve actually pulled off recently before moving straight on to the next thing.'
+    ],
+    H: [
+      'Teenagers generally need around 8–10 hours of sleep. Try to keep your sleep and wake times reasonably consistent, even on weekends.',
+      'Add one burst of movement to a day that has none — it doesn’t have to be sport, just moving counts.',
+      'Notice what you actually do when you’re stressed, and try swapping one thing that doesn’t help (like scrolling for hours) for something that does.'
+    ]
+  }
 };
 
 let role = null;
@@ -356,7 +399,7 @@ function buildForm() {
       <div class="q-text">${it.text}</div>
       <div class="rating-labels"><span>Rarely true</span><span>Very true</span></div>
       <div class="rating-options" role="group" aria-label="Question ${i + 1}">
-        ${[1,2,3,4,5].map(n => `<button class="rating-btn" data-i="${i}" data-val="${n}" type="button">${n}</button>`).join('')}
+        ${[1,2,3,4,5].map(n => `<button class="rating-btn" data-i="${i}" data-val="${n}" type="button" aria-pressed="false" aria-label="${n}${RATING_LABELS[n] ? ' - ' + RATING_LABELS[n] : ''}">${n}</button>`).join('')}
       </div>`;
     card.querySelectorAll('.rating-btn').forEach(btn => {
       btn.addEventListener('click', () => handleAnswer(i, parseInt(btn.dataset.val)));
@@ -365,10 +408,14 @@ function buildForm() {
   });
 }
 
+const RATING_LABELS = { 1: 'Rarely true', 3: 'Sometimes true', 5: 'Very true' };
+
 function handleAnswer(i, val) {
   answers[i] = val;
   document.querySelectorAll(`.rating-btn[data-i="${i}"]`).forEach(btn => {
-    btn.classList.toggle('selected', parseInt(btn.dataset.val) === val);
+    const selected = parseInt(btn.dataset.val) === val;
+    btn.classList.toggle('selected', selected);
+    btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
   });
   document.getElementById(`card-${i}`).classList.add('rated');
   updateProgress();
@@ -386,10 +433,10 @@ function updateProgress() {
 }
 
 function bandFor(score) {
-  if (score >= 4.0) return { label: 'Thriving', tone: 'strong' };
-  if (score >= 3.0) return { label: 'Doing okay', tone: 'ok' };
-  if (score >= 2.0) return { label: 'Worth some attention', tone: 'low' };
-  return { label: 'A good place to start', tone: 'low' };
+  if (score >= 4.0) return { label: 'A current strength' };
+  if (score >= 3.0) return { label: 'Generally going well' };
+  if (score >= 2.0) return { label: 'Could use some attention' };
+  return { label: 'Worth checking in on' };
 }
 
 function computeScores() {
@@ -402,6 +449,24 @@ function computeScores() {
   return scores;
 }
 
+const STRONG_MAINTENANCE = {
+  P: 'Keep noticing and making space for the small things that lift your mood.',
+  E: 'Keep protecting time for the things that absorb you — that’s not indulgence, it’s part of what’s working.',
+  R: 'Keep investing in the people who matter to you — strong relationships take maintenance too.',
+  M: 'Keep doing the things that feel meaningful to you — they’re clearly paying off.',
+  A: 'Keep setting yourself things worth working toward — momentum is easier to keep than to rebuild.',
+  H: 'Keep the habits that are working for you — consistency is doing more than it might feel like.'
+};
+
+const SUPPORT_MESSAGE = {
+  staff: 'A low score doesn’t mean something is wrong with you, but it may be worth talking with someone you trust — a colleague, your line manager, or through the Employee Assistance Program (EAP).',
+  student: 'A low score doesn’t mean something is wrong with you, but it may be worth talking with someone you trust. You could speak with your Year Level Coordinator, a Guidance Officer, a parent or carer, or another trusted adult.'
+};
+
+function focusLabelFor(score) {
+  return score < 3.0 ? 'Worth focusing on' : 'One area you could strengthen';
+}
+
 function showResults() {
   const scores = computeScores();
   document.getElementById('survey').style.display = 'none';
@@ -409,8 +474,7 @@ function showResults() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   document.getElementById('results-sub').textContent =
-    role === 'student' ? 'How things are looking across your six pillars of wellbeing right now.'
-                        : 'How things are looking across your six pillars of wellbeing right now.';
+    'How things are looking across your six pillars of wellbeing right now.';
 
   const rows = document.getElementById('pillar-rows');
   rows.innerHTML = '';
@@ -432,21 +496,60 @@ function showResults() {
     rows.appendChild(row);
   });
 
-  // Lowest pillar(s), ties within 0.1, capped at 2 so the takeaway stays focused.
-  const sorted = [...PILLARS].sort((a, b) => scores[a.id] - scores[b.id]);
-  const lowestScore = scores[sorted[0].id];
-  const focusPillars = sorted.filter(p => scores[p.id] <= lowestScore + 0.1).slice(0, 2);
+  // Safeguarding: surface support options on the results screen itself, not
+  // just the page footer, whenever any pillar is low enough to warrant it.
+  const supportWrap = document.getElementById('support-box-wrap');
+  supportWrap.innerHTML = '';
+  if (Object.values(scores).some(s => s < 2.0)) {
+    const box = document.createElement('div');
+    box.className = 'support-box';
+    box.innerHTML = `<strong>If things feel hard right now:</strong> ${SUPPORT_MESSAGE[role]}`;
+    supportWrap.appendChild(box);
+  }
 
   const focusWrap = document.getElementById('focus-boxes');
   focusWrap.innerHTML = '';
-  focusPillars.forEach(p => {
+
+  const sorted = [...PILLARS].sort((a, b) => scores[a.id] - scores[b.id]);
+  const lowestScore = scores[sorted[0].id];
+
+  if (lowestScore >= 4.0) {
+    // Every pillar is a strength — a deficit-framed "worth focusing on" box
+    // would be actively wrong here. Name the comparatively lowest pillar
+    // once, but as maintenance, not as a problem.
+    const title = document.createElement('div');
+    title.className = 'focus-boxes-title';
+    title.textContent = 'Your profile is looking strong';
+    focusWrap.appendChild(title);
+
+    const p = sorted[0];
     const box = document.createElement('div');
     box.className = 'focus-box';
     box.style.borderLeftColor = p.color;
     box.innerHTML = `
-      <div class="focus-eyebrow" style="color:${p.color}">Worth focusing on</div>
+      <div class="focus-eyebrow" style="color:${p.color}">Keep it up</div>
       <div class="focus-name">${p.name}</div>
-      <ul class="focus-list">${SUGGESTIONS[p.id].map(s => `<li>${s}</li>`).join('')}</ul>`;
+      <ul class="focus-list"><li>${STRONG_MAINTENANCE[p.id]}</li></ul>`;
+    focusWrap.appendChild(box);
+    return;
+  }
+
+  // Lowest pillar(s), ties within 0.1, capped at 2 so the takeaway stays focused.
+  const focusPillars = sorted.filter(p => scores[p.id] <= lowestScore + 0.1).slice(0, 2);
+  const title = document.createElement('div');
+  title.className = 'focus-boxes-title';
+  title.textContent = focusPillars.length > 1 ? 'Areas worth a look' : 'An area worth a look';
+  focusWrap.appendChild(title);
+
+  focusPillars.forEach(p => {
+    const score = scores[p.id];
+    const box = document.createElement('div');
+    box.className = 'focus-box';
+    box.style.borderLeftColor = p.color;
+    box.innerHTML = `
+      <div class="focus-eyebrow" style="color:${p.color}">${focusLabelFor(score)}</div>
+      <div class="focus-name">${p.name}</div>
+      <ul class="focus-list">${SUGGESTIONS[role][p.id].map(s => `<li>${s}</li>`).join('')}</ul>`;
     focusWrap.appendChild(box);
   });
 }
