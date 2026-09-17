@@ -114,23 +114,6 @@
     color: var(--muted);
   }
 
-  #spin-btn {
-    display: block;
-    margin: 12px auto 0;
-    background: transparent;
-    color: var(--gold);
-    border: 1px solid var(--gold-border);
-    border-radius: 8px;
-    padding: 8px 18px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  #spin-btn:hover:not(:disabled) { background: rgba(242,180,0,0.1); }
-  #spin-btn:disabled { opacity: 0.5; cursor: default; }
-
   footer {
     margin-top: 12px;
     text-align: center;
@@ -160,8 +143,6 @@
   <div class="strength-name" id="result-name"></div>
   <div class="strength-desc" id="result-desc"></div>
 </div>
-
-<button id="spin-btn">🎡 Spin a random strength instead</button>
 
 <footer>
   <a href="../character-strengths/index.html">See every strength's activities →</a>
@@ -330,7 +311,6 @@ function drawWheel(rotation) {
 }
 
 let currentRotation = 0;
-let spinning = false;
 
 // ---------- Current-fortnight resolution, shared date logic with every other game ----------
 // Reads the same window.CSHS_SITE_CONFIG (assets/site-config.js) that Wordle, Connections
@@ -413,47 +393,6 @@ function showResult(s) {
   document.getElementById('result-name').textContent = s.name;
   document.getElementById('result-desc').textContent = s.desc;
 }
-
-function pickRandomIndex() { return Math.floor(Math.random() * N); }
-
-function spin() {
-  if (spinning) return;
-  spinning = true;
-  document.getElementById('spin-btn').disabled = true;
-  document.getElementById('focus-eyebrow').textContent = 'Random strength';
-
-  const targetIndex = pickRandomIndex();
-  const pointerAngle = -Math.PI / 2;
-  const sliceCentre = targetIndex * SLICE + SLICE / 2;
-  let delta = pointerAngle - sliceCentre - currentRotation;
-  delta = ((delta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-  const extraSpins = 5 + Math.floor(Math.random() * 3);
-  const totalDelta = delta + extraSpins * Math.PI * 2;
-  const startRotation = currentRotation;
-  const duration = 3600;
-  const startTime = performance.now();
-
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
-  function frame(now) {
-    const elapsed = now - startTime;
-    const t = Math.min(1, elapsed / duration);
-    currentRotation = startRotation + totalDelta * easeOutCubic(t);
-    drawWheel(currentRotation);
-    if (t < 1) {
-      requestAnimationFrame(frame);
-    } else {
-      currentRotation = currentRotation % (Math.PI * 2);
-      drawWheel(currentRotation);
-      showResult(STRENGTHS[targetIndex]);
-      spinning = false;
-      document.getElementById('spin-btn').disabled = false;
-    }
-  }
-  requestAnimationFrame(frame);
-}
-
-document.getElementById('spin-btn').addEventListener('click', spin);
 
 // Land on the actual current fortnight's strength on load — no animation needed for
 // the default state, since this is meant to sit quietly in an iframe and just be
