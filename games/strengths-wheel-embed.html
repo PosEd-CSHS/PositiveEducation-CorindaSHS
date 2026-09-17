@@ -41,45 +41,10 @@
   h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(18px, 5vw, 24px); letter-spacing: 0.02em; }
   h1 span { color: var(--gold); }
 
-  .wheel-wrap {
-    position: relative;
-    margin: 14px auto 4px;
-    width: min(230px, 60vw);
-  }
-  .pointer {
-    position: absolute;
-    top: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0; height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 16px solid var(--gold);
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,.4));
-    z-index: 3;
-  }
-  .hub {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 17%; height: 17%;
-    border-radius: 50%;
-    background: var(--green);
-    border: 2px solid var(--gold);
-    z-index: 2;
-  }
-  canvas#wheel {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 50%;
-    box-shadow: 0 6px 22px rgba(0,0,0,.5);
-  }
-
   #focus-card {
     max-width: 320px;
     width: 100%;
-    margin: 10px auto 0;
+    margin: 14px auto 0;
     background: rgba(255,255,255,0.04);
     border: 1px solid var(--gold-border);
     border-radius: 12px;
@@ -131,12 +96,6 @@
   <h1>This Fortnight's <span>Strength</span></h1>
 </header>
 
-<div class="wheel-wrap">
-  <div class="pointer"></div>
-  <canvas id="wheel" width="800" height="800"></canvas>
-  <div class="hub"></div>
-</div>
-
 <div id="focus-card">
   <div class="eyebrow" id="focus-eyebrow">This fortnight</div>
   <div class="virtue-tag" id="result-virtue"></div>
@@ -150,8 +109,7 @@
 
 <script>
 // Canonical 24 VIA strengths, current terminology, matching character-strengths/index.html.
-// Six virtues, each a colour family so the wheel reads
-// the same way the physical spinner it's modelled on does. Kept identical to
+// Six virtues, each a colour used for the virtue-tag text. Kept identical to
 // games/strengths-wheel.html so the two never drift apart.
 const VIRTUES = [
   { name: 'Wisdom',       hue: 355 }, // red
@@ -182,135 +140,14 @@ const STRENGTHS = [
   { name: 'Humility', virtue: 'Temperance', desc: 'You don’t need to be the headline. Your work can speak for itself, and you take feedback without bristling.' },
   { name: 'Prudence', virtue: 'Temperance', desc: 'You look before you leap, habitually. Choices get weighed against where they lead, not just how they feel right now.' },
   { name: 'Self-Regulation', virtue: 'Temperance', desc: 'You run yourself with discipline. Impulses and moods get a vote but not a veto.' },
-  { name: 'Appreciation of Beauty & Excellence', short: 'Appreciation & Awe', virtue: 'Transcendence', desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly.' },
+  { name: 'Appreciation of Beauty & Excellence', virtue: 'Transcendence', desc: 'Quality stops you in your tracks — a striking sky, a piece of music, someone doing difficult work superbly.' },
   { name: 'Gratitude', virtue: 'Transcendence', desc: 'You keep track of the good in your life rather than taking it as given, and you make sure people know what they’ve meant to you.' },
   { name: 'Hope', virtue: 'Transcendence', desc: 'You treat the future as something to build, not something that happens to you. Your optimism comes with effort attached.' },
   { name: 'Humour', virtue: 'Transcendence', desc: 'You find the light side and you share it. You can take the heaviness out of a room without taking the substance out of it.' },
   { name: 'Spirituality', virtue: 'Transcendence', desc: 'Your life is organised around a sense of meaning that goes beyond the day-to-day.' },
 ];
 
-const N = STRENGTHS.length;
-const SLICE = (Math.PI * 2) / N;
 const virtueHue = Object.fromEntries(VIRTUES.map(v => [v.name, v.hue]));
-
-const bandIndex = {};
-const bandTotal = {};
-STRENGTHS.forEach(s => { bandTotal[s.virtue] = (bandTotal[s.virtue] || 0) + 1; });
-const seen = {};
-STRENGTHS.forEach(s => {
-  seen[s.virtue] = (seen[s.virtue] || 0);
-  bandIndex[s.name] = seen[s.virtue];
-  seen[s.virtue]++;
-});
-
-function sliceColor(s) {
-  const hue = virtueHue[s.virtue];
-  const t = bandIndex[s.name] / Math.max(1, bandTotal[s.virtue] - 1);
-  const light = 68 - t * 26;
-  return `hsl(${hue}, 72%, ${light}%)`;
-}
-
-const canvas = document.getElementById('wheel');
-const ctx = canvas.getContext('2d');
-const R = canvas.width / 2;
-
-const VIRTUE_BAND = 0.20;
-const VIRTUE_RADIUS = R * (1 - VIRTUE_BAND / 2) - 4;
-const STRENGTH_OUTER = R * (1 - VIRTUE_BAND) - 10;
-const STRENGTH_INNER = R * 0.26;
-
-const virtueSpans = [];
-{
-  let i = 0;
-  while (i < N) {
-    const v = STRENGTHS[i].virtue;
-    let j = i;
-    while (j < N && STRENGTHS[j].virtue === v) j++;
-    virtueSpans.push({ virtue: v, start: i * SLICE, end: j * SLICE });
-    i = j;
-  }
-}
-
-function drawCurvedLabel(text, radius, midAngle, fontPx) {
-  ctx.save();
-  ctx.font = `700 ${fontPx}px "Bebas Neue", sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const letters = text.split('');
-  const spacing = fontPx * 0.18;
-  const widths = letters.map(ch => ctx.measureText(ch).width);
-  const totalArc = widths.reduce((a, b) => a + b + spacing, -spacing);
-  let travelled = -totalArc / 2;
-  letters.forEach((ch, i) => {
-    const w = widths[i];
-    const charCentre = travelled + w / 2;
-    const angle = midAngle + charCentre / radius;
-    ctx.save();
-    ctx.rotate(angle);
-    ctx.translate(radius, 0);
-    ctx.rotate(Math.PI / 2);
-    ctx.lineWidth = fontPx * 0.22;
-    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
-    ctx.strokeText(ch, 0, 0);
-    ctx.fillStyle = '#fff';
-    ctx.fillText(ch, 0, 0);
-    ctx.restore();
-    travelled += w + spacing;
-  });
-  ctx.restore();
-}
-
-function drawStrengthLabel(text, midAngle) {
-  const available = STRENGTH_OUTER - STRENGTH_INNER - 10;
-  let fontPx = 18;
-  ctx.font = `700 ${fontPx}px "DM Sans", sans-serif`;
-  while (fontPx > 9 && ctx.measureText(text).width > available) {
-    fontPx -= 1;
-    ctx.font = `700 ${fontPx}px "DM Sans", sans-serif`;
-  }
-  ctx.save();
-  ctx.rotate(midAngle);
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'middle';
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-  ctx.strokeText(text, STRENGTH_OUTER, 0);
-  ctx.fillStyle = '#fff';
-  ctx.fillText(text, STRENGTH_OUTER, 0);
-  ctx.restore();
-}
-
-function drawWheel(rotation) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
-  ctx.translate(R, R);
-  ctx.rotate(rotation);
-
-  STRENGTHS.forEach((s, i) => {
-    const start = i * SLICE;
-    const end = start + SLICE;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.arc(0, 0, R - 4, start, end);
-    ctx.closePath();
-    ctx.fillStyle = sliceColor(s);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    drawStrengthLabel(s.short || s.name, start + SLICE / 2);
-  });
-
-  const virtueFont = Math.max(15, Math.min(22, (R * 0.09)));
-  virtueSpans.forEach(v => {
-    drawCurvedLabel(v.virtue.toUpperCase(), VIRTUE_RADIUS, (v.start + v.end) / 2, virtueFont);
-  });
-
-  ctx.restore();
-}
-
-let currentRotation = 0;
 
 // ---------- Current-fortnight resolution, shared date logic with every other game ----------
 // Reads the same window.CSHS_SITE_CONFIG (assets/site-config.js) that Wordle, Connections
@@ -332,7 +169,7 @@ function cshsAbsWeek(){
 }
 
 // site-config.js's week labels don't always spell a strength exactly the way this
-// wheel's STRENGTHS list does (e.g. a short form, or the bare virtue name for the
+// widget's STRENGTHS list does (e.g. a short form, or the bare virtue name for the
 // first week of a fortnight) — these are the only two real mismatches today.
 const LABEL_ALIASES = {
   'Spirituality / Meaning': 'Spirituality',
@@ -365,16 +202,7 @@ function resolveFocus() {
   return { strength: null, weekLabel: label };
 }
 
-function rotationForIndex(index) {
-  const sliceCentre = index * SLICE + SLICE / 2;
-  const pointerAngle = -Math.PI / 2;
-  let delta = pointerAngle - sliceCentre;
-  delta = ((delta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-  return delta;
-}
-
 function showFocus(focus) {
-  const card = document.getElementById('focus-card');
   const eyebrow = document.getElementById('focus-eyebrow');
   if (!focus || !focus.strength) {
     eyebrow.textContent = 'This fortnight';
@@ -394,16 +222,7 @@ function showResult(s) {
   document.getElementById('result-desc').textContent = s.desc;
 }
 
-// Land on the actual current fortnight's strength on load — no animation needed for
-// the default state, since this is meant to sit quietly in an iframe and just be
-// correct, not perform a spin every time the embedding page reloads.
-const focus = resolveFocus();
-if (focus && focus.strength) {
-  const idx = STRENGTHS.indexOf(focus.strength);
-  currentRotation = rotationForIndex(idx);
-}
-drawWheel(currentRotation);
-showFocus(focus);
+showFocus(resolveFocus());
 </script>
 </body>
 </html>
