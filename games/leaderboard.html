@@ -78,19 +78,20 @@
     </div>
   </div>
 
-  <!-- Column 2: Games 1–3 -->
+  <!-- Column 2: Games 1–4 -->
   <div class="col-games">
-    <div class="section-label">🎮 By Game (1–3)</div>
+    <div class="section-label">🎮 By Game (1–4)</div>
     <div class="games-stack">
+      <div class="cell-game"><div class="cell-label">🧠 Weekly Trivia</div><iframe data-sheet="Weekly Trivia" title="Weekly Trivia leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">W Wordle</div><iframe data-sheet="Wordle" title="Wordle leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">C Connections</div><iframe data-sheet="Connections" title="Connections leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">🎡 Wheel of Fortune</div><iframe data-sheet="Wheel of Fortune" title="Wheel of Fortune leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
     </div>
   </div>
 
-  <!-- Column 3: Games 4–6 -->
+  <!-- Column 3: Games 5–7 -->
   <div class="col-games">
-    <div class="section-label">🎮 By Game (4–6)</div>
+    <div class="section-label">🎮 By Game (5–7)</div>
     <div class="games-stack">
       <div class="cell-game"><div class="cell-label">A Alphabucks</div><iframe data-sheet="Alphabucks" title="Alphabucks leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">🔍 Where's Smoulder</div><iframe data-sheet="Where's Smoulder" title="Where's Smoulder leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
