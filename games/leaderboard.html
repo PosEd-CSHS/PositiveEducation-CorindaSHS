@@ -44,6 +44,10 @@
   .cell-game { background: var(--subtle); border: 1px solid var(--subtle-border); border-radius: 12px; overflow: hidden; }
   .cell-game iframe, .cell-overall iframe { display: block; width: 100%; border: 0; }
 
+  .house-view { max-width: 640px; margin: 0 auto; }
+  .house-nav { max-width: 1100px; margin: 0 auto 20px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .house-nav a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); text-decoration: none; border: 1px solid var(--gold-border); border-radius: 20px; padding: 5px 14px; }
+  .house-nav a:hover, .house-nav a.active { background: var(--gold-dim); }
   .embed-note { max-width: 1100px; margin: -12px auto 20px; text-align: center; font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.62); }
   .footer { text-align: center; margin-top: 28px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: rgba(255,255,255,0.32); text-transform: uppercase; }
   @media (max-width: 960px) {
@@ -68,7 +72,18 @@
 
 <p class="embed-note">The workbook may ask staff to sign in to Microsoft 365. If a panel does not load, refresh after signing in.</p>
 
-<div class="main-layout">
+<nav class="house-nav" aria-label="Leaderboard view">
+  <a href="?" id="nav-all">All houses</a>
+  <a href="?house=Bunar">Bunar</a><a href="?house=Dibbil">Dibbil</a><a href="?house=Kabul">Kabul</a>
+  <a href="?house=Moori">Moori</a><a href="?house=Pirri">Pirri</a><a href="?house=Yarraman">Yarraman</a>
+</nav>
+
+<div class="house-view" id="house-view" style="display:none">
+  <div class="section-label" id="house-label"></div>
+  <div class="cell-overall"><iframe id="house-frame" title="House leaderboard" height="900" scrolling="no"></iframe></div>
+</div>
+
+<div class="main-layout" id="main-layout">
 
   <!-- Column 1: Overall leaderboard -->
   <div class="col-overall">
@@ -108,8 +123,24 @@
   (function(){
     // If the workbook moves to a school-owned SharePoint library, update this one URL only.
     const WORKBOOK_EMBED_BASE = 'https://qedu.sharepoint.com/sites/msteams_2eafaa/_layouts/15/Doc.aspx?sourcedoc={d6762387-9c59-42ea-b2c4-c00757c18236}&action=embedview&wdAllowInteractivity=False';
+    // One sheet per house, named "<House> totals" in the workbook (mirrors "Overall totals").
+    const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
+    const houseParam = new URLSearchParams(location.search).get('house');
+    const house = HOUSES.find(h => h.toLowerCase() === (houseParam || '').toLowerCase());
+    if (house) {
+      document.getElementById('main-layout').style.display = 'none';
+      document.getElementById('house-view').style.display = 'block';
+      document.getElementById('house-label').textContent = '🏆 ' + house + ' — homegroups overall';
+      document.querySelector('.header h1').innerHTML = house + ' <span>Leaderboard</span>';
+      document.title = house + ' Leaderboard – CSHS Home Group Games';
+      document.querySelectorAll('.house-nav a').forEach(a => { if (a.getAttribute('href') === '?house=' + house) a.classList.add('active'); });
+      document.getElementById('house-frame').dataset.sheet = house + ' totals';
+      document.getElementById('house-frame').setAttribute('data-sheet', house + ' totals');
+    } else {
+      document.getElementById('nav-all').classList.add('active');
+    }
     document.querySelectorAll('iframe[data-sheet]').forEach(function(frame){
-      const grid = frame.dataset.sheet === 'Overall totals' ? '' : '&wdHideGridlines=True';
+      const grid = /totals$/.test(frame.dataset.sheet) ? '' : '&wdHideGridlines=True';
       frame.src = WORKBOOK_EMBED_BASE + '&Item=' + encodeURIComponent(frame.dataset.sheet) + grid + '&wdInConfigurator=True&edaebf=rslc0';
     });
 
