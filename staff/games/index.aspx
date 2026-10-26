@@ -78,6 +78,11 @@
         <div class="card-title">Stop the Clock</div>
         <div class="card-desc">Stop the timer as close to 5 seconds as you can.</div>
       </a>
+      <a class="card" href="geoguessr.aspx">
+        <span class="card-emoji">📍</span>
+        <div class="card-title">Corinda GeoGuessr</div>
+        <div class="card-desc">One photo from around the school each week. Pin where it was taken on the campus map, closest scores 10.</div>
+      </a>
     </div>
   </section>
 
