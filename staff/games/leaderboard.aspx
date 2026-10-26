@@ -22,13 +22,13 @@
 
   .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; padding-bottom: 7px; border-bottom: 1px solid var(--gold-border); }
 
-  /* Three-column layout */
+  /* Two-column layout: overall, then the most-played games */
   .main-layout {
     display: grid;
-    grid-template-columns: minmax(280px,320px) repeat(2,minmax(280px,1fr));
+    grid-template-columns: minmax(280px,380px) minmax(280px,1fr);
     gap: 20px;
     align-items: start;
-    max-width: 1100px;
+    max-width: 900px;
     margin: 0 auto;
   }
 
@@ -45,7 +45,7 @@
   .cell-game iframe, .cell-overall iframe { display: block; width: 100%; border: 0; }
 
   .house-view { max-width: 640px; margin: 0 auto; }
-  .house-nav { max-width: 1100px; margin: 0 auto 20px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .house-nav { max-width: 900px; margin: 0 auto 20px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .house-nav a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); text-decoration: none; border: 1px solid var(--gold-border); border-radius: 20px; padding: 5px 14px; }
   .house-nav a:hover, .house-nav a.active { background: var(--gold-dim); }
   .embed-note { max-width: 1100px; margin: -12px auto 20px; text-align: center; font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.62); }
@@ -80,7 +80,7 @@
 
 <div class="house-view" id="house-view" style="display:none">
   <div class="section-label" id="house-label"></div>
-  <div class="cell-overall"><iframe id="house-frame" title="House leaderboard" height="900" scrolling="no"></iframe></div>
+  <div class="cell-overall"><iframe id="house-frame" title="House leaderboard" height="1000" scrolling="no"></iframe></div>
 </div>
 
 <div class="main-layout" id="main-layout">
@@ -93,24 +93,13 @@
     </div>
   </div>
 
-  <!-- Column 2: Games 1–4 -->
+  <!-- Column 2: the three games played most -->
   <div class="col-games">
-    <div class="section-label">🎮 By Game (1–4)</div>
+    <div class="section-label">🎮 Most-played games</div>
     <div class="games-stack">
-      <div class="cell-game"><div class="cell-label">🧠 Weekly Trivia</div><iframe data-sheet="Weekly Trivia" title="Weekly Trivia leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-      <div class="cell-game"><div class="cell-label">W Wordle</div><iframe data-sheet="Wordle" title="Wordle leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-      <div class="cell-game"><div class="cell-label">C Connections</div><iframe data-sheet="Connections" title="Connections leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-      <div class="cell-game"><div class="cell-label">🎡 Wheel of Fortune</div><iframe data-sheet="Wheel of Fortune" title="Wheel of Fortune leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-    </div>
-  </div>
-
-  <!-- Column 3: Games 5–7 -->
-  <div class="col-games">
-    <div class="section-label">🎮 By Game (5–7)</div>
-    <div class="games-stack">
-      <div class="cell-game"><div class="cell-label">A Alphabucks</div><iframe data-sheet="Alphabucks" title="Alphabucks leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-      <div class="cell-game"><div class="cell-label">🔍 Where's Smoulder</div><iframe data-sheet="Where's Smoulder" title="Where's Smoulder leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
-      <div class="cell-game"><div class="cell-label">⏱ Stop the Clock</div><iframe data-sheet="Stop the clock" title="Stop the Clock leaderboard" height="250" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">🧠 Weekly Trivia</div><iframe data-sheet="Weekly Trivia" title="Weekly Trivia leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">W Wordle</div><iframe data-sheet="Wordle" title="Wordle leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">C Connections</div><iframe data-sheet="Connections" title="Connections leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
     </div>
   </div>
 
@@ -140,6 +129,7 @@
       document.getElementById('nav-all').classList.add('active');
     }
     document.querySelectorAll('iframe[data-sheet]').forEach(function(frame){
+      if (house && frame.closest('#main-layout')) return;
       const grid = /totals$/.test(frame.dataset.sheet) ? '' : '&wdHideGridlines=True';
       frame.src = WORKBOOK_EMBED_BASE + '&Item=' + encodeURIComponent(frame.dataset.sheet) + grid + '&wdInConfigurator=True&edaebf=rslc0';
     });
