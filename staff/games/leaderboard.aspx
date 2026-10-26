@@ -112,7 +112,8 @@
   (function(){
     // If the workbook moves to a school-owned SharePoint library, update this one URL only.
     const WORKBOOK_EMBED_BASE = 'https://qedu.sharepoint.com/sites/msteams_2eafaa/_layouts/15/Doc.aspx?sourcedoc={d6762387-9c59-42ea-b2c4-c00757c18236}&action=embedview&wdAllowInteractivity=False';
-    // One sheet per house, named "<House> totals" in the workbook (mirrors "Overall totals").
+    // One tab per house, named exactly as in the workbook (Dibbil is the only mixed-case one).
+    const HOUSE_TABS = { Bunar:'BUNAR', Dibbil:'Dibbil', Kabul:'KABUL', Moori:'MOORI', Pirri:'PIRRI', Yarraman:'YARRAMAN' };
     const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
     const houseParam = new URLSearchParams(location.search).get('house');
     const house = HOUSES.find(h => h.toLowerCase() === (houseParam || '').toLowerCase());
@@ -123,14 +124,13 @@
       document.querySelector('.header h1').innerHTML = house + ' <span>Leaderboard</span>';
       document.title = house + ' Leaderboard – CSHS Home Group Games';
       document.querySelectorAll('.house-nav a').forEach(a => { if (a.getAttribute('href') === '?house=' + house) a.classList.add('active'); });
-      document.getElementById('house-frame').dataset.sheet = house + ' totals';
-      document.getElementById('house-frame').setAttribute('data-sheet', house + ' totals');
+      document.getElementById('house-frame').setAttribute('data-sheet', HOUSE_TABS[house]);
     } else {
       document.getElementById('nav-all').classList.add('active');
     }
     document.querySelectorAll('iframe[data-sheet]').forEach(function(frame){
       if (house && frame.closest('#main-layout')) return;
-      const grid = /totals$/.test(frame.dataset.sheet) ? '' : '&wdHideGridlines=True';
+      const grid = (frame.id === 'house-frame' || frame.dataset.sheet === 'Overall totals') ? '' : '&wdHideGridlines=True';
       frame.src = WORKBOOK_EMBED_BASE + '&Item=' + encodeURIComponent(frame.dataset.sheet) + grid + '&wdInConfigurator=True&edaebf=rslc0';
     });
 
