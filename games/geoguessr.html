@@ -29,10 +29,11 @@ const CONFIG = {
   // ---- Scoring (out of 10, matching every other game in the suite) ------
   // One photo per week. Each row is [furthest distance in metres, points].
   // The first row a guess fits inside decides the score; further than the
-  // last row scores 0. "Exact" is 3 m because nobody can tap closer than that.
+  // last row still scores 1 (a pin that is placed always earns a point);
+  // no pin at all scores 0.
   scoreBands: [
-    [3, 10], [5, 9], [10, 8], [15, 7], [20, 6],
-    [25, 5], [30, 4], [35, 3], [40, 2], [50, 1]
+    [5, 10], [10, 9], [15, 8], [20, 7], [25, 6],
+    [30, 5], [35, 4], [40, 3], [50, 2]
   ],
 
   guessSeconds: 60,        // 0 = no timer
@@ -555,7 +556,7 @@ function distanceMetres(a, b){
 }
 function scoreFor(d){
   for (const [maxM, pts] of CONFIG.scoreBands) if (d <= maxM) return pts;
-  return 0;
+  return 1;
 }
 
 /* ==========================================================================
