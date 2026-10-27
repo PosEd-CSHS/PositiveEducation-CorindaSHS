@@ -154,7 +154,7 @@
 <div class="header">
   <div class="header-eyebrow">Corinda State High School</div>
   <h1>Weekly <span>Trivia</span></h1>
-  <div class="header-sub">Ten quick rounds for the whole class, mixing this week's focus, Crack the Code, a logo, general knowledge and what's on the calendar — some weeks add a picture round, a music round or a strength-in-action scenario. You're being timed — a perfect 10/10 finished quickly earns bonus points, and some weeks offer one shot at winning back a missed point.</div>
+  <div class="header-sub">Ten quick rounds for the whole class, mixing this week's focus, Crack the Code, a logo, general knowledge and what's on the calendar — some weeks add a picture round, a music round or a strength-in-action scenario. Some weeks offer one shot at winning back a missed point.</div>
 </div>
 
 <div class="card" id="signinCard">
@@ -332,15 +332,9 @@ const weekTag=document.getElementById('weekTag'),progressDots=document.getElemen
   scoreSub=document.getElementById('scoreSub'),timerDisplay=document.getElementById('timerDisplay'),
   bonusLine=document.getElementById('bonusLine'),bonusView=document.getElementById('bonusView');
 
-/* ── TIMER + SPEED BONUS ──
-   A perfect 10/10 finished faster earns bonus points added to the score
-   submitted to the leaderboard — an imperfect score is submitted as-is,
-   with no time penalty or bonus. */
-const SPEED_BONUS_TIERS = [
-  { maxSeconds: 90, bonus: 5 },
-  { maxSeconds: 150, bonus: 3 },
-  { maxSeconds: 240, bonus: 1 },
-];
+/* ── TIMER ──
+   The elapsed time is shown on the results screen only; it does not
+   affect the score submitted to the leaderboard. */
 let startTime = null, timerInterval = null, finalElapsedSeconds = 0;
 function fmtTime(totalSeconds){
   const m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
@@ -359,10 +353,6 @@ function stopTimer(){
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
   finalElapsedSeconds = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
   return finalElapsedSeconds;
-}
-function speedBonusFor(seconds){
-  for (const tier of SPEED_BONUS_TIERS) if (seconds <= tier.maxSeconds) return tier.bonus;
-  return 0;
 }
 
 function renderProgress(){
@@ -626,19 +616,10 @@ function showResults(){
   playView.style.display = 'none';
   bonusView.style.display = 'none';
   resultView.style.display = '';
-  const perfect = score === round.plan.length;
-  const bonus = perfect ? speedBonusFor(seconds) : 0;
-  const finalScore = score + bonus;
+  const finalScore = score;
   scoreBig.textContent = score + ' / ' + round.plan.length;
-  if (perfect) {
-    bonusLine.style.display = 'block';
-    bonusLine.textContent = bonus > 0
-      ? `Perfect run in ${fmtTime(seconds)} — +${bonus} speed bonus (${finalScore} points to the leaderboard)`
-      : `Perfect run in ${fmtTime(seconds)} — no speed bonus this time (under ${SPEED_BONUS_TIERS[SPEED_BONUS_TIERS.length-1].maxSeconds}s earns one)`;
-  } else {
-    bonusLine.style.display = 'block';
-    bonusLine.textContent = `Finished in ${fmtTime(seconds)}. Speed bonuses only apply to a perfect 10/10.`;
-  }
+  bonusLine.style.display = 'block';
+  bonusLine.textContent = `Finished in ${fmtTime(seconds)}.`;
   const msgs = ['Have another crack next week!','A solid effort.','Nice work.','Great round!','Weekly Trivia champions!'];
   const bracket = Math.min(Math.floor(score / round.plan.length * msgs.length), msgs.length - 1);
   scoreSub.textContent = msgs[bracket];
