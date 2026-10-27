@@ -97,7 +97,7 @@
   <div class="col-games">
     <div class="section-label">🎮 Most-played games</div>
     <div class="games-stack">
-      <div class="cell-game"><div class="cell-label">🧠 Weekly Trivia</div><iframe data-sheet="Weekly Trivia" title="Weekly Trivia leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
+      <div class="cell-game"><div class="cell-label">🧠 Weekly Trivia</div><iframe data-sheet="WeeklyTrivia" title="Weekly Trivia leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">W Wordle</div><iframe data-sheet="Wordle" title="Wordle leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
       <div class="cell-game"><div class="cell-label">C Connections</div><iframe data-sheet="Connections" title="Connections leaderboard" height="330" scrolling="no" loading="lazy"></iframe></div>
     </div>
@@ -112,8 +112,8 @@
   (function(){
     // If the workbook moves to a school-owned SharePoint library, update this one URL only.
     const WORKBOOK_EMBED_BASE = 'https://qedu.sharepoint.com/sites/msteams_2eafaa/_layouts/15/Doc.aspx?sourcedoc={d6762387-9c59-42ea-b2c4-c00757c18236}&action=embedview&wdAllowInteractivity=False';
-    // One tab per house, named exactly as in the workbook (Dibbil is the only mixed-case one).
-    const HOUSE_TABS = { Bunar:'BUNAR', Dibbil:'Dibbil', Kabul:'KABUL', Moori:'MOORI', Pirri:'PIRRI', Yarraman:'YARRAMAN' };
+    // One named range per house, defined in the workbook Name Box.
+    const HOUSE_TABS = { Bunar:'House_Bunar', Dibbil:'House_Dibbil', Kabul:'House_Kabul', Moori:'House_Moori', Pirri:'House_Pirri', Yarraman:'House_Yarraman' };
     const HOUSES = ['Bunar','Dibbil','Kabul','Moori','Pirri','Yarraman'];
     const houseParam = new URLSearchParams(location.search).get('house');
     const house = HOUSES.find(h => h.toLowerCase() === (houseParam || '').toLowerCase());
