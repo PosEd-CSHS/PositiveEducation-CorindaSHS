@@ -83,7 +83,7 @@ let ROUNDS = [
   { photo: "photos/round-011.jpg", x: 0.7454, y: 0.7677, wp: 11, caption: "" },
   { photo: "photos/round-012.jpg", x: 0.5293, y: 0.8723, wp: 12, caption: "" },
   { photo: "photos/round-013.jpg", x: 0.4785, y: 0.6958, wp: 13, caption: "" },
-  { photo: "photos/round-014.jpg", x: 0.523, y: 0.7553, wp: 14, caption: "" },
+  { photo: "photos/round-014.jpg", x: 0.4773, y: 0.7553, wp: 14, caption: "" },
   { photo: "photos/round-015.jpg", x: 0.4149, y: 0.743, wp: 15, caption: "" },
   { photo: "photos/round-016.jpg", x: 0.3783, y: 0.9339, wp: 16, caption: "" },
   { photo: "photos/round-017.jpg", x: 0.3879, y: 0.8477, wp: 17, caption: "" },
