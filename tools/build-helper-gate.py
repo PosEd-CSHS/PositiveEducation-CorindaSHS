@@ -23,6 +23,7 @@ import argparse, importlib.util, os, re, secrets, shutil, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(ROOT, 'staff')
+HELPER_SRC_DIR = os.path.join(ROOT, 'helpers-src')   # pages that exist only for helpers
 OUT_DIR = os.path.join(ROOT, 'dist', 'helpers')
 
 _spec = importlib.util.spec_from_file_location(
@@ -32,7 +33,7 @@ _spec.loader.exec_module(gate)
 
 # Helpers get the games and the Home Group activity cards, and nothing else: no
 # leaderboard and no brain breaks. The hub is rebuilt below to match.
-PAGES = ['homegroup-lessons/homegroup-lessons.aspx',
+PAGES = ['index.aspx', 'homegroup-lessons/homegroup-lessons.aspx',
          'games/index.aspx', 'games/wordle.aspx', 'games/connections.aspx',
          'games/wheel-of-fortune.aspx', 'games/alphabucks.aspx',
          'games/smoulder.aspx', 'games/stop-the-clock.aspx',
@@ -73,6 +74,13 @@ HUB_ACTIVITIES = """  <section>
   </section>
 
 """
+
+# A way back to the helper home page from the hub and the lesson cards.
+BACK_CSS = ".back{display:inline-block;margin-bottom:18px;color:#f2b400;text-decoration:none;font-size:13px;border:1px solid rgba(242,180,0,.3);border-radius:20px;padding:5px 14px}.back:hover{background:rgba(242,180,0,.12)}"
+BACK_LINK = '<a class="back" href="../index.aspx">\u2190 Helper home</a>'
+BACK_FLOAT = ('<a href="../index.aspx" style="position:fixed;left:12px;bottom:12px;z-index:9999;'
+              'background:#00180f;color:#f2b400;border:1px solid #f2b400;border-radius:20px;'
+              'padding:6px 14px;font:13px Arial,sans-serif;text-decoration:none">\u2190 Helper home</a>')
 
 # Wording for the helper gate. Every replaced string must occur exactly once.
 WORDING = [
@@ -122,7 +130,8 @@ def main():
         shutil.rmtree(OUT_DIR)
 
     for rel in PAGES:
-        text = open(os.path.join(SRC_DIR, rel), encoding='utf-8').read()
+        src_dir = HELPER_SRC_DIR if rel == 'index.aspx' else SRC_DIR
+        text = open(os.path.join(src_dir, rel), encoding='utf-8').read()
         for old, new, want in HARDEN.get(rel, []):
             assert text.count(old) == want, \
                 '%s: expected %d of %r, found %d' % (rel, want, old, text.count(old))
@@ -131,6 +140,11 @@ def main():
             assert len(HUB_SECTION.findall(text)) == 1, 'hub layout moved: cannot swap in the Activities section'
             text = HUB_SECTION.sub(lambda m: HUB_ACTIVITIES, text)
             assert 'leaderboard' not in text.lower(), 'hub still mentions the leaderboard'
+            assert text.count('</style>') == 1 and text.count('<div class="wrap">') == 1, 'hub layout moved: cannot add the back link'
+            text = text.replace('</style>', BACK_CSS + '\n</style>').replace('<div class="wrap">', '<div class="wrap">\n  ' + BACK_LINK)
+        if rel == 'homegroup-lessons/homegroup-lessons.aspx':
+            assert text.count('<body>') == 1, 'lesson page layout moved: cannot add the back link'
+            text = text.replace('<body>', '<body>' + BACK_FLOAT)
         iv, ct = gate.encrypt(text.encode('utf-8'), raw_key)
         page = (wrapper.replace('__PAYLOAD__', gate.b64(ct)).replace('__SALT__', gate.b64(salt))
                 .replace('__IV__', gate.b64(iv)).replace('__ITER__', str(gate.ITERATIONS)))
@@ -141,10 +155,11 @@ def main():
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         open(dst, 'w', encoding='utf-8').write(page)
 
-    lines = ['# Helper links', '', 'Helper password: `%s`' % key, '',
-             'Give helpers one of these links. Each already carries the password.', '']
-    for rel in PAGES:
-        lines.append('- %s/helpers/%s#k=%s' % (args.base_url, rel, key))
+    entry = '%s/helpers/index.aspx' % args.base_url
+    lines = ['# Helper site', '', 'Entry page (no password in the link): %s' % entry, '',
+             'Helper password: `%s`' % key, '',
+             'Helpers open the entry page, type the password, then choose Games or Activities.',
+             'Every other helper page asks for the password too if it is opened directly.']
     open(os.path.join(ROOT, 'dist', 'helper-links.md'), 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
     print('helper password: %s' % key)
     print('%d helper pages written to %s' % (len(PAGES), OUT_DIR))
