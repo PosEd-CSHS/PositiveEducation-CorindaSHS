@@ -19,7 +19,7 @@ Usage:
 Then run tools/package-upload.py, which adds dist/helpers/ to the upload zip.
 """
 
-import argparse, importlib.util, os, secrets, shutil, sys
+import argparse, importlib.util, os, re, secrets, shutil, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(ROOT, 'staff')
@@ -30,14 +30,13 @@ _spec = importlib.util.spec_from_file_location(
 gate = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(gate)
 
-# The hub links to the leaderboard, so it is included to keep those links alive.
-# The lesson cards and the brain break generator are the Home Group activities.
-PAGES = ['homegroup-lessons/homegroup-lessons.aspx', 'brain-breaks/random-generator.aspx',
+# Helpers get the games and the Home Group activity cards, and nothing else: no
+# leaderboard and no brain breaks. The hub is rebuilt below to match.
+PAGES = ['homegroup-lessons/homegroup-lessons.aspx',
          'games/index.aspx', 'games/wordle.aspx', 'games/connections.aspx',
          'games/wheel-of-fortune.aspx', 'games/alphabucks.aspx',
          'games/smoulder.aspx', 'games/stop-the-clock.aspx',
-         'games/weekly-trivia.aspx', 'games/geoguessr.aspx',
-         'games/leaderboard.aspx']
+         'games/weekly-trivia.aspx', 'games/geoguessr.aspx']
 
 # Teacher shortcuts that a helper must not have: ?reset clears the one-play-a-week
 # lock on a device, ?test skips it, ?week previews another week's puzzle, and
@@ -60,20 +59,15 @@ HARDEN = {
          'href="../../staff/homegroup-lessons/Brain_breaks_ordered.pdf#page=', 3)],
 }
 
-# The helper games hub gains a section for the Home Group activities.
-HUB_MARKER = '  <section>\n    <div class="section-head"><h2>Leaderboards</h2>'
+# The helper hub swaps its Leaderboards section for the Home Group activity cards.
+HUB_SECTION = re.compile(r'  <section>\n    <div class="section-head"><h2>Leaderboards</h2>.*?</section>\n\n', re.S)
 HUB_ACTIVITIES = """  <section>
-    <div class="section-head"><h2>Activities</h2><span>ready-to-run cards and quick breaks</span></div>
+    <div class="section-head"><h2>Activities</h2><span>ready-to-run cards for Home Group</span></div>
     <div class="grid">
       <a class="card" href="../homegroup-lessons/homegroup-lessons.aspx">
         <span class="card-emoji">\U0001F4D8</span>
         <div class="card-title">Home Group Lessons</div>
         <div class="card-desc">Fortnightly activity cards. Open the one marked THIS WEEK and follow the numbered steps.</div>
-      </a>
-      <a class="card" href="../brain-breaks/random-generator.aspx">
-        <span class="card-emoji">\U0001F9E0</span>
-        <div class="card-title">Brain Break Generator</div>
-        <div class="card-desc">A quick, random movement or reset activity for the whole class.</div>
       </a>
     </div>
   </section>
@@ -134,8 +128,9 @@ def main():
                 '%s: expected %d of %r, found %d' % (rel, want, old, text.count(old))
             text = text.replace(old, new)
         if rel == 'games/index.aspx':
-            assert text.count(HUB_MARKER) == 1, 'hub layout moved: cannot add the Activities section'
-            text = text.replace(HUB_MARKER, HUB_ACTIVITIES + HUB_MARKER)
+            assert len(HUB_SECTION.findall(text)) == 1, 'hub layout moved: cannot swap in the Activities section'
+            text = HUB_SECTION.sub(lambda m: HUB_ACTIVITIES, text)
+            assert 'leaderboard' not in text.lower(), 'hub still mentions the leaderboard'
         iv, ct = gate.encrypt(text.encode('utf-8'), raw_key)
         page = (wrapper.replace('__PAYLOAD__', gate.b64(ct)).replace('__SALT__', gate.b64(salt))
                 .replace('__IV__', gate.b64(iv)).replace('__ITER__', str(gate.ITERATIONS)))
