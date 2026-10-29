@@ -31,7 +31,9 @@ gate = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(gate)
 
 # The hub links to the leaderboard, so it is included to keep those links alive.
-PAGES = ['games/index.aspx', 'games/wordle.aspx', 'games/connections.aspx',
+# The lesson cards and the brain break generator are the Home Group activities.
+PAGES = ['homegroup-lessons/homegroup-lessons.aspx', 'brain-breaks/random-generator.aspx',
+         'games/index.aspx', 'games/wordle.aspx', 'games/connections.aspx',
          'games/wheel-of-fortune.aspx', 'games/alphabucks.aspx',
          'games/smoulder.aspx', 'games/stop-the-clock.aspx',
          'games/weekly-trivia.aspx', 'games/geoguessr.aspx',
@@ -42,20 +44,41 @@ PAGES = ['games/index.aspx', 'games/wordle.aspx', 'games/connections.aspx',
 # ?builder opens the GeoGuessr round editor. Each is switched off by replacing
 # the condition, and the build fails if the text it expects has moved, so a
 # shortcut can never quietly survive a refactor.
-RESET = ("location.search.includes('reset')", 'false')
+RESET = ("location.search.includes('reset')", 'false', 1)
 HARDEN = {
     'games/wordle.aspx': [RESET],
     'games/connections.aspx': [RESET],
     'games/wheel-of-fortune.aspx': [RESET],
     'games/alphabucks.aspx': [RESET],
     'games/smoulder.aspx': [RESET],
-    'games/geoguessr.aspx': [('params.has("test")', 'false'),
-                             ('params.get("week")', 'null'),
-                             ('new URLSearchParams(location.search).has("builder")', 'false')],
+    'games/geoguessr.aspx': [('params.has("test")', 'false', 1),
+                             ('params.get("week")', 'null', 2),
+                             ('new URLSearchParams(location.search).has("builder")', 'false', 1)],
+    # The brain break PDF is a plain file, so it stays in staff/ and is linked from there.
+    'homegroup-lessons/homegroup-lessons.aspx': [
+        ('href="Brain_breaks_ordered.pdf#page=',
+         'href="../../staff/homegroup-lessons/Brain_breaks_ordered.pdf#page=', 3)],
 }
-EXPECTED = {("location.search.includes('reset')"): 1, 'params.has("test")': 1,
-            'params.get("week")': 2,
-            'new URLSearchParams(location.search).has("builder")': 1}
+
+# The helper games hub gains a section for the Home Group activities.
+HUB_MARKER = '  <section>\n    <div class="section-head"><h2>Leaderboards</h2>'
+HUB_ACTIVITIES = """  <section>
+    <div class="section-head"><h2>Activities</h2><span>ready-to-run cards and quick breaks</span></div>
+    <div class="grid">
+      <a class="card" href="../homegroup-lessons/homegroup-lessons.aspx">
+        <span class="card-emoji">\U0001F4D8</span>
+        <div class="card-title">Home Group Lessons</div>
+        <div class="card-desc">Fortnightly activity cards. Open the one marked THIS WEEK and follow the numbered steps.</div>
+      </a>
+      <a class="card" href="../brain-breaks/random-generator.aspx">
+        <span class="card-emoji">\U0001F9E0</span>
+        <div class="card-title">Brain Break Generator</div>
+        <div class="card-desc">A quick, random movement or reset activity for the whole class.</div>
+      </a>
+    </div>
+  </section>
+
+"""
 
 # Wording for the helper gate. Every replaced string must occur exactly once.
 WORDING = [
@@ -106,10 +129,13 @@ def main():
 
     for rel in PAGES:
         text = open(os.path.join(SRC_DIR, rel), encoding='utf-8').read()
-        for old, new in HARDEN.get(rel, []):
-            assert text.count(old) == EXPECTED[old], \
-                '%s: expected %d of %r, found %d' % (rel, EXPECTED[old], old, text.count(old))
+        for old, new, want in HARDEN.get(rel, []):
+            assert text.count(old) == want, \
+                '%s: expected %d of %r, found %d' % (rel, want, old, text.count(old))
             text = text.replace(old, new)
+        if rel == 'games/index.aspx':
+            assert text.count(HUB_MARKER) == 1, 'hub layout moved: cannot add the Activities section'
+            text = text.replace(HUB_MARKER, HUB_ACTIVITIES + HUB_MARKER)
         iv, ct = gate.encrypt(text.encode('utf-8'), raw_key)
         page = (wrapper.replace('__PAYLOAD__', gate.b64(ct)).replace('__SALT__', gate.b64(salt))
                 .replace('__IV__', gate.b64(iv)).replace('__ITER__', str(gate.ITERATIONS)))
