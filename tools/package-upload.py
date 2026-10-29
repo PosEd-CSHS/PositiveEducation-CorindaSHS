@@ -18,9 +18,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GATED = os.path.join(ROOT, 'dist', 'staff')
 OUT = os.path.join(ROOT, 'dist', 'PosEd-sharepoint-upload.zip')
 
+HELPERS = os.path.join(ROOT, 'dist', 'helpers')
 SOURCES = [('assets', os.path.join(ROOT, 'assets')),
            ('public', os.path.join(ROOT, 'public')),
            ('staff', GATED)]
+if os.path.isdir(HELPERS):
+    SOURCES.append(('helpers', HELPERS))
 
 assert os.path.isdir(GATED), 'run tools/build-staff-gate.py first'
 
@@ -41,9 +44,9 @@ for arc, full in files:
     # SharePoint document libraries refuse to render pages containing these.
     if '<%' in text:
         problems.append('%s: server-side code block' % arc)
-    if arc.startswith('staff/'):
+    if arc.startswith('staff/') or arc.startswith('helpers/'):
         if 'id="payload"' not in text:
-            problems.append('%s: staff page is not gated' % arc)
+            problems.append('%s: page is not gated' % arc)
     else:
         if 'id="payload"' in text:
             problems.append('%s: public page should not be gated' % arc)
@@ -55,5 +58,6 @@ with zipfile.ZipFile(OUT, 'w', zipfile.ZIP_DEFLATED) as z:
 
 gated = sum(1 for a, _ in files if a.startswith('staff/') and a.endswith('.aspx'))
 openp = sum(1 for a, _ in files if a.startswith('public/') and a.endswith('.aspx'))
-print('%s\n%d files, %.1f MB  (%d gated staff pages, %d open public pages)'
-      % (OUT, len(files), os.path.getsize(OUT) / 1e6, gated, openp))
+help_n = sum(1 for a, _ in files if a.startswith('helpers/') and a.endswith('.aspx'))
+print('%s\n%d files, %.1f MB  (%d gated staff pages, %d gated helper pages, %d open public pages)'
+      % (OUT, len(files), os.path.getsize(OUT) / 1e6, gated, help_n, openp))
